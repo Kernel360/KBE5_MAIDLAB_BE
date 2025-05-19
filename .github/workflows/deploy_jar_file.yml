@@ -29,7 +29,7 @@ jobs:
         key: ${{ secrets.EC2_SSHKEY }}
         port: ${{ secrets.EC2_PORT }}
         source: |
-          build/libs/*.jar
+          build/libs/*-all.jar
           !build/libs/*plain.jar
         target: "/home/${{ secrets.EC2_USER }}/githubaction"
 
