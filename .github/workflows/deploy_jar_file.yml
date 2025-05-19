@@ -36,7 +36,7 @@ jobs:
       env:
         SPRING_PROFILES_ACTIVE: prod
         DB_PROD_HOST: ${{ secrets.DB_PROD_HOST }}
-        DB_PROD_USER: ${{ secrets.DB_PROD_USER }}
+        DB_PROD_USERNAME: ${{ secrets.DB_PROD_USERNAME }}
         DB_PROD_PASSWORD: ${{ secrets.DB_PROD_PASSWORD }}
         DB_PROD_PORT: ${{ secrets.DB_PROD_PORT }}
         DB_PROD_DATABASE: ${{ secrets.DB_PROD_DATABASE }}
@@ -46,7 +46,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSHKEY }}
         port: ${{ secrets.EC2_PORT }}
-        envs: SPRING_PROFILES_ACTIVE,DB_PROD_HOST,DB_PROD_USER,DB_PROD_PASSWORD,JWT_SECRET,DB_PROD_PORT
+        envs: SPRING_PROFILES_ACTIVE,DB_PROD_HOST,DB_PROD_USERNAME,DB_PROD_PASSWORD,JWT_SECRET,DB_PROD_PORT
         script: |
           #!/bin/bash
           set -e
