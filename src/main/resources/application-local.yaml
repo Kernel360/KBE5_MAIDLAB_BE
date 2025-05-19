@@ -1,0 +1,18 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    show-sql: true
+    properties:
+      dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: create
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:${DB_LOCAL_PORT}/${DB_LOCAL_DATABASE}?useSSL=false&useUnicode=true&allowPublicKeyRetrieval=true
+    username: ${DB_LOCAL_USERNAME}
+    password: ${DB_LOCAL_PASSWORD}
+
+jwt:
+  secret-key: ${JWT_SECRET}
