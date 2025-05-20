@@ -14,5 +14,4 @@ spring:
     username: ${DB_LOCAL_USERNAME}
     password: ${DB_LOCAL_PASSWORD}
 
-jwt:
-  secret-key: ${JWT_SECRET}
+
