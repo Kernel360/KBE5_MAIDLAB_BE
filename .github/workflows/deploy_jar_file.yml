@@ -19,7 +19,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Build with Gradle
-      run: ./gradlew clean build -x test
+      run: ./gradlew :app:bootJar clean build -x test
 
     - name: Upload JAR to EC2
       uses: appleboy/scp-action@v0.1.4
@@ -28,7 +28,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSHKEY }}
         port: ${{ secrets.EC2_PORT }}
-        source: "build/libs/*.jar"
+        source: "app/build/libs/*.jar"
         target: "/home/${{ secrets.EC2_USER }}/githubaction"
 
     - name: Run commands on EC2
