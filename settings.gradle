@@ -1,1 +1,8 @@
 rootProject.name = 'MaidLab'
+include 'app'
+include 'admin'
+include 'common'
+include 'consumer'
+include 'manager'
+include 'matching'
+include 'reservation'
