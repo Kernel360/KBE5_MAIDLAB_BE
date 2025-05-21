@@ -3,6 +3,6 @@ spring:
     import: optional:file:.env[.properties]
   profiles:
     group:
-      local: "local, localkey"
+      local: "local,localkey,swagger"
       prod: "prod"
     active: prod
