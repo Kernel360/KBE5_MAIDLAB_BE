@@ -1,22 +1,22 @@
 plugins {
-    id 'java'
+	id 'java'
 }
 
 allprojects {
-    group = 'kernel'
-    version = '1.0.0'
+	group = 'kernel'
+	version = '1.0.0'
 
-    repositories {
-        mavenCentral()
-    }
+	repositories {
+		mavenCentral()
+	}
 }
 
 
 subprojects {
-    apply plugin: 'java'
+	apply plugin: 'java'
 
-    java {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
+	java {
+		sourceCompatibility = JavaVersion.VERSION_21
+		targetCompatibility = JavaVersion.VERSION_21
+	}
 }

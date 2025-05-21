@@ -1,2 +1,6 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
 jwt:
   secret-key: ${JWT_SECRET}
+  expiration: 1800000
