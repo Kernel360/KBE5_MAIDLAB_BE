@@ -9,10 +9,11 @@ public class WebConfig implements WebMvcConfigurer {
 
 	public void addCorsMappings(CorsRegistry registry){
 		registry.addMapping("/api/**")
-			.allowedOrigins("http://localhost:5173")
+			.allowedOrigins("http://localhost:5173", "https://kbe-5-maidlab-fe.vercel.app")
 			.allowedMethods("*")
 			.allowCredentials(true);
 	}
+
 
 
 }
