@@ -15,9 +15,14 @@ java {
 	}
 }
 
+springBoot{
+	mainClass = 'kernel.maidlab.app.MaidlabBeApplication'
+}
+
+
 bootJar {
 	archiveFileName = 'MaidLab-1.0.0.jar'
-	mainClass = 'com.maidlab.app.MaidlabBeApplication'
+
 }
 
 

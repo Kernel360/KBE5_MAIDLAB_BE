@@ -1,4 +1,4 @@
-package kernel.maidlab.auth.dto.response;
+package kernel.maidlab.common.auth.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

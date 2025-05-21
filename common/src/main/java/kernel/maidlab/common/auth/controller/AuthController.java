@@ -1,4 +1,4 @@
-package kernel.maidlab.auth.controller;
+package kernel.maidlab.consumer.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -6,9 +6,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kernel.maidlab.auth.dto.request.LoginRequestDto;
-import kernel.maidlab.auth.dto.request.SignupRequestDto;
-import kernel.maidlab.auth.dto.response.TokenResponseDto;
+
+import kernel.maidlab.common.auth.dto.request.LoginRequestDto;
+import kernel.maidlab.common.auth.dto.request.SignupRequestDto;
+import kernel.maidlab.common.auth.dto.response.TokenResponseDto;
 import kernel.maidlab.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
