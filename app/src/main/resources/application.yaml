@@ -4,5 +4,5 @@ spring:
   profiles:
     group:
       local: "local,localkey,swagger"
-      prod: "prod"
+      prod: "prod, localkey, swagger"
     active: prod
