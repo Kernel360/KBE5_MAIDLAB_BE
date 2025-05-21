@@ -15,6 +15,13 @@ java {
 	}
 }
 
+bootJar {
+	archiveFileName = 'MaidLab-1.0.0.jar'
+	mainClass = 'com.maidlab.app.MaidlabBeApplication'
+}
+
+
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor

@@ -2,7 +2,7 @@ name: Deploy Spring Boot to EC2
 
 on:
   push:
-    branches: 'dev'  # dev 브랜치 push 시 작동
+    branches: 'chore/be/#3'  # chore/be/#3 브랜치 push 시 작동
 
 jobs:
   deploy:
@@ -28,7 +28,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSHKEY }}
         port: ${{ secrets.EC2_PORT }}
-        source: "build/libs/*SNAPSHOT.jar"
+        source: "build/libs/*.jar"
         target: "/home/${{ secrets.EC2_USER }}/githubaction"
 
     - name: Run commands on EC2
