@@ -15,6 +15,18 @@ java {
 	}
 }
 
+springBoot{
+	mainClass = 'kernel.maidlab.MaidlabBeApplication'
+}
+
+
+bootJar {
+	archiveFileName = 'MaidLab-1.0.0.jar'
+	mainClass = 'kernel.maidlab.MaidlabBeApplication'
+}
+
+
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
