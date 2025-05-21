@@ -19,7 +19,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Build with Gradle
-      run: ./gradlew :app:bootJar clean build -x test
+      run: ./gradlew clean :app:bootJar -x test
 
     - name: Upload JAR to EC2
       uses: appleboy/scp-action@v0.1.4
