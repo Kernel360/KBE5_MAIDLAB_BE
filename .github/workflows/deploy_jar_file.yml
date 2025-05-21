@@ -2,7 +2,7 @@ name: Deploy Spring Boot to EC2
 
 on:
   push:
-    branches: 'chore/be/#3'  # chore/be/#3 브랜치 push 시 작동
+    branches: 'dev'  # dev 브랜치 push 시 작동
 
 jobs:
   deploy:
@@ -19,7 +19,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Build with Gradle
-      run: ./gradlew clean build -x test
+      run: ./gradlew clean :app:bootJar -x test
 
     - name: Upload JAR to EC2
       uses: appleboy/scp-action@v0.1.4
@@ -28,7 +28,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSHKEY }}
         port: ${{ secrets.EC2_PORT }}
-        source: "build/libs/*.jar"
+        source: "app/build/libs/*.jar"
         target: "/home/${{ secrets.EC2_USER }}/githubaction"
 
     - name: Run commands on EC2
@@ -56,7 +56,7 @@ jobs:
             rm -f app.pid
           fi
           # 가장 최근 jar 찾기
-          JAR=$(ls -t build/libs/*.jar | head -n 1)
+          JAR=$(ls -t app/build/libs/*.jar | head -n 1)
           # 백그라운드 실행(로그 아웃해도 유지)
           touch app.log
           nohup java -jar "$JAR" --spring.profiles.active=prod > app.log 2>&1 & echo $! > app.pid
