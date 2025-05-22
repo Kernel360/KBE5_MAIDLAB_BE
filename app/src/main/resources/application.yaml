@@ -6,3 +6,4 @@ spring:
       local: "local,localkey,swagger"
       prod: "prod, localkey, swagger"
     active: prod
+
