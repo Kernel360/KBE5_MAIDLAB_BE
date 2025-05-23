@@ -26,7 +26,6 @@ public class S3ServiceImpl implements S3Service {
 	@Value("${aws.s3.bucket}")
 	private String bucketName;
 
-
 	// 백엔드에서 직접 파일 보내는 함수
 	// public String uploadFile(String key, MultipartFile file) throws IOException {
 	// 	String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
