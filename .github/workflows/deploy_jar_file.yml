@@ -41,12 +41,14 @@ jobs:
         DB_PROD_PORT: ${{ secrets.DB_PROD_PORT }}
         DB_PROD_DATABASE: ${{ secrets.DB_PROD_DATABASE }}
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        AWS_S3_ACCESSKEY: ${{ secrets.AWS_S3_ACCESSKEY }}
+        AWS_S3_SECRETKEY: ${{ secrets.AWS_S3_SECRETKEY }}
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSHKEY }}
         port: ${{ secrets.EC2_PORT }}
-        envs: SPRING_PROFILES_ACTIVE,DB_PROD_HOST,DB_PROD_USERNAME,DB_PROD_PASSWORD,DB_PROD_DATABASE,DB_PROD_PORT,JWT_SECRET
+        envs: SPRING_PROFILES_ACTIVE,DB_PROD_HOST,DB_PROD_USERNAME,DB_PROD_PASSWORD,DB_PROD_DATABASE,DB_PROD_PORT,JWT_SECRET,AWS_S3_ACCESSKEY,AWS_S3_SECRETKEY
         script: |
           #!/bin/bash
           set -e

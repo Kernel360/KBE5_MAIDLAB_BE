@@ -13,3 +13,9 @@ spring:
     url: jdbc:mysql://${DB_PROD_HOST}:${DB_PROD_PORT}/${DB_PROD_DATABASE}?useSSL=false&useUnicode=true&allowPublicKeyRetrieval=true
     username: ${DB_PROD_USERNAME}
     password: ${DB_PROD_PASSWORD}
+aws:
+  region: ap-northeast-2 #asia/seoul
+  s3:
+    bucket: maidlab-bucket
+    access-key: ${AWS_S3_ACCESSKEY}
+    secret-key: ${AWS_S3_SECRETKEY}
