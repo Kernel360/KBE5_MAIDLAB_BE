@@ -9,13 +9,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import kernel.maidlab.common.dto.FileNamesRequest;
+import kernel.maidlab.common.dto.PresignedFileResponse;
 import kernel.maidlab.common.dto.baseResponse.BaseResponse;
 import kernel.maidlab.common.dto.baseResponse.ResponseCode;
 import kernel.maidlab.common.util.JwtUtil;
 import kernel.maidlab.manager.dto.ManagerProfile;
-import kernel.maidlab.manager.service.S3Service;
+import kernel.maidlab.common.service.S3Service;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,6 @@ public class ManagerController {
 
 	private final JwtUtil jwtUtil;
 	private final S3Service s3service;
-
 
 	@GetMapping("/me/profile")
 	@Operation(summary = "프로필 조회", description = "JWT 기반 매니저 프로필 조회", security = @SecurityRequirement(name = "JWT"))
@@ -71,27 +71,12 @@ public class ManagerController {
 		return ResponseEntity.ok(BaseResponse.error(ResponseCode.AF));
 	}
 
-	/*
-
-	 파일 저장할 때 사용할 서비스 s3Service
-
-
-	 */
+	//매니저 프로필 이미지 저장 테스트 api
 	@PostMapping("/me/fileupload")
-	public ResponseEntity<?> Fileupload(@RequestParam("files") List<MultipartFile> files) throws IOException {
-		List<String> fileNames;
-		fileNames = new ArrayList<String>();
-		files.forEach(file -> {
-			try {
-				String fileName = s3service.uploadFile(file);
-				log.debug("filename : {}", fileName);
-				fileNames.add(fileName);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		});
-
-		return ResponseEntity.ok(BaseResponse.success(fileNames.toString()));
+	public ResponseEntity<?> getPresignedUploadUrls(@RequestBody FileNamesRequest request) {
+		List<String> filenames = request.getFilenames();
+		List<PresignedFileResponse> presignedUrls = s3service.uploadFile(filenames, "profile_image/");
+		return ResponseEntity.ok(BaseResponse.success(presignedUrls));
 	}
 
 }
