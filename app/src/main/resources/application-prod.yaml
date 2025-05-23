@@ -8,6 +8,10 @@ spring:
       dialect: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update               # Dev/운영 스키마 보호
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${DB_PROD_HOST}:${DB_PROD_PORT}/${DB_PROD_DATABASE}?useSSL=false&useUnicode=true&allowPublicKeyRetrieval=true
