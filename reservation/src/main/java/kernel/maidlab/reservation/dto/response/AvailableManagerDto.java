@@ -1,8 +1,5 @@
 package kernel.maidlab.reservation.dto.response;
 
-import java.util.List;
-
-import kernel.maidlab.reservation.enums.AdditionalService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

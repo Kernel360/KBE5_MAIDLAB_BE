@@ -7,13 +7,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import kernel.maidlab.reservation.enums.AdditionalService;
 import kernel.maidlab.reservation.enums.ReservationStatus;
-import kernel.maidlab.reservation.enums.ServiceType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,14 +32,26 @@ public class Reservation {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private Long managerId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "service_detail_type_id", nullable = false)
+	private ServiceDetailType serviceDetailType;
+
+	@Column(length = 1000, nullable = false)
+	private String address;
+	@Column(length = 1000)
+	private String addressDetail;
+
+	private Long MatchManagerId;
 
 	@Column(nullable = false)
 	private Long consumerId;
 
 	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private ServiceType serviceType;
+	private String housingType;
+	@Column(nullable = false)
+	private Integer roomSize;
+	@Column(nullable = false)
+	private String housingInformation;
 
 	@Column(nullable = false)
 	private LocalDateTime reservationDate;
@@ -47,28 +60,16 @@ public class Reservation {
 	@Column(nullable = false)
 	private LocalDateTime endTime;
 
-	@Column(length=1000, nullable = false)
-	private String address;
-	@Column(length=1000)
-	private String addressDetail;
-	@Column(nullable = false)
-	private String housingType;
-	@Column(nullable = false)
-	private Integer roomSize;
-	@Column(nullable = false)
-	private Integer roomCount;
-
-	@Enumerated(EnumType.STRING)
-	private AdditionalService serviceAdd;
+	private String serviceAdd;
 
 	private Boolean helper;
-	private Boolean pet;
+	private String pet;
 
 	@Column(columnDefinition = "TEXT")
 	private String specialRequest;
 
 	@Column(nullable = false)
-	private BigDecimal totalPrice;
+	private Long totalPrice;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -78,11 +79,9 @@ public class Reservation {
 	private LocalDateTime createdAt;
 	private LocalDateTime modifiedAt;
 
-	public void cancel(LocalDateTime canceledAt){
+	public void cancel(LocalDateTime canceledAt) {
 		this.status = ReservationStatus.CANCELED;
 		this.canceledAt = canceledAt;
 	}
-
-
 
 }
