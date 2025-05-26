@@ -7,6 +7,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FileNamesRequest {
+public class FileNamesRequestDto {
 	private List<String> filenames;
 }

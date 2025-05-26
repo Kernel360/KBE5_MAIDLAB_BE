@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class PresignedFileResponse {
+public class PresignedFileResponseDto {
 	private String key;
 	private String url;
 }

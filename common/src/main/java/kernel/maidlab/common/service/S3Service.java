@@ -1,25 +1,8 @@
 package kernel.maidlab.common.service;
 
-import java.io.IOException;
-import java.net.URL;
-import java.time.Duration;
 import java.util.List;
-import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import kernel.maidlab.common.dto.PresignedFileResponse;
-import lombok.RequiredArgsConstructor;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
-
-
+import kernel.maidlab.common.dto.PresignedFileResponseDto;
 
 public interface S3Service {
 
@@ -40,6 +23,6 @@ public interface S3Service {
 	// }
 
 	//presigned url 이용하여 전송하는 함수
-	public List<PresignedFileResponse> uploadFile(List<String> filenames, String prefix);
+	public List<PresignedFileResponseDto> uploadFile(List<String> filenames, String prefix);
 
 }
