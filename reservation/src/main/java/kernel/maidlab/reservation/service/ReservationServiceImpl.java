@@ -33,10 +33,10 @@ public class ReservationServiceImpl implements ReservationService {
 
 		// 금액 비교
 		if (!totalCalculatedPrice.equals(clientPrice)) {
-			log.warn("결제 금액 불일치: client={}, server={}, detailTypeId={}", clientPrice, totalCalculatedPrice, dto.getServiceDetailTypeId());
+			log.warn("결제 금액 불일치: client={}, server={}, detailTypeId={}", clientPrice, totalCalculatedPrice,
+				dto.getServiceDetailTypeId());
 			throw new IllegalArgumentException("총 결제 금액이 일치하지 않습니다.");
 		}
-
 
 		Reservation reservation = Reservation.builder()
 			.serviceDetailType(detailType)
@@ -51,7 +51,7 @@ public class ReservationServiceImpl implements ReservationService {
 			.startTime(dto.getStartTime())
 			.endTime(dto.getEndTime())
 			.serviceAdd(dto.getServiceAdd())
-			.helper(dto.getHelper())
+			// .helper(dto.getHelper())
 			.pet(dto.getPet())
 			.specialRequest(dto.getSpecialRequest())
 			.totalPrice(clientPrice)
@@ -61,7 +61,7 @@ public class ReservationServiceImpl implements ReservationService {
 		reservationRepository.save(reservation);
 	}
 
-	private Long calculateAdditionalServicePrice(PaymentRequestDto dto){
+	private Long calculateAdditionalServicePrice(PaymentRequestDto dto) {
 		long additional = 0L;
 
 		if (dto.getServiceAdd() != null && dto.getServiceAdd().equals("COOK")) {

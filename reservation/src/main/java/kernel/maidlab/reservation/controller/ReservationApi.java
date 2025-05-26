@@ -2,6 +2,7 @@ package kernel.maidlab.reservation.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -9,7 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kernel.maidlab.reservation.dto.request.PaymentRequestDto;
 
-@Tag(name= "Reservation", description = "예약 관련 API")
+@Tag(name = "Reservation", description = "예약 관련 API")
 public interface ReservationApi {
 
 	@Operation(

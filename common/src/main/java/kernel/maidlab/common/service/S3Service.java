@@ -19,10 +19,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
-
-
 public interface S3Service {
-
 
 	// 백엔드에서 직접 파일 보내는 함수
 	// public String uploadFile(String key, MultipartFile file) throws IOException {

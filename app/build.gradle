@@ -1,61 +1,59 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.5'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.5'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
-allprojects{
-	group = 'kernel'
-	version = '0.0.1-SNAPSHOT'
+allprojects {
+    group = 'kernel'
+    version = '0.0.1-SNAPSHOT'
 }
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
-springBoot{
-	mainClass = 'kernel.maidlab.MaidlabBeApplication'
+springBoot {
+    mainClass = 'kernel.maidlab.MaidlabBeApplication'
 }
 
 
 bootJar {
-	archiveFileName = 'MaidLab-1.0.0.jar'
-	mainClass = 'kernel.maidlab.MaidlabBeApplication'
+    archiveFileName = 'MaidLab-1.0.0.jar'
+    mainClass = 'kernel.maidlab.MaidlabBeApplication'
 }
-
 
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation project (':admin')
-	implementation project (':common')
-	implementation project (':consumer')
-	implementation project (':manager')
-	implementation project (':matching')
-	implementation project (':reservation')
+    implementation project(':admin')
+    implementation project(':common')
+    implementation project(':consumer')
+    implementation project(':manager')
+    implementation project(':matching')
+    implementation project(':reservation')
 
 
-
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
