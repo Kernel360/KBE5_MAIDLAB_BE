@@ -61,7 +61,6 @@ public class Reservation {
 
 	private String serviceAdd;
 
-	private Boolean helper;
 	private String pet;
 
 	@Column(columnDefinition = "TEXT")
