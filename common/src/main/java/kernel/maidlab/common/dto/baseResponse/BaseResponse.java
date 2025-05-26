@@ -1,5 +1,6 @@
 package kernel.maidlab.common.dto.baseResponse;
 
+import kernel.maidlab.common.enums.ResponseCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

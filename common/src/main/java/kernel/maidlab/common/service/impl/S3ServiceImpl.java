@@ -1,4 +1,4 @@
-package kernel.maidlab.common.impl;
+package kernel.maidlab.common.service.impl;
 
 import java.time.Duration;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import kernel.maidlab.common.dto.PresignedFileResponse;
+import kernel.maidlab.common.dto.PresignedFileResponseDto;
 import kernel.maidlab.common.service.S3Service;
 import lombok.RequiredArgsConstructor;
 // import software.amazon.awssdk.services.s3.S3Client;
@@ -43,7 +43,7 @@ public class S3ServiceImpl implements S3Service {
 
 	//presigned url 이용하여 전송하는 함수
 	@Override
-	public List<PresignedFileResponse> uploadFile(List<String> filenames, String prefix) {
+	public List<PresignedFileResponseDto> uploadFile(List<String> filenames, String prefix) {
 		return filenames.stream().map(filename -> {
 			String key = prefix + UUID.randomUUID() + "_" + filename;
 
@@ -60,7 +60,7 @@ public class S3ServiceImpl implements S3Service {
 
 			PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
 
-			return new PresignedFileResponse(key, presignedRequest.url().toString());
+			return new PresignedFileResponseDto(key, presignedRequest.url().toString());
 		}).toList();
 	}
 }

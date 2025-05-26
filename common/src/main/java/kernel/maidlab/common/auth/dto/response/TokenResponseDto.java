@@ -12,6 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Schema(description = "JWT 토큰 응답 DTO")
 public class TokenResponseDto {
-	@Schema(description = "액세스 토큰", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6...")
-	private String accessToken;
+    @Schema(description = "액세스 토큰", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6...")
+    private String accessToken;
 }
