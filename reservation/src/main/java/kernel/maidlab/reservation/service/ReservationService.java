@@ -1,6 +1,5 @@
 package kernel.maidlab.reservation.service;
 
-
 import kernel.maidlab.reservation.dto.request.PaymentRequestDto;
 
 public interface ReservationService {
