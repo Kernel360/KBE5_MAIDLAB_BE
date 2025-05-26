@@ -1,0 +1,17 @@
+package kernel.maidlab.api.reservation.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class AvailableManagerDto {
+	private Long managerId;
+	private String managerName;
+	private String managerProfileImageUrl;
+	private Integer managerRating;
+	private String introduceText;
+	// private List<AdditionalService> additionalServiceList;
+}

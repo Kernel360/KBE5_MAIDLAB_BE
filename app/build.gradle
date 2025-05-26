@@ -39,11 +39,7 @@ repositories {
 dependencies {
     implementation project(':admin')
     implementation project(':common')
-    implementation project(':consumer')
-    implementation project(':manager')
-    implementation project(':matching')
-    implementation project(':reservation')
-
+    implementation project(':api')
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
