@@ -1,6 +1,5 @@
 package kernel.maidlab.reservation.dto.request;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentRequestDto {
+public class ReservationRequestDto {
 	private Long serviceDetailTypeId; // ex) 0 : 대청소,가사
 
 	private String address;
@@ -29,11 +28,9 @@ public class PaymentRequestDto {
 	private LocalDateTime endTime;
 
 	private String serviceAdd;
-	private Boolean helper;
 	private String pet;
 
 	private String specialRequest;
 
 	private Long totalPrice;
-
 }
