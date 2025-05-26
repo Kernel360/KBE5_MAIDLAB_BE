@@ -5,5 +5,5 @@ spring:
     group:
       local: "local,localkey,swagger"
       prod: "prod, localkey, swagger"
-    active: local
+    active: prod
 

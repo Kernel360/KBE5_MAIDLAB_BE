@@ -31,12 +31,13 @@ public class ReservationServiceImpl implements ReservationService {
 			throw new IllegalArgumentException("총 결제 금액이 일치하지 않습니다.");
 		}
 	}
+
 	@Transactional
 	@Override
 	public void createReservation(ReservationRequestDto dto) {
 		// 결제 검증 로직(애플리케이션 상용 전 true 고정)
 		boolean payValid = true;
-		if (!payValid){
+		if (!payValid) {
 			throw new IllegalArgumentException("결제 검증 실패");
 		}
 
@@ -69,8 +70,6 @@ public class ReservationServiceImpl implements ReservationService {
 		reservationRepository.save(reservation);
 	}
 
-
-
 	private Long calculateTotalPrice(ReservationRequestDto dto, Long basePrice) {
 
 		long additional = 0L;
@@ -78,6 +77,6 @@ public class ReservationServiceImpl implements ReservationService {
 		if (dto.getServiceAdd() != null && dto.getServiceAdd().equals("COOK")) {
 			additional += 10_000;
 		}
-		return basePrice+additional;
+		return basePrice + additional;
 	}
 }
