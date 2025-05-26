@@ -1,4 +1,4 @@
-package kernel.maidlab.common.dto.baseResponse;
+package kernel.maidlab.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

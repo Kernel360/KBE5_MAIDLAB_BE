@@ -1,6 +1,5 @@
 package kernel.maidlab.reservation.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -62,7 +61,7 @@ public class Reservation {
 
 	private String serviceAdd;
 
-	//private Boolean helper;
+	private Boolean helper;
 	private String pet;
 
 	@Column(columnDefinition = "TEXT")

@@ -1,4 +1,4 @@
-package kernel.maidlab.reservation.enums;
+package kernel.maidlab.common.enums;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
