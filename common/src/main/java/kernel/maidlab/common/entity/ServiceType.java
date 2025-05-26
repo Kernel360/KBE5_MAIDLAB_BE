@@ -9,15 +9,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "service_type")
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+// @Entity
+// @Table(name = "service_type")
+// @Getter
+// @NoArgsConstructor
+// @AllArgsConstructor
+// @Builder
 public class ServiceType {
 
-	@Id
-	@GeneratedValue
-
+	// @Id
+	// @GeneratedValue
 }
