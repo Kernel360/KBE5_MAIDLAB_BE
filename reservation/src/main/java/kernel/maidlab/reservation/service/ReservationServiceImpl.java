@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
-import kernel.maidlab.reservation.dto.request.PaymentRequestDto;
+import jakarta.transaction.Transactional;
+import kernel.maidlab.reservation.dto.request.ReservationRequestDto;
 import kernel.maidlab.reservation.entity.Reservation;
 import kernel.maidlab.reservation.entity.ServiceDetailType;
 import kernel.maidlab.reservation.enums.ReservationStatus;
@@ -21,22 +22,31 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ServiceDetailTypeRepository serviceDetailTypeRepository;
 
 	@Override
-	public void createReservation(PaymentRequestDto dto) {
+	public void checkTotalPrice(ReservationRequestDto dto) {
 		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
 			.orElseThrow(() -> new IllegalArgumentException("유효하지않은 서비스 상세 타입입니다."));
-
-		// 서버에서 총 결제 금액 재계산
-		Long basePrice = detailType.getServicePrice();
-		Long additionalPrice = calculateAdditionalServicePrice(dto);
-		Long totalCalculatedPrice = basePrice + additionalPrice;
-		Long clientPrice = dto.getTotalPrice();
-
-		// 금액 비교
-		if (!totalCalculatedPrice.equals(clientPrice)) {
-			log.warn("결제 금액 불일치: client={}, server={}, detailTypeId={}", clientPrice, totalCalculatedPrice,
-				dto.getServiceDetailTypeId());
+		Long serverCalculatedPrice = calculateTotalPrice(dto, detailType.getServicePrice());
+		if (!serverCalculatedPrice.equals(dto.getTotalPrice())) {
+			log.warn("금액 불일치 - client={}, server={}", dto.getTotalPrice(), serverCalculatedPrice);
 			throw new IllegalArgumentException("총 결제 금액이 일치하지 않습니다.");
 		}
+	}
+
+	@Transactional
+	@Override
+	public void createReservation(ReservationRequestDto dto) {
+		// 결제 검증 로직(애플리케이션 상용 전 true 고정)
+		boolean payValid = true;
+		if (!payValid) {
+			throw new IllegalArgumentException("결제 검증 실패");
+		}
+
+		// 금액 재검증
+		checkTotalPrice(dto);
+
+		// 예약 저장
+		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
+			.orElseThrow(() -> new IllegalArgumentException("유효하지않은 서비스 상세 타입입니다."));
 
 		Reservation reservation = Reservation.builder()
 			.serviceDetailType(detailType)
@@ -51,22 +61,22 @@ public class ReservationServiceImpl implements ReservationService {
 			.startTime(dto.getStartTime())
 			.endTime(dto.getEndTime())
 			.serviceAdd(dto.getServiceAdd())
-			// .helper(dto.getHelper())
 			.pet(dto.getPet())
 			.specialRequest(dto.getSpecialRequest())
-			.totalPrice(clientPrice)
+			.totalPrice(dto.getTotalPrice())
 			.status(ReservationStatus.PENDING)
 			.createdAt(LocalDateTime.now())
 			.build();
 		reservationRepository.save(reservation);
 	}
 
-	private Long calculateAdditionalServicePrice(PaymentRequestDto dto) {
+	private Long calculateTotalPrice(ReservationRequestDto dto, Long basePrice) {
+
 		long additional = 0L;
 
 		if (dto.getServiceAdd() != null && dto.getServiceAdd().equals("COOK")) {
 			additional += 10_000;
 		}
-		return additional;
+		return basePrice + additional;
 	}
 }

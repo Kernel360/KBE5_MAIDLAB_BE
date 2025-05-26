@@ -19,3 +19,11 @@ spring:
     password: ${DB_LOCAL_PASSWORD}
 
 
+aws:
+  region: ap-northeast-2 #asia/seoul
+  s3:
+    bucket: maidlab-bucket
+    access-key: ${AWS_S3_ACCESSKEY}
+    secret-key: ${AWS_S3_SECRETKEY}
+
+
