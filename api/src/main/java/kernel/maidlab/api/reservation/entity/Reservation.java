@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import kernel.maidlab.api.reservation.enums.ReservationStatus;
+import kernel.maidlab.common.entity.Base;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,11 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Reservation {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+public class Reservation extends Base {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "service_detail_type_id", nullable = false)
