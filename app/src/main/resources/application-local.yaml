@@ -27,3 +27,11 @@ aws:
     secret-key: ${AWS_S3_SECRETKEY}
 
 
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  header: ${JWT_HEADER}
+  prefix: ${JWT_PREFIX}
+  expiration:
+    access: ${JWT_EXPIRATION_ACCESS}
+    refresh: ${JWT_EXPIRATION_REFRESH}
+
