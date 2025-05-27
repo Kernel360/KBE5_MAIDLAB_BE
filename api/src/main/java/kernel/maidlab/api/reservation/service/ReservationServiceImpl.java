@@ -9,7 +9,7 @@ import kernel.maidlab.api.exception.custom.ReservationException;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
 import kernel.maidlab.api.reservation.entity.Reservation;
 import kernel.maidlab.api.reservation.entity.ServiceDetailType;
-import kernel.maidlab.api.reservation.enums.ReservationStatus;
+import kernel.maidlab.common.enums.ReservationStatus;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
 import kernel.maidlab.api.reservation.repository.ServiceDetailTypeRepository;
 import kernel.maidlab.common.enums.ResponseType;
