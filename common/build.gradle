@@ -32,4 +32,7 @@ dependencies {
     implementation group: 'software.amazon.awssdk', name: 's3', version: '2.31.48'
     implementation group: 'software.amazon.awssdk', name: 'auth', version: '2.31.48'
 
+    //querydsl
+    implementation 'com.querydsl:querydsl-core:5.0.0'
+
 }
