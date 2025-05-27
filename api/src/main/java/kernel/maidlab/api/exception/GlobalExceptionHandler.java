@@ -1,6 +1,5 @@
 package kernel.maidlab.api.exception;
 
-
 import kernel.maidlab.api.exception.dto.ErrorResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import lombok.extern.slf4j.Slf4j;
@@ -11,11 +10,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
 	@ExceptionHandler(BaseException.class)
 	public ResponseEntity<ErrorResponseDto> handleBaseException(BaseException e) {
 		ResponseType type = e.getResponseType();
-		log.warn("Handled BaseException - code: {}, message: {}", type.getCode(), type.getMessage());
+		log.error("Handled BaseException - code: {}, message: {}", type.getCode(), type.getMessage());
 		return ResponseEntity
 			.status(type.getHttpStatus())
 			.body(new ErrorResponseDto(type));
