@@ -26,7 +26,7 @@ public enum ResponseType {
 	THIS_BOARD_DOES_NOT_EXIST("NB", "This board does not exist.", HttpStatus.NOT_FOUND),
 	THIS_USER_DOES_NOT_EXIST("NU", "This user does not exist.", HttpStatus.NOT_FOUND),
 	THIS_RESERVATION_DOSE_NOT_EXIST("NR", "This reservation does not exist.", HttpStatus.NOT_FOUND),
-
+	
 	// 500
 	DATABASE_ERROR("DBE", "Database error.", HttpStatus.INTERNAL_SERVER_ERROR);
 
