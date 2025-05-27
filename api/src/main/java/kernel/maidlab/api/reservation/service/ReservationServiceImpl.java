@@ -50,26 +50,7 @@ public class ReservationServiceImpl implements ReservationService {
 		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
 			.orElseThrow(() -> new ReservationException(ResponseType.VALIDATION_FAILED));
 
-		Reservation reservation = Reservation.builder()
-			.serviceDetailType(detailType)
-			.address(dto.getAddress())
-			.addressDetail(dto.getAddressDetail())
-			.MatchManagerId(dto.getMatchManagerId())
-			.consumerId(dto.getConsumerId())
-			.housingType(dto.getHousingType())
-			.roomSize(dto.getRoomSize())
-			.housingInformation(dto.getHousingInformation())
-			.reservationDate(dto.getReservationDate())
-			.startTime(dto.getStartTime())
-			.endTime(dto.getEndTime())
-			.serviceAdd(dto.getServiceAdd())
-
-			.pet(dto.getPet())
-			.specialRequest(dto.getSpecialRequest())
-			.totalPrice(dto.getTotalPrice())
-			.status(ReservationStatus.PENDING)
-			.createdAt(LocalDateTime.now())
-			.build();
+		Reservation reservation = Reservation.of(dto, detailType);
 		reservationRepository.save(reservation);
 	}
 
