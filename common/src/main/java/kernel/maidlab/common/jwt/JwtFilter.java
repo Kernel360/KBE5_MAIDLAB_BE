@@ -32,7 +32,10 @@ public class JwtFilter implements Filter {
 
 	private static final Set<String> AUTH_WHITELIST = Set.of(
 		"/api/auth/login",
-		"/api/auth/register"
+		"/api/auth/social-login",
+		"/api/auth/create-account",
+		"/api/auth/social-create-account",
+		"/api/auth/token"
 	);
 
 	@Override
@@ -55,7 +58,7 @@ public class JwtFilter implements Filter {
 			if (token != null) {
 				log.debug("토큰 발견, 검증 시작");
 
-				JwtDto.ValidationResult validationResult = jwtProvider.validateToken(token);
+				JwtDto.ValidationResult validationResult = jwtProvider.validateAccessToken(token);
 
 				if (validationResult.isValid()) {
 					String uuid = validationResult.getUuid();

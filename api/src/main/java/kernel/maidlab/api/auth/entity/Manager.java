@@ -101,6 +101,10 @@ public class Manager extends Base {
 		return manager;
 	}
 
+	public void updateRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
+
 	@PrePersist
 	public void generateUuid() {
 		if (this.uuid == null) {

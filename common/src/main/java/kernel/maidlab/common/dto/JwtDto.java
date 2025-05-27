@@ -28,4 +28,38 @@ public class JwtDto {
 		}
 
 	}
+
+	@Getter
+	public static class TokenPair {
+		private final String accessToken;
+		private final String refreshToken;
+
+		public TokenPair(String accessToken, String refreshToken) {
+			this.accessToken = accessToken;
+			this.refreshToken = refreshToken;
+		}
+	}
+
+	@Getter
+	public static class RefreshResult {
+		private final boolean success;
+		private final String message;
+		private final String accessToken;
+		private final String refreshToken;
+
+		private RefreshResult(boolean success, String message, String accessToken, String refreshToken) {
+			this.success = success;
+			this.message = message;
+			this.accessToken = accessToken;
+			this.refreshToken = refreshToken;
+		}
+
+		public static RefreshResult success(String accessToken, String refreshToken) {
+			return new RefreshResult(true, null, accessToken, refreshToken);
+		}
+
+		public static RefreshResult failure(String message) {
+			return new RefreshResult(false, message, null, null);
+		}
+	}
 }
