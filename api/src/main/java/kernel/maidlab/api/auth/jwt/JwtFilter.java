@@ -1,10 +1,11 @@
-package kernel.maidlab.common.jwt;
+package kernel.maidlab.api.auth.jwt;
 
-import kernel.maidlab.common.dto.JwtDto;
+import kernel.maidlab.api.util.ServletResponseUtil;
 import kernel.maidlab.common.enums.UserType;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Set;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class JwtFilter implements Filter {
@@ -25,24 +28,23 @@ public class JwtFilter implements Filter {
 	public static final String CURRENT_USER_TYPE_KEY = "currentUserType";
 
 	private final JwtProvider jwtProvider;
+	private final ObjectMapper objectMapper;
 
-	public JwtFilter(JwtProvider jwtProvider) {
+	public JwtFilter(JwtProvider jwtProvider, ObjectMapper objectMapper) {
 		this.jwtProvider = jwtProvider;
+		this.objectMapper = objectMapper;
 	}
 
-	private static final Set<String> AUTH_WHITELIST = Set.of(
-		"/api/auth/login",
-		"/api/auth/social-login",
-		"/api/auth/create-account",
-		"/api/auth/social-create-account",
-		"/api/auth/token"
-	);
+	private static final Set<String> AUTH_WHITELIST = Set.of("/api/auth/login", "/api/auth/social-login",
+		"/api/auth/create-account", "/api/auth/social-create-account", "/api/auth/token");
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-		throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
+		IOException,
+		ServletException {
 
 		HttpServletRequest httpRequest = (HttpServletRequest)request;
+		HttpServletResponse httpResponse = (HttpServletResponse)response;
 		String uri = httpRequest.getRequestURI();
 
 		if (AUTH_WHITELIST.contains(uri)) {
@@ -51,6 +53,8 @@ public class JwtFilter implements Filter {
 		}
 
 		log.debug("JWT 인증 필터 시작 - URL: {}", httpRequest.getRequestURI());
+
+		boolean authenticated = false;
 
 		try {
 			String token = jwtProvider.extractToken(httpRequest);
@@ -69,6 +73,7 @@ public class JwtFilter implements Filter {
 						httpRequest.setAttribute(CURRENT_USER_KEY, user);
 						httpRequest.setAttribute(CURRENT_USER_UUID_KEY, uuid);
 						httpRequest.setAttribute(CURRENT_USER_TYPE_KEY, userType);
+						authenticated = true;
 
 						log.debug("인증 성공 - UUID: {}, Type: {}", uuid, userType);
 					} else {
@@ -83,6 +88,11 @@ public class JwtFilter implements Filter {
 
 		} catch (Exception e) {
 			log.error("JWT 인증 필터에서 오류 발생", e);
+		}
+
+		if (!authenticated) {
+			ServletResponseUtil.authorizationFailed(httpResponse, objectMapper);
+			return;
 		}
 
 		chain.doFilter(request, response);

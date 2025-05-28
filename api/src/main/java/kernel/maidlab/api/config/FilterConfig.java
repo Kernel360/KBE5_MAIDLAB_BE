@@ -1,8 +1,8 @@
-package kernel.maidlab.common.config;
+package kernel.maidlab.api.config;
 
 import jakarta.servlet.Filter;
 
-import kernel.maidlab.common.jwt.JwtFilter;
+import kernel.maidlab.api.auth.jwt.JwtFilter;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
