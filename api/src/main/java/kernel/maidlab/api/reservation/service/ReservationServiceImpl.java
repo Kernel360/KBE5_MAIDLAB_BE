@@ -1,15 +1,16 @@
 package kernel.maidlab.api.reservation.service;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.exception.custom.ReservationException;
+import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.api.reservation.entity.Reservation;
 import kernel.maidlab.api.reservation.entity.ServiceDetailType;
-import kernel.maidlab.api.reservation.enums.ReservationStatus;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
 import kernel.maidlab.api.reservation.repository.ServiceDetailTypeRepository;
 import kernel.maidlab.common.enums.ResponseType;
@@ -24,14 +25,19 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ServiceDetailTypeRepository serviceDetailTypeRepository;
 
 	@Override
-	public void checkTotalPrice(ReservationRequestDto dto) {
-		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
-			.orElseThrow(() -> new IllegalArgumentException("유효하지않은 서비스 상세 타입입니다."));
-		Long serverCalculatedPrice = calculateTotalPrice(dto, detailType.getServicePrice());
-		if (!serverCalculatedPrice.equals(dto.getTotalPrice())) {
-			log.warn("금액 불일치 - client={}, server={}", dto.getTotalPrice(), serverCalculatedPrice);
-			throw new ReservationException(ResponseType.VALIDATION_FAILED);
-		}
+	public List<ReservationResponseDto> allReservations(){
+		List<Reservation> reservations = reservationRepository.findAll();
+		return reservations.stream()
+			.map(reservation -> ReservationResponseDto.builder()
+				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
+				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
+				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
+				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0,5))
+				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0,5))
+				.totalPrice(reservation.getTotalPrice())
+				.build()
+			)
+			.toList();
 	}
 
 	@Transactional
@@ -50,27 +56,39 @@ public class ReservationServiceImpl implements ReservationService {
 		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
 			.orElseThrow(() -> new ReservationException(ResponseType.VALIDATION_FAILED));
 
-		Reservation reservation = Reservation.builder()
-			.serviceDetailType(detailType)
-			.address(dto.getAddress())
-			.addressDetail(dto.getAddressDetail())
-			.MatchManagerId(dto.getMatchManagerId())
-			.consumerId(dto.getConsumerId())
-			.housingType(dto.getHousingType())
-			.roomSize(dto.getRoomSize())
-			.housingInformation(dto.getHousingInformation())
-			.reservationDate(dto.getReservationDate())
-			.startTime(dto.getStartTime())
-			.endTime(dto.getEndTime())
-			.serviceAdd(dto.getServiceAdd())
-
-			.pet(dto.getPet())
-			.specialRequest(dto.getSpecialRequest())
-			.totalPrice(dto.getTotalPrice())
-			.status(ReservationStatus.PENDING)
-			.createdAt(LocalDateTime.now())
-			.build();
+		Reservation reservation = Reservation.of(dto, detailType);
 		reservationRepository.save(reservation);
+	}
+
+	public void managerResponseToReservation(
+		Long reservationId,
+		ReservationIsApprovedRequestDto dto,
+		Long managerId
+	){
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+
+		boolean isApproved = dto.getStatus(); // approved : true, rejected : false
+		if (isApproved) {
+			reservation.managerRespond(managerId);
+			reservationRepository.save(reservation);
+			// TODO : 수요자에게 알림 보내기 (예약 성공)
+		} else {
+			// TODO : 매칭 테이블에서 거절로 변경 -> 관리자가 강제 개입 (예약 거부)
+		}
+
+
+	}
+
+	@Override
+	public void checkTotalPrice(ReservationRequestDto dto) {
+		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
+			.orElseThrow(() -> new IllegalArgumentException("유효하지않은 서비스 상세 타입입니다."));
+		Long serverCalculatedPrice = calculateTotalPrice(dto, detailType.getServicePrice());
+		if (!serverCalculatedPrice.equals(dto.getTotalPrice())) {
+			log.warn("금액 불일치 - client={}, server={}", dto.getTotalPrice(), serverCalculatedPrice);
+			throw new ReservationException(ResponseType.VALIDATION_FAILED);
+		}
 	}
 
 	private Long calculateTotalPrice(ReservationRequestDto dto, Long basePrice) {

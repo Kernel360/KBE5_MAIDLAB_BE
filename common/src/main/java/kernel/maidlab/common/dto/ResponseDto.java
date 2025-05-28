@@ -28,16 +28,8 @@ public class ResponseDto<T> {
 		return responseType.getMessage();
 	}
 
-	public static <T> ResponseEntity<ResponseDto<T>> success(T data) {
-		return ResponseEntity
-			.status(ResponseType.SUCCESS.getHttpStatus())
-			.body(new ResponseDto<>(ResponseType.SUCCESS, data));
-	}
 
 	public static <T> ResponseEntity<ResponseDto<T>> success(ResponseType responseType, T data) {
-		return ResponseEntity
-			.status(responseType.getHttpStatus())
-			.body(new ResponseDto<>(responseType, data));
+		return ResponseEntity.status(ResponseType.SUCCESS.getHttpStatus()).body(new ResponseDto<>(responseType, data));
 	}
-
 }
