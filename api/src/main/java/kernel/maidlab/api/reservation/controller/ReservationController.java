@@ -1,12 +1,16 @@
 package kernel.maidlab.api.reservation.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.api.reservation.service.ReservationService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
@@ -17,6 +21,13 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/reservations")
 public class ReservationController implements ReservationApi {
 	private final ReservationService reservationService;
+
+	@Override
+	@GetMapping
+	public ResponseEntity<ResponseDto<List<ReservationResponseDto>>> allReservations() {
+		List<ReservationResponseDto> response = reservationService.allReservations();
+		return ResponseDto.success(ResponseType.SUCCESS, response);
+	}
 
 	@Override
 	@PostMapping("/match")

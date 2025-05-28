@@ -1,15 +1,15 @@
 package kernel.maidlab.api.reservation.service;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.exception.custom.ReservationException;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.api.reservation.entity.Reservation;
 import kernel.maidlab.api.reservation.entity.ServiceDetailType;
-import kernel.maidlab.common.enums.ReservationStatus;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
 import kernel.maidlab.api.reservation.repository.ServiceDetailTypeRepository;
 import kernel.maidlab.common.enums.ResponseType;
@@ -22,6 +22,22 @@ import lombok.extern.slf4j.Slf4j;
 public class ReservationServiceImpl implements ReservationService {
 	private final ReservationRepository reservationRepository;
 	private final ServiceDetailTypeRepository serviceDetailTypeRepository;
+
+	@Override
+	public List<ReservationResponseDto> allReservations(){
+		List<Reservation> reservations = reservationRepository.findAll();
+		return reservations.stream()
+			.map(reservation -> ReservationResponseDto.builder()
+					.serviceType(reservation.getServiceDetailType().getServiceType().toString())
+					.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
+					.reservationDate(reservation.getReservationDate().toLocalDate().toString())
+					.startTime(reservation.getStartTime().toLocalTime().toString().substring(0,5))
+					.endTime(reservation.getEndTime().toLocalTime().toString().substring(0,5))
+					.totalPrice(reservation.getTotalPrice())
+					.build()
+			)
+			.toList();
+	}
 
 	@Override
 	public void checkTotalPrice(ReservationRequestDto dto) {
