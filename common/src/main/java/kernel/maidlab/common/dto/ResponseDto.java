@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import kernel.maidlab.common.enums.ResponseType;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -26,6 +27,7 @@ public class ResponseDto<T> {
 	public String getMessage() {
 		return responseType.getMessage();
 	}
+
 
 	public static <T> ResponseEntity<ResponseDto<T>> success(ResponseType responseType, T data) {
 		return ResponseEntity.status(ResponseType.SUCCESS.getHttpStatus()).body(new ResponseDto<>(responseType, data));

@@ -15,17 +15,18 @@ import jakarta.persistence.Table;
 import kernel.maidlab.common.entity.Base;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.SocialType;
+import kernel.maidlab.common.enums.Status;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "consumer", indexes = {
-	@Index(name = "idx_consumer_uuid", columnList = "uuid", unique = true),
-	@Index(name = "idx_consumer_phone_number", columnList = "phone_number", unique = true)})
+@Table(name = "manager", indexes = {
+	@Index(name = "idx_manager_uuid", columnList = "uuid", unique = true),
+	@Index(name = "idx_manager_phone_number", columnList = "phone_number", unique = true)})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Consumer extends Base {
+public class Manager extends Base {
 
 	@Column(name = "uuid", nullable = false, unique = true)
 	private String uuid;
@@ -45,23 +46,26 @@ public class Consumer extends Base {
 	@Column(name = "gender", nullable = false)
 	private Gender gender;
 
-	@Column(name = "profile_image")
-	private String profileImage;
-
-	@Column(name = "address")
-	private String address;
-
-	@Column(name = "detail_address")
-	private String detailAddress;
-
-	@Column(name = "point", nullable = false)
-	private Integer point;
-
 	@Column(name = "social_type")
 	private SocialType socialType;
 
+	@Column(name = "profile_image")
+	private String profileImage;
+
+	@Column(name = "introduce_text")
+	private String introduceText;
+
+	@Column(name = "average_rate")
+	private Float averageRate;
+
+	@Column(name = "bank")
+	private String bank;
+
 	@Column(name = "refresh_token")
 	private String refreshToken;
+
+	@Column(name = "is_verified", nullable = false)
+	private Status isVerified;
 
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false)
@@ -74,24 +78,27 @@ public class Consumer extends Base {
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted;
 
-	private Consumer(String phoneNumber,String password, String name, Gender gender, LocalDate birth) {
+	private Manager(String phoneNumber, String password, String name, Gender gender, LocalDate birth) {
 		this.phoneNumber = phoneNumber;
 		this.password = password;
 		this.name = name;
 		this.gender = gender;
 		this.birth = birth;
-		this.point = 0;
+		this.averageRate = 0.0F;
+		this.isVerified = PENDING;
 		this.isDeleted = false;
 	}
 
-	public static Consumer createConsumer(String phoneNumber,String password, String name, Gender gender, LocalDate birth) {
-		return new Consumer(phoneNumber,password,name,gender,birth);
+	public static Manager createManager(String phoneNumber, String password, String name, Gender gender,
+		LocalDate birth) {
+		return new Manager(phoneNumber, password, name, gender, birth);
 	}
 
-	public static Consumer createSocialConsumer(String phoneNumber,String password, String name, Gender gender, LocalDate birth, SocialType socialType) {
-		Consumer consumer = new Consumer(phoneNumber,null,name,gender,birth);
-		consumer.socialType = socialType;
-		return consumer;
+	public static Manager createSocialManager(String phoneNumber, String password, String name, Gender gender,
+		LocalDate birth, SocialType socialType) {
+		Manager manager = new Manager(phoneNumber, null, name, gender, birth);
+		manager.socialType = socialType;
+		return manager;
 	}
 
 	public void updateRefreshToken(String refreshToken) {
@@ -105,3 +112,4 @@ public class Consumer extends Base {
 		}
 	}
 }
+
