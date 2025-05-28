@@ -1,4 +1,4 @@
-package kernel.maidlab.common.dto;
+package kernel.maidlab.api.auth.jwt;
 
 import kernel.maidlab.common.enums.UserType;
 import lombok.Getter;

@@ -1,11 +1,11 @@
-package kernel.maidlab.common.jwt;
+package kernel.maidlab.api.auth.jwt;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import kernel.maidlab.api.auth.entity.Consumer;
 import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.api.auth.repository.ConsumerRepository;
 import kernel.maidlab.api.auth.repository.ManagerRepository;
-import kernel.maidlab.common.dto.JwtDto;
 import kernel.maidlab.common.enums.UserType;
 
 import io.jsonwebtoken.*;
@@ -13,6 +13,7 @@ import io.jsonwebtoken.security.Keys;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -140,7 +141,7 @@ public class JwtProvider {
 
 			String uuid = claims.getSubject();
 			String userTypeString = (String)claims.get("userType");
-			String tokenType = (String) claims.get("type");
+			String tokenType = (String)claims.get("type");
 
 			if (uuid == null || userTypeString == null || tokenType == null) {
 				return JwtDto.ValidationResult.failure("토큰에 정보가 없습니다.");
