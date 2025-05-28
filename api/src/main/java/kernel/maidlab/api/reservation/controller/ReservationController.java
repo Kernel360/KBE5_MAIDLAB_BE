@@ -4,11 +4,14 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.api.reservation.service.ReservationService;
@@ -47,6 +50,17 @@ public class ReservationController implements ReservationApi {
 		reservationService.checkTotalPrice(dto);
 		String response = "가격이 맞습니다.";
 		return ResponseDto.success(ResponseType.SUCCESS, response);
+	}
+
+	@Override
+	@PostMapping("/{reservationId}/response")
+	public ResponseEntity<ResponseDto<String>> managerResponseToReservation(
+		@PathVariable Long reservationId,
+		@RequestBody ReservationIsApprovedRequestDto dto
+	) {
+		Long managerId = 100L; // TODO : managerId jwt 토큰에서 받기
+		reservationService.managerResponseToReservation(reservationId, dto, managerId);
+		return ResponseDto.success(ResponseType.SUCCESS, "예약 응답 처리가 완료되었습니다.");
 	}
 
 }

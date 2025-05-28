@@ -34,7 +34,4 @@ public class ReservationRequestDto {
 
 	private Long totalPrice;
 
-	private Boolean isRepeat;
-	private Integer repeatCount;
-
 }

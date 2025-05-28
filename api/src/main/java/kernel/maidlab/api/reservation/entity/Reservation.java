@@ -2,9 +2,6 @@ package kernel.maidlab.api.reservation.entity;
 
 import java.time.LocalDateTime;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -69,10 +66,6 @@ public class Reservation extends Base {
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private ReservationStatus status;
-	@Column(name = "is_repeat")
-	private Boolean isRepeat;
-	@Column(name = "repeat_count")
-	private Integer repeatCount;
 
 	@Column(name = "canceled_at")
 	private LocalDateTime canceledAt;
@@ -98,6 +91,10 @@ public class Reservation extends Base {
 		this.canceledAt = canceledAt;
 	}
 
+	public void managerRespond(Long managerId) {
+		this.managerId = managerId;
+	}
+
 	private Reservation(
 		Long managerId,
 		Long consumerId,
@@ -113,9 +110,7 @@ public class Reservation extends Base {
 		String serviceAdd,
 		String pet,
 		String specialRequest,
-		Long totalPrice,
-		Boolean isRepeat,
-		Integer repeatCount
+		Long totalPrice
 	) {
 		this.managerId = managerId;
 		this.consumerId = consumerId;
@@ -133,8 +128,6 @@ public class Reservation extends Base {
 		this.specialRequest = specialRequest;
 		this.totalPrice = totalPrice;
 		this.status = ReservationStatus.PENDING;
-		this.isRepeat = isRepeat;
-		this.repeatCount = repeatCount;
 	}
 
 	public static Reservation of(ReservationRequestDto dto, ServiceDetailType detailType) {
@@ -153,9 +146,7 @@ public class Reservation extends Base {
 			dto.getServiceAdd(),
 			dto.getPet(),
 			dto.getSpecialRequest(),
-			dto.getTotalPrice(),
-			dto.getIsRepeat(),
-			dto.getRepeatCount()
+			dto.getTotalPrice()
 		);
 	}
 
