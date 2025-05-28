@@ -85,7 +85,7 @@ public class Manager extends Base {
 		this.gender = gender;
 		this.birth = birth;
 		this.averageRate = 0.0F;
-		this.isVerified = PENDING;
+		this.isVerified = Status.PENDING;
 		this.isDeleted = false;
 	}
 
