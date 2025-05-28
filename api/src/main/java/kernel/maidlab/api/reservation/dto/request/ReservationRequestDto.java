@@ -15,7 +15,7 @@ public class ReservationRequestDto {
 	private String address;
 	private String addressDetail;
 
-	private Long MatchManagerId;
+	private Long managerId;
 
 	private Long consumerId;
 
@@ -28,7 +28,6 @@ public class ReservationRequestDto {
 	private LocalDateTime endTime;
 
 	private String serviceAdd;
-	private Boolean helper;
 	private String pet;
 
 	private String specialRequest;
