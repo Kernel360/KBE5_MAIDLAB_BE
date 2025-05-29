@@ -2,7 +2,7 @@ name: Deploy Spring Boot to EC2
 
 on:
   push:
-    branches: 'hotfix/be/#48'  # hotfix 브랜치 push 시 작동
+    branches: 'dev'  # dev 브랜치 push 시 작동
 
 jobs:
   deploy:
