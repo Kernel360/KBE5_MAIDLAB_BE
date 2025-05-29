@@ -1,4 +1,4 @@
-ㅕpackage kernel.maidlab.api.util;
+package kernel.maidlab.api.util;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
