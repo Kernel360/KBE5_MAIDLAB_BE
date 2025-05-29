@@ -7,7 +7,11 @@ public enum Status {
 
 	PENDING("대기"),
 	APPROVED("승인"),
-	REJECTED("거절");
+	REJECTED("거절"),
+	MATCHED("매칭완료"),
+	WORKING("작업중"),
+	CANCELED("취소"),
+	COMPLETED("완료");
 
 	private final String value;
 

@@ -12,8 +12,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
-import kernel.maidlab.common.enums.ReservationStatus;
 import kernel.maidlab.common.entity.Base;
+import kernel.maidlab.common.enums.Status;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -65,7 +65,7 @@ public class Reservation extends Base {
 
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private ReservationStatus status;
+	private Status status;
 
 	@Column(name = "canceled_at")
 	private LocalDateTime canceledAt;
@@ -76,42 +76,46 @@ public class Reservation extends Base {
 	@Column(name = "modified_at", nullable = false)
 	private LocalDateTime modifiedAt;
 
+	@Column(name = "checkin_time")
+	private LocalDateTime checkinTime;
+
+	@Column(name = "checkout_time")
+	private LocalDateTime checkoutTime;
+
 	@PrePersist
 	public void prePersist() {
 		if (createdAt == null) {
 			this.createdAt = LocalDateTime.now();
 		}
-		if(modifiedAt == null) {
+		if (modifiedAt == null) {
 			this.modifiedAt = LocalDateTime.now();
 		}
 	}
 
+	public void checkin(LocalDateTime checkinTime) {
+		this.checkinTime = checkinTime;
+		this.status = Status.WORKING;
+	}
+
+	public void checkout(LocalDateTime checkoutTime) {
+		this.checkoutTime = checkoutTime;
+		this.status = Status.COMPLETED;
+	}
+
 	public void cancel(LocalDateTime canceledAt) {
-		this.status = ReservationStatus.CANCELED;
 		this.canceledAt = canceledAt;
+		this.status = Status.CANCELED;
 	}
 
 	public void managerRespond(Long managerId) {
 		this.managerId = managerId;
+		this.status = Status.MATCHED;
 	}
 
-	private Reservation(
-		Long managerId,
-		Long consumerId,
-		ServiceDetailType serviceDetailType,
-		LocalDateTime reservationDate,
-		LocalDateTime startTime,
-		LocalDateTime endTime,
-		String address,
-		String addressDetail,
-		String housingType,
-		Integer roomSize,
-		String housingInformation,
-		String serviceAdd,
-		String pet,
-		String specialRequest,
-		Long totalPrice
-	) {
+	private Reservation(Long managerId, Long consumerId, ServiceDetailType serviceDetailType,
+		LocalDateTime reservationDate, LocalDateTime startTime, LocalDateTime endTime, String address,
+		String addressDetail, String housingType, Integer roomSize, String housingInformation, String serviceAdd,
+		String pet, String specialRequest, Long totalPrice) {
 		this.managerId = managerId;
 		this.consumerId = consumerId;
 		this.serviceDetailType = serviceDetailType;
@@ -127,27 +131,14 @@ public class Reservation extends Base {
 		this.pet = pet;
 		this.specialRequest = specialRequest;
 		this.totalPrice = totalPrice;
-		this.status = ReservationStatus.PENDING;
+		this.status = Status.PENDING;
 	}
 
-	public static Reservation of(ReservationRequestDto dto, ServiceDetailType detailType) {
-		return new Reservation(
-			dto.getManagerId(),
-			dto.getConsumerId(),
-			detailType,
-			dto.getReservationDate(),
-			dto.getStartTime(),
-			dto.getEndTime(),
-			dto.getAddress(),
-			dto.getAddressDetail(),
-			dto.getHousingType(),
-			dto.getRoomSize(),
-			dto.getHousingInformation(),
-			dto.getServiceAdd(),
-			dto.getPet(),
-			dto.getSpecialRequest(),
-			dto.getTotalPrice()
-		);
+	public static Reservation of(ReservationRequestDto dto, Long consumerId, ServiceDetailType detailType) {
+		return new Reservation(dto.getManagerId(), consumerId, detailType, dto.getReservationDate(), dto.getStartTime(),
+			dto.getEndTime(), dto.getAddress(), dto.getAddressDetail(), dto.getHousingType(), dto.getRoomSize(),
+			dto.getHousingInformation(), dto.getServiceAdd(), dto.getPet(), dto.getSpecialRequest(),
+			dto.getTotalPrice());
 	}
 
 }
