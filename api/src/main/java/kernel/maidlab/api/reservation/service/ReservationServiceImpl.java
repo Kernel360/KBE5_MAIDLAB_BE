@@ -18,6 +18,7 @@ import kernel.maidlab.api.reservation.entity.ServiceDetailType;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
 import kernel.maidlab.api.reservation.repository.ServiceDetailTypeRepository;
 import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -87,7 +88,9 @@ public class ReservationServiceImpl implements ReservationService {
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		Long managerId = authUtil.getManager(request).getId();
-
+		if (!reservation.getStatus().equals(Status.APPROVED)) {
+			throw new ReservationException(ResponseType.VALIDATION_FAILED);
+		}
 		boolean isApproved = dto.getStatus(); // approved : true, rejected : false
 		if (isApproved) {
 			reservation.managerRespond(managerId);
@@ -98,6 +101,7 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 	}
 
+	@Transactional
 	@Override
 	public void checkin(Long reservationId, CheckInOutRequestDto dto, HttpServletRequest request) {
 		Reservation reservation = reservationRepository.findById(reservationId)
@@ -116,7 +120,7 @@ public class ReservationServiceImpl implements ReservationService {
 		reservation.checkin(dto.getCheckTime());
 		reservationRepository.save(reservation);
 	}
-
+	@Transactional
 	@Override
 	public void checkout(Long reservationId, CheckInOutRequestDto dto, HttpServletRequest request) {
 		Reservation reservation = reservationRepository.findById(reservationId)
@@ -134,6 +138,27 @@ public class ReservationServiceImpl implements ReservationService {
 			throw new ReservationException(ResponseType.ALREADY_CHECKED_OUT);
 		}
 		reservation.checkout(dto.getCheckTime());
+		reservationRepository.save(reservation);
+	}
+	@Transactional
+	@Override
+	public void cancel(
+		Long reservationId,
+		HttpServletRequest request
+	) {
+		// TODO : 매칭도 같이 삭제하기
+
+		Long consumerId = authUtil.getConsumer(request).getId();
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+		if (!reservation.getConsumerId().equals(consumerId)) {
+			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
+		}
+
+		if (reservation.getStatus()!= Status.PENDING && reservation.getStatus()!= Status.MATCHED) {
+			throw new ReservationException(ResponseType.ALREADY_WORKING_OR_COMPLETED);
+		}
+		reservation.cancel(LocalDateTime.now());
 		reservationRepository.save(reservation);
 	}
 

@@ -109,7 +109,7 @@ public class Reservation extends Base {
 
 	public void managerRespond(Long managerId) {
 		this.managerId = managerId;
-		this.status = Status.APPROVED;
+		this.status = Status.MATCHED;
 	}
 
 	private Reservation(Long managerId, Long consumerId, ServiceDetailType serviceDetailType,

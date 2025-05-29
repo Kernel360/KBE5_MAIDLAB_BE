@@ -3,6 +3,7 @@ package kernel.maidlab.api.reservation.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,5 +73,13 @@ public class ReservationController implements ReservationApi {
 		@RequestBody CheckInOutRequestDto dto, HttpServletRequest request) {
 		reservationService.checkout(reservationId, dto, request);
 		return ResponseDto.success(ResponseType.SUCCESS, "체크아웃 완료!");
+	}
+
+	@Override
+	@DeleteMapping("/{reservationId}/cancel")
+	public ResponseEntity<ResponseDto<String>> cancel(@PathVariable Long reservationId, HttpServletRequest request
+	) {
+		reservationService.cancel(reservationId,request);
+		return ResponseDto.success(ResponseType.SUCCESS, "취소 완료!");
 	}
 }
