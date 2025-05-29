@@ -77,9 +77,8 @@ public class ReservationController implements ReservationApi {
 
 	@Override
 	@DeleteMapping("/{reservationId}/cancel")
-	public ResponseEntity<ResponseDto<String>> cancel(@PathVariable Long reservationId, HttpServletRequest request
-	) {
-		reservationService.cancel(reservationId,request);
+	public ResponseEntity<ResponseDto<String>> cancel(@PathVariable Long reservationId, HttpServletRequest request) {
+		reservationService.cancel(reservationId, request);
 		return ResponseDto.success(ResponseType.SUCCESS, "취소 완료!");
 	}
 }

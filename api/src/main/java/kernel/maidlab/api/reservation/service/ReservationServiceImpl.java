@@ -38,12 +38,11 @@ public class ReservationServiceImpl implements ReservationService {
 
 		if (userType == UserType.CONSUMER) {
 			Long consumerId = authUtil.getConsumer(request).getId();
-			 reservations = reservationRepository.findByConsumerId(consumerId);
-		} else  {
+			reservations = reservationRepository.findByConsumerId(consumerId);
+		} else {
 			Long managerId = authUtil.getManager(request).getId();
 			reservations = reservationRepository.findByManagerId(managerId);
 		}
-
 
 		return reservations.stream()
 			.map(reservation -> ReservationResponseDto.builder()
@@ -120,6 +119,7 @@ public class ReservationServiceImpl implements ReservationService {
 		reservation.checkin(dto.getCheckTime());
 		reservationRepository.save(reservation);
 	}
+
 	@Transactional
 	@Override
 	public void checkout(Long reservationId, CheckInOutRequestDto dto, HttpServletRequest request) {
@@ -140,12 +140,10 @@ public class ReservationServiceImpl implements ReservationService {
 		reservation.checkout(dto.getCheckTime());
 		reservationRepository.save(reservation);
 	}
+
 	@Transactional
 	@Override
-	public void cancel(
-		Long reservationId,
-		HttpServletRequest request
-	) {
+	public void cancel(Long reservationId, HttpServletRequest request) {
 		// TODO : 매칭도 같이 삭제하기
 
 		Long consumerId = authUtil.getConsumer(request).getId();
@@ -155,7 +153,7 @@ public class ReservationServiceImpl implements ReservationService {
 			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
 		}
 
-		if (reservation.getStatus()!= Status.PENDING && reservation.getStatus()!= Status.MATCHED) {
+		if (reservation.getStatus() != Status.PENDING && reservation.getStatus() != Status.MATCHED) {
 			throw new ReservationException(ResponseType.ALREADY_WORKING_OR_COMPLETED);
 		}
 		reservation.cancel(LocalDateTime.now());
