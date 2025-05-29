@@ -36,7 +36,7 @@ public class JwtFilter implements Filter {
 	}
 
 	private static final Set<String> AUTH_WHITELIST = Set.of("/api/auth/login", "/api/auth/social-login",
-		"/api/auth/create-account", "/api/auth/social-create-account", "/api/auth/token");
+		"/api/auth/sign-up", "/api/auth/social-sign-up", "/api/auth/refresh");
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws

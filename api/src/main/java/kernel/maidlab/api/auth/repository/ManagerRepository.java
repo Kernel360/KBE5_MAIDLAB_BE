@@ -8,4 +8,5 @@ import kernel.maidlab.api.auth.entity.Manager;
 
 public interface ManagerRepository extends JpaRepository<Manager, Long> {
 	Optional<Manager> findByUuid(String uuid);
+	Optional<Manager> findByPhoneNumber(String phoneNumber);
 }

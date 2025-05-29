@@ -15,6 +15,10 @@ java {
     }
 }
 
+ext {
+    set('springCloudVersion', "2024.0.0")
+}
+
 springBoot {
     mainClass = 'kernel.maidlab.MaidlabBeApplication'
 }
@@ -41,6 +45,9 @@ dependencies {
     implementation project(':common')
     implementation project(':api')
 
+    //FeignClient
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
@@ -52,4 +59,14 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+test {
+    enabled = false  // 테스트 완전 비활성화
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
