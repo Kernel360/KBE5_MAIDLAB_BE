@@ -1,11 +1,14 @@
 package kernel.maidlab.api.reservation.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.exception.custom.ReservationException;
+import kernel.maidlab.api.matching.entity.Matching;
+import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
@@ -23,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ReservationServiceImpl implements ReservationService {
 	private final ReservationRepository reservationRepository;
 	private final ServiceDetailTypeRepository serviceDetailTypeRepository;
+	private final MatchingRepository matchingRepository;
 
 	@Override
 	public List<ReservationResponseDto> allReservations(){
@@ -72,9 +76,11 @@ public class ReservationServiceImpl implements ReservationService {
 		if (isApproved) {
 			reservation.managerRespond(managerId);
 			reservationRepository.save(reservation);
+			matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId));
 			// TODO : 수요자에게 알림 보내기 (예약 성공)
 		} else {
 			// TODO : 매칭 테이블에서 거절로 변경 -> 관리자가 강제 개입 (예약 거부)
+			Optional<Matching> matching = matchingRepository.findById(matchingRepository.findByReservationId(reservationId));
 		}
 
 

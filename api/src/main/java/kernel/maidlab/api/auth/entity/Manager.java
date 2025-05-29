@@ -9,6 +9,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -22,11 +25,15 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "manager", indexes = {
-	@Index(name = "idx_manager_uuid", columnList = "uuid", unique = true),
-	@Index(name = "idx_manager_phone_number", columnList = "phone_number", unique = true)})
+@Index(name = "idx_manager_uuid", columnList = "uuid", unique = true),
+@Index(name = "idx_manager_phone_number", columnList = "phone_number", unique = true)})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Manager extends Base {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
 	@Column(name = "uuid", nullable = false, unique = true)
 	private String uuid;
@@ -85,7 +92,7 @@ public class Manager extends Base {
 		this.gender = gender;
 		this.birth = birth;
 		this.averageRate = 0.0F;
-		this.isVerified = PENDING;
+		this.isVerified = Status.PENDING;
 		this.isDeleted = false;
 	}
 
@@ -111,5 +118,11 @@ public class Manager extends Base {
 			this.uuid = UUID.randomUUID().toString();
 		}
 	}
+
+	@Override
+	public Long getId() {
+		return this.id;
+	}
+
 }
 

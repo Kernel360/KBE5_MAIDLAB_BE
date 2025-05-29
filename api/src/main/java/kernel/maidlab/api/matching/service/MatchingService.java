@@ -2,10 +2,16 @@ package kernel.maidlab.api.matching.service;
 
 import java.util.List;
 
-import kernel.maidlab.api.matching.dto.ManagerResponseDto;
+import kernel.maidlab.api.matching.dto.AvailableManagerResponseDto;
+import kernel.maidlab.api.matching.dto.MatchingDto;
 import kernel.maidlab.api.matching.dto.MatchingRequestDto;
+import kernel.maidlab.common.enums.Status;
 
 public interface MatchingService {
 
-	public List<ManagerResponseDto> FindAvailableManagers(MatchingRequestDto dto);
+	public List<AvailableManagerResponseDto> FindAvailableManagers(MatchingRequestDto dto);
+
+	void createMatching(MatchingDto dto);
+
+	void ChangeStatus(Long reservationId, Status status);
 }

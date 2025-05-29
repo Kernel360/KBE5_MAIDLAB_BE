@@ -13,7 +13,8 @@ public enum ResponseType {
 	// 400
 	VALIDATION_FAILED("VF", "Validation failed.", HttpStatus.BAD_REQUEST),
 	DUPLICATE_TEL_NUMBER("DT", "Duplicate tel number.", HttpStatus.BAD_REQUEST),
-
+	DUPLICATE_RESERVATION_ID("DR", "Matching notification has already been sent.", HttpStatus.BAD_REQUEST),
+	WRONG_ADDRESS("WR", "You sent the wrong address.", HttpStatus.BAD_REQUEST),
 	// 401
 	AUTHORIZATION_FAILED("AF", "Authorization Failed.", HttpStatus.UNAUTHORIZED),
 	LOGIN_FAILED("LF", "Login Failed.", HttpStatus.UNAUTHORIZED),
@@ -27,6 +28,7 @@ public enum ResponseType {
 	THIS_BOARD_DOES_NOT_EXIST("NB", "This board does not exist.", HttpStatus.NOT_FOUND),
 	THIS_USER_DOES_NOT_EXIST("NU", "This user does not exist.", HttpStatus.NOT_FOUND),
 	THIS_RESERVATION_DOSE_NOT_EXIST("NR", "This reservation does not exist.", HttpStatus.NOT_FOUND),
+	AVAILABLE_MANAGER_DOES_NOT_EXIST("NM", "Available manager does not exist.", HttpStatus.NOT_FOUND),
 
 	// 500
 	DATABASE_ERROR("DBE", "Database error.", HttpStatus.INTERNAL_SERVER_ERROR);

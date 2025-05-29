@@ -2,9 +2,12 @@ package kernel.maidlab.api.manager.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-import kernel.maidlab.api.matching.dto.ManagerResponseDto;
+import kernel.maidlab.api.auth.entity.Manager;
+import kernel.maidlab.api.matching.dto.AvailableManagerResponseDto;
 
 public interface ManagerRepositoryCustom {
-	List<ManagerResponseDto> FindAvailableManagers(String site, LocalDateTime Start, LocalDateTime End);
+	List<AvailableManagerResponseDto> FindAvailableManagers(String site, LocalDateTime Start, LocalDateTime End);
+	Optional<Manager> findByUuid(String uuid);
 }
