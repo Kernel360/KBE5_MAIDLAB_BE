@@ -17,8 +17,6 @@ public class ReservationRequestDto {
 
 	private Long managerId;
 
-	private Long consumerId;
-
 	private String housingType;
 	private Integer roomSize;
 	private String housingInformation;
