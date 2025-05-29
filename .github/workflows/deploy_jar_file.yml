@@ -47,6 +47,10 @@ jobs:
           JWT_EXPIRATION_REFRESH: ${{ secrets.JWT_EXPIRATION_REFRESH }}
           AWS_S3_ACCESSKEY: ${{ secrets.AWS_S3_ACCESSKEY }}
           AWS_S3_SECRETKEY: ${{ secrets.AWS_S3_SECRETKEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REDIRECT_URL: ${{ secrets.GOOGLE_REDIRECT_URL }}
+
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}

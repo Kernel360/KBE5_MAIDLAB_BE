@@ -40,15 +40,15 @@ public class Matching extends Base {
 		Long managerId,
 		Status matchingStatus
 	) {
-		this.managerId = managerId;
 		this.reservationId = reservationId;
+		this.managerId = managerId;
 		this.matchingStatus = matchingStatus;
 	}
 
 	public static Matching of(MatchingDto dto){
 		return new Matching(
-			dto.getManagerId(),
 			dto.getReservationId(),
+			dto.getManagerId(),
 			dto.getMatchingStatus()
 		);
 	}

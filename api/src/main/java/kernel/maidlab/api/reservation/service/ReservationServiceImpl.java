@@ -76,11 +76,11 @@ public class ReservationServiceImpl implements ReservationService {
 		if (isApproved) {
 			reservation.managerRespond(managerId);
 			reservationRepository.save(reservation);
-			matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId));
+			// matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId));
 			// TODO : 수요자에게 알림 보내기 (예약 성공)
 		} else {
 			// TODO : 매칭 테이블에서 거절로 변경 -> 관리자가 강제 개입 (예약 거부)
-			Optional<Matching> matching = matchingRepository.findById(matchingRepository.findByReservationId(reservationId));
+			// Optional<Matching> matching = matchingRepository.findById(matchingRepository.findByReservationId(reservationId));
 		}
 
 

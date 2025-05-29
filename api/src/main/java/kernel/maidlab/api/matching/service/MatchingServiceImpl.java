@@ -55,10 +55,7 @@ public class MatchingServiceImpl implements MatchingService {
 	@Transactional
 	@Override
 	public void ChangeStatus(Long reservationId, Status status) {
-		Long matchingId = matchingRepository.findByReservationId(reservationId);
-		Matching matching = matchingRepository.findById(matchingId)
-			.orElseThrow(() -> new BaseException(ResponseType.DATABASE_ERROR));
-
+		Matching matching = matchingRepository.findByReservationId(reservationId);
 		matching.setMatchingStatus(status);
 	}
 
