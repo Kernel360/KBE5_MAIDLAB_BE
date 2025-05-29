@@ -1,18 +1,24 @@
 package kernel.maidlab.api.reservation.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.api.auth.util.AuthUtil;
 import kernel.maidlab.api.exception.custom.ReservationException;
+import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
+import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.api.reservation.entity.Reservation;
 import kernel.maidlab.api.reservation.entity.ServiceDetailType;
-import kernel.maidlab.api.reservation.enums.ReservationStatus;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
 import kernel.maidlab.api.reservation.repository.ServiceDetailTypeRepository;
 import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.UserType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,21 +28,40 @@ import lombok.extern.slf4j.Slf4j;
 public class ReservationServiceImpl implements ReservationService {
 	private final ReservationRepository reservationRepository;
 	private final ServiceDetailTypeRepository serviceDetailTypeRepository;
+	private final AuthUtil authUtil;
 
 	@Override
-	public void checkTotalPrice(ReservationRequestDto dto) {
-		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
-			.orElseThrow(() -> new IllegalArgumentException("유효하지않은 서비스 상세 타입입니다."));
-		Long serverCalculatedPrice = calculateTotalPrice(dto, detailType.getServicePrice());
-		if (!serverCalculatedPrice.equals(dto.getTotalPrice())) {
-			log.warn("금액 불일치 - client={}, server={}", dto.getTotalPrice(), serverCalculatedPrice);
-			throw new ReservationException(ResponseType.VALIDATION_FAILED);
+	public List<ReservationResponseDto> allReservations(HttpServletRequest request) {
+		UserType userType = authUtil.getUserType(request);
+		List<Reservation> reservations;
+
+		if (userType == UserType.CONSUMER) {
+			Long consumerId = authUtil.getConsumer(request).getId();
+			 reservations = reservationRepository.findByConsumerId(consumerId);
+		} else  {
+			Long managerId = authUtil.getManager(request).getId();
+			reservations = reservationRepository.findByManagerId(managerId);
 		}
+
+
+		return reservations.stream()
+			.map(reservation -> ReservationResponseDto.builder()
+				.reservationId(reservation.getId())
+				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
+				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
+				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
+				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
+				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
+				.totalPrice(reservation.getTotalPrice())
+				.build())
+			.toList();
 	}
 
 	@Transactional
 	@Override
-	public void createReservation(ReservationRequestDto dto) {
+	public void createReservation(ReservationRequestDto dto, HttpServletRequest request) {
+		Long consumerId = authUtil.getConsumer(request).getId();
+
 		// 결제 검증 로직(애플리케이션 상용 전 true 고정)
 		boolean payValid = true;
 		if (!payValid) {
@@ -50,27 +75,77 @@ public class ReservationServiceImpl implements ReservationService {
 		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
 			.orElseThrow(() -> new ReservationException(ResponseType.VALIDATION_FAILED));
 
-		Reservation reservation = Reservation.builder()
-			.serviceDetailType(detailType)
-			.address(dto.getAddress())
-			.addressDetail(dto.getAddressDetail())
-			.MatchManagerId(dto.getMatchManagerId())
-			.consumerId(dto.getConsumerId())
-			.housingType(dto.getHousingType())
-			.roomSize(dto.getRoomSize())
-			.housingInformation(dto.getHousingInformation())
-			.reservationDate(dto.getReservationDate())
-			.startTime(dto.getStartTime())
-			.endTime(dto.getEndTime())
-			.serviceAdd(dto.getServiceAdd())
-
-			.pet(dto.getPet())
-			.specialRequest(dto.getSpecialRequest())
-			.totalPrice(dto.getTotalPrice())
-			.status(ReservationStatus.PENDING)
-			.createdAt(LocalDateTime.now())
-			.build();
+		Reservation reservation = Reservation.of(dto, consumerId, detailType);
 		reservationRepository.save(reservation);
+	}
+
+	@Transactional
+	@Override
+	public void managerResponseToReservation(Long reservationId, ReservationIsApprovedRequestDto dto,
+		HttpServletRequest request) {
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+
+		Long managerId = authUtil.getManager(request).getId();
+
+		boolean isApproved = dto.getStatus(); // approved : true, rejected : false
+		if (isApproved) {
+			reservation.managerRespond(managerId);
+			reservationRepository.save(reservation);
+			// TODO : 수요자에게 알림 보내기 (예약 성공)
+		} else {
+			// TODO : 매칭 테이블에서 거절로 변경 -> 관리자가 강제 개입 (예약 거부)
+		}
+	}
+
+	@Override
+	public void checkin(Long reservationId, CheckInOutRequestDto dto, HttpServletRequest request) {
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+
+		Long managerId = authUtil.getManager(request).getId();
+
+		if (!reservation.getManagerId().equals(managerId)) {
+			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
+		}
+		// 이미 체크인 되어 있는 경우
+		if (reservation.getCheckinTime() != null) {
+			throw new ReservationException(ResponseType.ALREADY_CHECKED_IN);
+		}
+
+		reservation.checkin(dto.getCheckTime());
+		reservationRepository.save(reservation);
+	}
+
+	@Override
+	public void checkout(Long reservationId, CheckInOutRequestDto dto, HttpServletRequest request) {
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+
+		Long managerId = authUtil.getManager(request).getId();
+
+		if (!reservation.getManagerId().equals(managerId)) {
+			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
+		}
+		if (reservation.getCheckinTime() == null) {
+			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
+		}
+		if (reservation.getCheckoutTime() != null) {
+			throw new ReservationException(ResponseType.ALREADY_CHECKED_OUT);
+		}
+		reservation.checkout(dto.getCheckTime());
+		reservationRepository.save(reservation);
+	}
+
+	@Override
+	public void checkTotalPrice(ReservationRequestDto dto) {
+		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+		Long serverCalculatedPrice = calculateTotalPrice(dto, detailType.getServicePrice());
+		if (!serverCalculatedPrice.equals(dto.getTotalPrice())) {
+			log.warn("금액 불일치 - client={}, server={}", dto.getTotalPrice(), serverCalculatedPrice);
+			throw new ReservationException(ResponseType.VALIDATION_FAILED);
+		}
 	}
 
 	private Long calculateTotalPrice(ReservationRequestDto dto, Long basePrice) {

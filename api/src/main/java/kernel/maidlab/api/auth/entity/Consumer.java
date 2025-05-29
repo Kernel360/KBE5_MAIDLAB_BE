@@ -20,8 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "consumer", indexes = {
-	@Index(name = "idx_consumer_uuid", columnList = "uuid", unique = true),
+@Table(name = "consumer", indexes = {@Index(name = "idx_consumer_uuid", columnList = "uuid", unique = true),
 	@Index(name = "idx_consumer_phone_number", columnList = "phone_number", unique = true)})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -74,7 +73,7 @@ public class Consumer extends Base {
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted;
 
-	private Consumer(String phoneNumber,String password, String name, Gender gender, LocalDate birth) {
+	private Consumer(String phoneNumber, String password, String name, Gender gender, LocalDate birth) {
 		this.phoneNumber = phoneNumber;
 		this.password = password;
 		this.name = name;
@@ -84,12 +83,14 @@ public class Consumer extends Base {
 		this.isDeleted = false;
 	}
 
-	public static Consumer createConsumer(String phoneNumber,String password, String name, Gender gender, LocalDate birth) {
-		return new Consumer(phoneNumber,password,name,gender,birth);
+	public static Consumer createConsumer(String phoneNumber, String password, String name, Gender gender,
+		LocalDate birth) {
+		return new Consumer(phoneNumber, password, name, gender, birth);
 	}
 
-	public static Consumer createSocialConsumer(String phoneNumber,String password, String name, Gender gender, LocalDate birth, SocialType socialType) {
-		Consumer consumer = new Consumer(phoneNumber,null,name,gender,birth);
+	public static Consumer createSocialConsumer(String phoneNumber, String password, String name, Gender gender,
+		LocalDate birth, SocialType socialType) {
+		Consumer consumer = new Consumer(phoneNumber, null, name, gender, birth);
 		consumer.socialType = socialType;
 		return consumer;
 	}
