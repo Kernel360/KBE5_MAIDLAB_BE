@@ -8,4 +8,5 @@ import kernel.maidlab.api.auth.entity.Consumer;
 
 public interface ConsumerRepository extends JpaRepository<Consumer, Long> {
 	Optional<Consumer> findByUuid(String uuid);
+	Optional<Consumer> findByPhoneNumber(String phoneNumber);
 }

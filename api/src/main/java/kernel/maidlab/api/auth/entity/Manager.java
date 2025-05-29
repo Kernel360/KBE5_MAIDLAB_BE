@@ -61,7 +61,7 @@ public class Manager extends Base {
 	@Column(name = "bank")
 	private String bank;
 
-	@Column(name = "refresh_token")
+	@Column(name = "refresh_token", columnDefinition = "TEXT")
 	private String refreshToken;
 
 	@Column(name = "is_verified", nullable = false)

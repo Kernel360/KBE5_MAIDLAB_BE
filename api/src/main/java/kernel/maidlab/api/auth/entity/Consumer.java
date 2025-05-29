@@ -60,7 +60,7 @@ public class Consumer extends Base {
 	@Column(name = "social_type")
 	private SocialType socialType;
 
-	@Column(name = "refresh_token")
+	@Column(name = "refresh_token", columnDefinition = "TEXT")
 	private String refreshToken;
 
 	@CreationTimestamp

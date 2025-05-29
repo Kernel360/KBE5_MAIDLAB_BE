@@ -18,6 +18,6 @@ public class SocialLoginRequestDto {
 	@NotBlank
 	private SocialType socialType;
 
-	private String accessToken;
+	private String code;
 
 }
