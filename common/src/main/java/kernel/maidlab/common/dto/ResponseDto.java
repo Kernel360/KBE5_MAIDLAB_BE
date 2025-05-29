@@ -31,7 +31,7 @@ public class ResponseDto<T> {
 	public static <T> ResponseEntity<ResponseDto<T>> success(T data) {
 		return ResponseEntity
 			.status(ResponseType.SUCCESS.getHttpStatus())
-			.body(new ResponseDto<>(ResponseType.SUCCESS, data));
+			.body(new ResponseDto<T>(ResponseType.SUCCESS, data));
 	}
 
 	public static <T> ResponseEntity<ResponseDto<T>> success(ResponseType responseType, T data) {
