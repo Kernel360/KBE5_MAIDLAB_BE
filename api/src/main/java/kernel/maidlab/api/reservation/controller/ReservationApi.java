@@ -65,4 +65,7 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류"),})
 	ResponseEntity<ResponseDto<String>> checkout(@PathVariable Long reservationId,
 		@RequestBody CheckInOutRequestDto dto, HttpServletRequest request);
+
+	@Operation(summary = "예약 취소", description = "예약 취소 요청", security = @SecurityRequirement(name = "JWT"))
+	ResponseEntity<ResponseDto<String>> cancel(@PathVariable Long reservationId, HttpServletRequest request);
 }
