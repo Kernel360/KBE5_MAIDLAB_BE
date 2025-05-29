@@ -21,8 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "manager", indexes = {
-	@Index(name = "idx_manager_uuid", columnList = "uuid", unique = true),
+@Table(name = "manager", indexes = {@Index(name = "idx_manager_uuid", columnList = "uuid", unique = true),
 	@Index(name = "idx_manager_phone_number", columnList = "phone_number", unique = true)})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -61,7 +60,7 @@ public class Manager extends Base {
 	@Column(name = "bank")
 	private String bank;
 
-	@Column(name = "refresh_token")
+	@Column(name = "refresh_token", columnDefinition = "TEXT")
 	private String refreshToken;
 
 	@Column(name = "is_verified", nullable = false)
@@ -85,7 +84,7 @@ public class Manager extends Base {
 		this.gender = gender;
 		this.birth = birth;
 		this.averageRate = 0.0F;
-		this.isVerified = PENDING;
+		this.isVerified = Status.PENDING;
 		this.isDeleted = false;
 	}
 

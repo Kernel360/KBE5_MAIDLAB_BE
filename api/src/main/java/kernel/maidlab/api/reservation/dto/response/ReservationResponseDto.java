@@ -8,6 +8,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class ReservationResponseDto {
+	private Long reservationId;
 	private String serviceType;
 	private String detailServiceType;
 	private String reservationDate;
