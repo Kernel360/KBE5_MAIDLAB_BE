@@ -24,5 +24,6 @@ public interface ReservationService {
 	void checkout(Long reservationId, CheckInOutRequestDto dto, HttpServletRequest request);
 
 	void cancel(Long reservationId, HttpServletRequest request);
+
 	ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request);
 }

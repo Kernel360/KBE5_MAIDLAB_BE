@@ -8,6 +8,6 @@ import kernel.maidlab.api.manager.entity.ManagerRegion;
 
 public interface ManagerRegionRepository extends JpaRepository<ManagerRegion, Long> {
 
-	List<ManagerRegion> findByManager_Id(Long managerId);
+	List<ManagerRegion> findByManagerId(Long managerId);
 
 }

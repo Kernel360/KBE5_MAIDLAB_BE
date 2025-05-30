@@ -34,13 +34,14 @@ public class ReservationController implements ReservationApi {
 		List<ReservationResponseDto> response = reservationService.allReservations(request);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
+
 	@GetMapping("/{reservationId}")
 	@Override
 	public ResponseEntity<ResponseDto<ReservationDetailResponseDto>> reservationDetail(@PathVariable Long reservationId,
 		HttpServletRequest request
 	) {
 		ReservationDetailResponseDto data = reservationService.getReservationDetail(reservationId, request);
-		return ResponseDto.success(ResponseType.SUCCESS,data);
+		return ResponseDto.success(ResponseType.SUCCESS, data);
 	}
 
 	@Override
@@ -90,6 +91,5 @@ public class ReservationController implements ReservationApi {
 		reservationService.cancel(reservationId, request);
 		return ResponseDto.success(ResponseType.SUCCESS, "취소 완료!");
 	}
-
 
 }

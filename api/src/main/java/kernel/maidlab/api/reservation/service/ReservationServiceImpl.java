@@ -77,19 +77,18 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
 		Reservation reservation = reservationRepository.findById(reservationId)
-			.orElseThrow(()-> new ReservationException(ResponseType.DATABASE_ERROR));
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 		Manager manager = managerRepository.findById(reservation.getManagerId())
-			.orElseThrow(()-> new ReservationException(ResponseType.DATABASE_ERROR));
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		String mangerUuid = manager.getUuid();
 		Long managerId = manager.getId();
-		List<ManagerRegion> managerRegions = managerRegionRepository.findByManager_Id(managerId);
+		List<ManagerRegion> managerRegions = managerRegionRepository.findByManagerId(managerId);
 		List<String> regionNames = managerRegions.stream()
 			.map(mr -> regionRepository.findById(mr.getRegionId())
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR))
 				.getRegionName())
 			.collect(Collectors.toList());
-
 
 		return ReservationDetailResponseDto.builder()
 			.serviceType(reservation.getServiceDetailType().getServiceType().toString())
@@ -134,8 +133,8 @@ public class ReservationServiceImpl implements ReservationService {
 			.orElseThrow(() -> new ReservationException(ResponseType.VALIDATION_FAILED));
 
 		// managerUuid → managerId 변환
-		Manager manager = (Manager) managerRepository.findByUuid(dto.getManagerUuId())
-			.orElseThrow(()-> new ReservationException(ResponseType.DATABASE_ERROR));
+		Manager manager = (Manager)managerRepository.findByUuid(dto.getManagerUuId())
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 		Long managerId = manager.getId();
 
 		Reservation reservation = Reservation.of(dto, consumerId, managerId, detailType);
