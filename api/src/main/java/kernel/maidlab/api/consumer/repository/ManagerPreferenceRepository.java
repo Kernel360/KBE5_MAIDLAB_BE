@@ -21,7 +21,7 @@ public interface ManagerPreferenceRepository extends JpaRepository<ManagerPrefer
             "WHERE mp.consumer.id = :consumerId AND mp.preference = false ")
     List<Manager> findBlackListedManagers(@Param("consumerId") Long consumerId);
 
-    long deleteByConsumerIdAndManagerId(Long consumerId, Long managerId);
+    long deleteByConsumerIdAndManagerIdAndPreferenceIsTrue(Long consumerId, Long managerId);
 
 
 }

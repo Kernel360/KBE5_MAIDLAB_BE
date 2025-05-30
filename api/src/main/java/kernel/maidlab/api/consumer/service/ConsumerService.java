@@ -3,18 +3,20 @@ package kernel.maidlab.api.consumer.service;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.entity.Consumer;
 import kernel.maidlab.api.auth.entity.Manager;
+import kernel.maidlab.api.auth.repository.ConsumerRepository;
 import kernel.maidlab.api.auth.repository.ManagerRepository;
-import kernel.maidlab.api.consumer.dto.response.BlackListedManagerResponseDto;
 import kernel.maidlab.api.consumer.dto.request.ConsumerProfileRequestDto;
+import kernel.maidlab.api.consumer.dto.response.BlackListedManagerResponseDto;
 import kernel.maidlab.api.consumer.dto.response.LikedManagerResponseDto;
 import kernel.maidlab.api.consumer.entity.ManagerPreference;
-import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -24,13 +26,11 @@ public class ConsumerService {
     private final ManagerPreferenceRepository managerPreferenceRepository;
     private final ManagerRepository managerRepository;
 
-    // 수요자 조회
     public Consumer getConsumer(String uuid) {
         return consumerRepository.findByUuid(uuid)
                 .orElseThrow((()-> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
     }
 
-    // 프로필 업데이트(생성 or 수정)
     public void updateConsumerProfile(Consumer consumer, ConsumerProfileRequestDto consumerProfileRequestDto){
         String profileImage = consumerProfileRequestDto.getProfileImage();
         String address = consumerProfileRequestDto.getAddress();
@@ -70,11 +70,6 @@ public class ConsumerService {
                 .toList();
     }
 
-
-    /**
-     * 수요자id를 찾고
-     * 매니저id를 찾고
-     */
     // 찜/블랙리스트 매니저 등록
     public void saveLikedOrBlackListedManager(String consumerUuid, String managerUuid, boolean preference){
 
@@ -93,6 +88,6 @@ public class ConsumerService {
         Manager manager = managerRepository.findByUuid(managerUuid).
                 orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저 입니다."));
 
-        return managerPreferenceRepository.deleteByConsumerIdAndManagerId(consumer.getId(), manager.getId());
+        return managerPreferenceRepository.deleteByConsumerIdAndManagerIdAndPreferenceIsTrue(consumer.getId(), manager.getId());
     }
 }
