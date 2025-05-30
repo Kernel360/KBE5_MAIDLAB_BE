@@ -17,12 +17,6 @@ import lombok.Setter;
 public class SocialSignUpRequestDto {
 
 	@NotBlank
-	private UserType userType;
-
-	@NotBlank
-	private String name;
-
-	@NotBlank
 	private LocalDate birth;
 
 	@NotBlank

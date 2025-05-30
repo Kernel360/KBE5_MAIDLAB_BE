@@ -339,11 +339,11 @@ public class AuthServiceImpl implements AuthService {
 	public ResponseEntity<ResponseDto<Void>> socialSignUp(SocialSignUpRequestDto req, HttpServletRequest req2) {
 		SocialTempInfo googleInfo = extractGoogleInfo(req2);
 
-		if (req.getUserType() == UserType.CONSUMER) {
+		if (googleInfo.getUserType() == UserType.CONSUMER) {
 			Consumer consumer = Consumer.createSocialConsumer(
 				googleInfo.getGoogleId(),
 				null,
-				req.getName(),
+				googleInfo.getGoogleName(),
 				req.getGender(),
 				req.getBirth(),
 				SocialType.GOOGLE
@@ -353,7 +353,7 @@ public class AuthServiceImpl implements AuthService {
 			Manager manager = Manager.createSocialManager(
 				googleInfo.getGoogleId(),
 				null,
-				req.getName(),
+				googleInfo.getGoogleName(),
 				req.getGender(),
 				req.getBirth(),
 				SocialType.GOOGLE
