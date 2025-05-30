@@ -1,5 +1,6 @@
 package kernel.maidlab.api.auth.entity;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -17,14 +18,24 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import kernel.maidlab.common.entity.Base;
 import kernel.maidlab.common.enums.Gender;
+import kernel.maidlab.common.enums.Region;
 import kernel.maidlab.common.enums.SocialType;
 import kernel.maidlab.common.enums.Status;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
-@Table(name = "manager", indexes = {@Index(name = "idx_manager_uuid", columnList = "uuid", unique = true),
+@Table(name = "manager", indexes = {
+	@Index(name = "idx_manager_uuid", columnList = "uuid", unique = true),
 	@Index(name = "idx_manager_phone_number", columnList = "phone_number", unique = true)})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -83,6 +94,15 @@ public class Manager extends Base {
 
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted;
+
+	@ElementCollection(targetClass = Region.class, fetch = FetchType.LAZY)
+	@CollectionTable(
+			name = "manager_region",
+			joinColumns = @JoinColumn(name = "manager_id")
+	)
+	@Column(name = "region", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private List<Region> regions = new ArrayList<>();
 
 	private Manager(String phoneNumber, String password, String name, Gender gender, LocalDate birth) {
 		this.phoneNumber = phoneNumber;
