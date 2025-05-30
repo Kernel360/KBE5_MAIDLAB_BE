@@ -119,6 +119,10 @@ public class AuthServiceImpl implements AuthService {
 		Consumer consumer = consumerRepository.findByPhoneNumber(req.getPhoneNumber())
 			.orElseThrow(() -> new BaseException(ResponseType.LOGIN_FAILED));
 
+		if (consumer.getIsDeleted()) {
+			throw new BaseException(ResponseType.ACCOUNT_DELETED);
+		}
+
 		if (!passwordUtil.checkPassword(req.getPassword(), consumer.getPassword())) {
 			throw new BaseException(ResponseType.LOGIN_FAILED);
 		}
@@ -140,6 +144,10 @@ public class AuthServiceImpl implements AuthService {
 	private ResponseEntity<ResponseDto<LoginResponseDto>> loginManager(LoginRequestDto req, HttpServletResponse res) {
 		Manager manager = managerRepository.findByPhoneNumber(req.getPhoneNumber())
 			.orElseThrow(() -> new BaseException(ResponseType.LOGIN_FAILED));
+
+		if (manager.getIsDeleted()) {
+			throw new BaseException(ResponseType.ACCOUNT_DELETED);
+		}
 
 		if (!passwordUtil.checkPassword(req.getPassword(), manager.getPassword())) {
 			throw new BaseException(ResponseType.LOGIN_FAILED);
@@ -229,6 +237,10 @@ public class AuthServiceImpl implements AuthService {
 
 			return ResponseDto.success(responseDto);
 		} else {
+			if (consumer.getIsDeleted()) {
+				throw new BaseException(ResponseType.ACCOUNT_DELETED);
+			}
+
 			JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(consumer.getUuid(), UserType.CONSUMER);
 			long expirationTime = jwtProperties.getExpiration().getAccess();
 
@@ -261,6 +273,10 @@ public class AuthServiceImpl implements AuthService {
 
 			return ResponseDto.success(responseDto);
 		} else {
+			if (manager.getIsDeleted()) {
+				throw new BaseException(ResponseType.ACCOUNT_DELETED);
+			}
+
 			JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(manager.getUuid(), UserType.MANAGER);
 			long expirationTime = jwtProperties.getExpiration().getAccess();
 
