@@ -2,16 +2,24 @@ package kernel.maidlab.api.matching.service;
 
 import java.util.List;
 
-import kernel.maidlab.api.matching.dto.AvailableManagerResponseDto;
-import kernel.maidlab.api.matching.dto.MatchingDto;
-import kernel.maidlab.api.matching.dto.MatchingRequestDto;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import kernel.maidlab.api.auth.entity.Manager;
+import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
+import kernel.maidlab.api.matching.dto.response.MatchingResponseDto;
+import kernel.maidlab.api.matching.dto.request.MatchingRequestDto;
 import kernel.maidlab.common.enums.Status;
 
 public interface MatchingService {
 
-	public List<AvailableManagerResponseDto> FindAvailableManagers(MatchingRequestDto dto);
+	public List<AvailableManagerResponseDto> findAvailableManagers(MatchingRequestDto dto);
 
-	void createMatching(MatchingDto dto);
+	void createMatching(MatchingResponseDto dto);
 
-	void ChangeStatus(Long reservationId, Status status);
+	void changeStatus(Long reservationId, Status status);
+
+	@Transactional
+	void changeManager(Long reservationId, Manager manager);
+
+	List<MatchingResponseDto> allMatching(HttpServletRequest request);
 }
