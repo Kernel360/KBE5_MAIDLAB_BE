@@ -7,7 +7,7 @@ import kernel.maidlab.api.auth.jwt.JwtDto;
 import kernel.maidlab.api.auth.jwt.JwtProvider;
 import kernel.maidlab.api.consumer.dto.ConsumerMyPageDto;
 import kernel.maidlab.api.consumer.dto.request.ConsumerProfileRequestDto;
-import kernel.maidlab.api.consumer.dto.request.PreferenceDto;
+import kernel.maidlab.api.consumer.dto.request.PreferenceRequestDto;
 import kernel.maidlab.api.consumer.dto.response.BlackListedManagerResponseDto;
 import kernel.maidlab.api.consumer.dto.response.ConsumerProfileResponseDto;
 import kernel.maidlab.api.consumer.dto.response.LikedManagerResponseDto;
@@ -101,10 +101,10 @@ public class ConsumerController implements ConsumerApi {
 	public ResponseEntity createLikedOrBlackListedManager(
 			HttpServletRequest request,
 			@PathVariable("managerUuid")String managerUuid,
-			@RequestBody @Valid PreferenceDto preferenceDto){
+			@RequestBody @Valid PreferenceRequestDto preferenceRequestDto){
 
 		String consumerUuid = getUuidByToken(request);
-		boolean preference = preferenceDto.getPreference();
+		boolean preference = preferenceRequestDto.isPreference();
 		log.info("{}", preference);
 		log.info("uuid 값 확인 = {}", managerUuid);
 
