@@ -1,18 +1,8 @@
 package kernel.maidlab.api.auth.service;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-
-import javax.crypto.SecretKey;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -225,7 +215,7 @@ public class AuthServiceImpl implements AuthService {
 		Consumer consumer = consumerRepository.findByPhoneNumber(googleUser.getId()).orElse(null);
 
 		if (consumer == null) {
-			String tempToken = generateTempToken(googleUser.getId(), googleUser.getName(), UserType.CONSUMER);
+			String tempToken = jwtProvider.generateTempToken(googleUser.getId(), googleUser.getName(), UserType.CONSUMER);
 			long expirationTime = jwtProperties.getExpiration().getAccess();
 
 			SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
@@ -255,7 +245,7 @@ public class AuthServiceImpl implements AuthService {
 		Manager manager = managerRepository.findByPhoneNumber(googleUser.getId()).orElse(null);
 
 		if (manager == null) {
-			String tempToken = generateTempToken(googleUser.getId(), googleUser.getName(), UserType.MANAGER);
+			String tempToken = jwtProvider.generateTempToken(googleUser.getId(), googleUser.getName(), UserType.MANAGER);
 			long expirationTime = jwtProperties.getExpiration().getAccess();
 
 			SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
@@ -281,63 +271,26 @@ public class AuthServiceImpl implements AuthService {
 		}
 	}
 
-	// 회원가입을 위한 임시토큰
-	private String generateTempToken(String googleId, String googleName, UserType userType) {
-		Date now = new Date();
-		Date expiryDate = new Date(now.getTime() + 300000);
-
-		return Jwts.builder()
-			.setSubject("temp_social")
-			.claim("googleId", googleId)
-			.claim("googleName", googleName)
-			.claim("userType", userType.name())
-			.claim("type", "temp")
-			.setIssuedAt(now)
-			.setExpiration(expiryDate)
-			.signWith(getSignKey(), SignatureAlgorithm.HS512)
-			.compact();
-	}
-
-	private SecretKey getSignKey() {
-		byte[] keyBytes = jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8);
-		return Keys.hmacShaKeyFor(keyBytes);
-	}
-
-	// 구글 정보 추출
-	private SocialTempInfo extractGoogleInfo(HttpServletRequest req) {
+	// 소셜 회원가입
+	private JwtDto.TempTokenInfo extractGoogleInfo(HttpServletRequest req) {
 		String tempToken = jwtProvider.extractToken(req);
 
 		if (tempToken == null) {
 			throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);
 		}
 
-		try {
-			Claims claims = Jwts.parserBuilder()
-				.setSigningKey(getSignKey())
-				.build()
-				.parseClaimsJws(tempToken)
-				.getBody();
+		JwtDto.TempTokenInfo tempTokenInfo = jwtProvider.validateTempToken(tempToken);
 
-			String type = (String) claims.get("type");
-			if (!"temp".equals(type)) {
-				throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);
-			}
-
-			String googleId = (String) claims.get("googleId");
-			String googleName = (String) claims.get("googleName");
-			String userTypeStr = (String) claims.get("userType");
-
-			return new SocialTempInfo(googleId, googleName, UserType.valueOf(userTypeStr));
-
-		} catch (Exception e) {
+		if (!tempTokenInfo.isValid()) {
 			throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);
 		}
+
+		return tempTokenInfo;
 	}
 
-	// 소셜 회원가입
 	@Override
 	public ResponseEntity<ResponseDto<Void>> socialSignUp(SocialSignUpRequestDto req, HttpServletRequest req2) {
-		SocialTempInfo googleInfo = extractGoogleInfo(req2);
+		JwtDto.TempTokenInfo googleInfo = extractGoogleInfo(req2);
 
 		if (googleInfo.getUserType() == UserType.CONSUMER) {
 			Consumer consumer = Consumer.createSocialConsumer(
@@ -364,20 +317,6 @@ public class AuthServiceImpl implements AuthService {
 		return ResponseDto.success(null);
 	}
 
-	// 내부 클래스
-	@Getter
-	private static class SocialTempInfo {
-		private final String googleId;
-		private final String googleName;
-		private final UserType userType;
-
-		public SocialTempInfo(String googleId, String googleName, UserType userType) {
-			this.googleId = googleId;
-			this.googleName = googleName;
-			this.userType = userType;
-		}
-	}
-
 	// 토큰 갱신
 	@Override
 	public ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(String refreshToken, HttpServletResponse res) {
@@ -399,4 +338,9 @@ public class AuthServiceImpl implements AuthService {
 		return ResponseDto.success(responseDto);
 	}
 
+	// 비밀번호 재설정
+
+	// 로그아웃
+
+	// 회원탈퇴
 }

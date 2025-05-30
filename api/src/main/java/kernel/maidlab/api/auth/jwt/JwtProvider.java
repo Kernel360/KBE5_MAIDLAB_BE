@@ -49,7 +49,7 @@ public class JwtProvider {
 		return new JwtDto.TokenPair(accessToken, refreshToken);
 	}
 
-	// 토큰 생성
+	// 엑세스 토큰 생성
 	public String generateAccessToken(String uuid, UserType userType) {
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + jwtProperties.getExpiration().getAccess());
@@ -65,10 +65,7 @@ public class JwtProvider {
 			.compact();
 	}
 
-	public String generateToken(String uuid, UserType userType) {
-		return generateAccessToken(uuid, userType);
-	}
-
+	// 리프레시 토큰 생성
 	public String generateRefreshToken(String uuid, UserType userType) {
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + jwtProperties.getExpiration().getRefresh());
@@ -78,6 +75,23 @@ public class JwtProvider {
 			.claim("userType", userType.name())
 			.claim("type", "refresh")
 			.claim("tokenId", UUID.randomUUID().toString())
+			.setIssuedAt(now)
+			.setExpiration(expiryDate)
+			.signWith(getSignKey(), SignatureAlgorithm.HS512)
+			.compact();
+	}
+
+	// 임시 토큰 생성
+	public String generateTempToken(String googleId, String googleName, UserType userType) {
+		Date now = new Date();
+		Date expiryDate = new Date(now.getTime() + 300000);
+
+		return Jwts.builder()
+			.setSubject("temp_social")
+			.claim("googleId", googleId)
+			.claim("googleName", googleName)
+			.claim("userType", userType.name())
+			.claim("type", "temp")
 			.setIssuedAt(now)
 			.setExpiration(expiryDate)
 			.signWith(getSignKey(), SignatureAlgorithm.HS512)
@@ -157,6 +171,40 @@ public class JwtProvider {
 
 		} catch (Exception e) {
 			return JwtDto.ValidationResult.failure("토큰 검증 실패");
+		}
+	}
+
+	// 임시 토큰 검증 및 파싱
+	public JwtDto.TempTokenInfo validateTempToken(String token) {
+		if (token == null || token.trim().isEmpty()) {
+			return JwtDto.TempTokenInfo.failure("토큰이 비어있습니다.");
+		}
+
+		try {
+			Claims claims = Jwts.parserBuilder()
+				.setSigningKey(getSignKey())
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+
+			String type = (String) claims.get("type");
+			if (!"temp".equals(type)) {
+				return JwtDto.TempTokenInfo.failure("임시 토큰이 아닙니다.");
+			}
+
+			String googleId = (String) claims.get("googleId");
+			String googleName = (String) claims.get("googleName");
+			String userTypeStr = (String) claims.get("userType");
+
+			if (googleId == null || googleName == null || userTypeStr == null) {
+				return JwtDto.TempTokenInfo.failure("토큰에 필요한 정보가 없습니다.");
+			}
+
+			UserType userType = UserType.valueOf(userTypeStr);
+			return JwtDto.TempTokenInfo.success(googleId, googleName, userType);
+
+		} catch (Exception e) {
+			return JwtDto.TempTokenInfo.failure("토큰 검증 실패");
 		}
 	}
 
