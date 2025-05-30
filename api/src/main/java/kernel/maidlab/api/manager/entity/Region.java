@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import kernel.maidlab.common.entity.Base;
 import lombok.AccessLevel;
@@ -21,15 +22,12 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Region {
 
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "region_name")
+	@Column(name = "region", nullable = false)
 	private String regionName;
-
-	// public void setRegionName(String regionName) {
-	// 	this.regionName = regionName;
-	// }
 
 }

@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
 
 public interface ReservationService {
@@ -23,4 +24,6 @@ public interface ReservationService {
 	void checkout(Long reservationId, CheckInOutRequestDto dto, HttpServletRequest request);
 
 	void cancel(Long reservationId, HttpServletRequest request);
+
+	ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request);
 }
