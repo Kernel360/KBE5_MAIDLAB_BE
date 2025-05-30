@@ -27,11 +27,7 @@ public class Region {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "region_name")
+	@Column(name = "region", nullable = false)
 	private String regionName;
-
-	// public void setRegionName(String regionName) {
-	// 	this.regionName = regionName;
-	// }
 
 }

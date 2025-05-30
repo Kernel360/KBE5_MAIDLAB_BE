@@ -24,10 +24,10 @@ import lombok.NoArgsConstructor;
 public class ManagerRegion {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long Id;
+	private Long id;
 
 	@Column(name = "manager_id", nullable = false)
-	private Long ManagerId;
+	private Long managerId;
 
 	@Column(name = "region_id", nullable = false)
 	private Long regionId;

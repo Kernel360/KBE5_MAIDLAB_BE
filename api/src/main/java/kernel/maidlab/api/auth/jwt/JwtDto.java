@@ -62,4 +62,32 @@ public class JwtDto {
 			return new RefreshResult(false, message, null, null);
 		}
 	}
+
+	public static class TempTokenInfo {
+		private final boolean valid;
+		@Getter private final String message;
+		@Getter private final String googleId;
+		@Getter private final String googleName;
+		@Getter private final UserType userType;
+
+		private TempTokenInfo(boolean valid, String message, String googleId, String googleName, UserType userType) {
+			this.valid = valid;
+			this.message = message;
+			this.googleId = googleId;
+			this.googleName = googleName;
+			this.userType = userType;
+		}
+
+		public static TempTokenInfo success(String googleId, String googleName, UserType userType) {
+			return new TempTokenInfo(true, null, googleId, googleName, userType);
+		}
+
+		public static TempTokenInfo failure(String message) {
+			return new TempTokenInfo(false, message, null, null, null);
+		}
+
+		public boolean isValid() {
+			return valid;
+		}
+	}
 }

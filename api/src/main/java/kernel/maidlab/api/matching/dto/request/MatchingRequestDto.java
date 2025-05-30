@@ -1,4 +1,4 @@
-package kernel.maidlab.api.matching.dto;
+package kernel.maidlab.api.matching.dto.request;
 
 import lombok.Data;
 
