@@ -88,7 +88,7 @@ public class Consumer extends Base {
 		return new Consumer(phoneNumber, password, name, gender, birth);
 	}
 
-	public static Consumer createSocialConsumer(String phoneNumber, String password, String name, Gender gender,
+	public static Consumer createSocialConsumer(String phoneNumber, String name, Gender gender,
 		LocalDate birth, SocialType socialType) {
 		Consumer consumer = new Consumer(phoneNumber, null, name, gender, birth);
 		consumer.socialType = socialType;
@@ -97,6 +97,14 @@ public class Consumer extends Base {
 
 	public void updateRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
+	}
+
+	public void updatePassword(String password) {
+		this.password = password;
+	}
+
+	public void deleteAccount() {
+		this.isDeleted = true;
 	}
 
 	@PrePersist

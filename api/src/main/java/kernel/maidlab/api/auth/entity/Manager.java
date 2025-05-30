@@ -100,7 +100,7 @@ public class Manager extends Base {
 		return new Manager(phoneNumber, password, name, gender, birth);
 	}
 
-	public static Manager createSocialManager(String phoneNumber, String password, String name, Gender gender,
+	public static Manager createSocialManager(String phoneNumber, String name, Gender gender,
 		LocalDate birth, SocialType socialType) {
 		Manager manager = new Manager(phoneNumber, null, name, gender, birth);
 		manager.socialType = socialType;
@@ -109,6 +109,14 @@ public class Manager extends Base {
 
 	public void updateRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
+	}
+
+	public void updatePassword(String password) {
+		this.password = password;
+	}
+
+	public void deleteAccount() {
+		this.isDeleted = true;
 	}
 
 	@PrePersist

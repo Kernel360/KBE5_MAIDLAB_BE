@@ -60,13 +60,37 @@ public class AuthController {
 		HttpServletRequest req,
 		HttpServletResponse res) {
 
-			String refreshToken = cookieUtil.getRefreshTokenFromCookie(req);
+		String refreshToken = cookieUtil.getRefreshTokenFromCookie(req);
 
-			if (refreshToken == null) {
-				throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);
-			}
+		if (refreshToken == null) {
+			throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);
+		}
 
-			return authService.refreshToken(refreshToken, res);
+		return authService.refreshToken(refreshToken, res);
+	}
+
+	@PatchMapping("/change-password")
+	public ResponseEntity<ResponseDto<Void>> changePw(
+		@Validated @RequestBody ChangePwRequestDto changePwRequestDto, HttpServletRequest req) {
+
+		return authService.changePw(changePwRequestDto, req);
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<ResponseDto<Void>> logout(
+		HttpServletRequest req,
+		HttpServletResponse res) {
+
+		return authService.logout(req, res);
+	}
+
+
+	@DeleteMapping("/withdraw")
+	public ResponseEntity<ResponseDto<Void>> withdraw(
+		HttpServletRequest req,
+		HttpServletResponse res) {
+
+		return authService.withdraw(req, res);
 	}
 
 }
