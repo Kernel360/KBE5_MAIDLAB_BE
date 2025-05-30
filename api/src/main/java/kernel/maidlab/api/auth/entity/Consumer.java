@@ -1,26 +1,25 @@
 package kernel.maidlab.api.auth.entity;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.common.entity.Base;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.SocialType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
-@Table(name = "consumer", indexes = {@Index(name = "idx_consumer_uuid", columnList = "uuid", unique = true),
+@Table(name = "consumer", indexes = {
+	@Index(name = "idx_consumer_uuid", columnList = "uuid", unique = true),
 	@Index(name = "idx_consumer_phone_number", columnList = "phone_number", unique = true)})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,6 +40,7 @@ public class Consumer extends Base {
 	@Column(name = "birth", nullable = false)
 	private LocalDate birth;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "gender", nullable = false)
 	private Gender gender;
 
@@ -56,6 +56,7 @@ public class Consumer extends Base {
 	@Column(name = "point", nullable = false)
 	private Integer point;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "social_type")
 	private SocialType socialType;
 
@@ -73,7 +74,10 @@ public class Consumer extends Base {
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted;
 
-	private Consumer(String phoneNumber, String password, String name, Gender gender, LocalDate birth) {
+	@OneToMany
+	private List<ManagerPreference> preferences = new ArrayList<>();
+
+	private Consumer(String phoneNumber,String password, String name, Gender gender, LocalDate birth) {
 		this.phoneNumber = phoneNumber;
 		this.password = password;
 		this.name = name;
@@ -105,6 +109,11 @@ public class Consumer extends Base {
 
 	public void deleteAccount() {
 		this.isDeleted = true;
+
+	public void updateProfile(String profileImage, String address, String detailAddress){
+		this.profileImage = profileImage;
+		this.address = address;
+		this.detailAddress = detailAddress;
 	}
 
 	@PrePersist

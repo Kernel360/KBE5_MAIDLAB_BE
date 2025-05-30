@@ -29,15 +29,15 @@ public class ManagerSchedule {
 	private Long id;
 
 	@Column
-	private Long manager_id;
+	private Long managerId;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private DayOfWeek workday;
+	@Column(name = "day", nullable = false)
+	private DayOfWeek workDay;
 
-	@Column
-	private LocalTime starttime;
+	@Column(name = "start_time", nullable = false)
+	private LocalTime startTime;
 
-	@Column
-	private LocalTime endtime;
+	@Column(name = "end_time", nullable = false)
+	private LocalTime endTime;
 }
