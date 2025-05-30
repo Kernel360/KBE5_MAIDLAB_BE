@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import kernel.maidlab.api.auth.entity.Manager;
-import kernel.maidlab.api.auth.repository.ManagerRepository;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
 
 @Service
 public class ManagerServiceImpl implements ManagerService {
