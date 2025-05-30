@@ -5,12 +5,11 @@ import lombok.Getter;
 
 public class JwtDto {
 
-	@Getter
 	public static class ValidationResult {
 		private final boolean valid;
-		private final String message;
-		private final String uuid;
-		private final UserType userType;
+		@Getter private final String message;
+		@Getter private final String uuid;
+		@Getter private final UserType userType;
 
 		public ValidationResult(boolean valid, String message, String uuid, UserType userType) {
 			this.valid = valid;
@@ -27,6 +26,9 @@ public class JwtDto {
 			return new ValidationResult(false, message, null, null);
 		}
 
+		public boolean isValid() {
+			return valid;
+		}
 	}
 
 	@Getter
