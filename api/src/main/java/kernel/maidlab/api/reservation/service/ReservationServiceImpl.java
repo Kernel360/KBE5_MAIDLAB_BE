@@ -2,7 +2,6 @@ package kernel.maidlab.api.reservation.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -10,8 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.util.AuthUtil;
 import kernel.maidlab.api.exception.custom.ReservationException;
-import kernel.maidlab.api.matching.entity.Matching;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
+import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
@@ -34,6 +33,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ServiceDetailTypeRepository serviceDetailTypeRepository;
 	private final MatchingRepository matchingRepository;
 	private final AuthUtil authUtil;
+	private final MatchingService matchingService;
 
 	@Override
 	public List<ReservationResponseDto> allReservations(HttpServletRequest request) {
@@ -98,11 +98,11 @@ public class ReservationServiceImpl implements ReservationService {
 		if (isApproved) {
 			reservation.managerRespond(managerId);
 			reservationRepository.save(reservation);
-			// matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId));
+			matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId).getId());
 			// TODO : 수요자에게 알림 보내기 (예약 성공)
 		} else {
-			// TODO : 매칭 테이블에서 거절로 변경 -> 관리자가 강제 개입 (예약 거부)
-			// Optional<Matching> matching = matchingRepository.findById(matchingRepository.findByReservationId(reservationId));
+			matchingService.changeStatus(reservationId, Status.REJECTED);
+
 		}
 	}
 
@@ -150,7 +150,6 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	@Override
 	public void cancel(Long reservationId, HttpServletRequest request) {
-		// TODO : 매칭도 같이 삭제하기
 
 		Long consumerId = authUtil.getConsumer(request).getId();
 		Reservation reservation = reservationRepository.findById(reservationId)
@@ -164,6 +163,7 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 		reservation.cancel(LocalDateTime.now());
 		reservationRepository.save(reservation);
+		matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId).getId());
 	}
 
 	@Override

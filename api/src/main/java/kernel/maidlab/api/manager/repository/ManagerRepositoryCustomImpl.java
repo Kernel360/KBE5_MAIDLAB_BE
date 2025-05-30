@@ -4,28 +4,29 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
-import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.api.auth.entity.QManager;
 import kernel.maidlab.api.manager.entity.QManagerRegion;
 import kernel.maidlab.api.manager.entity.QRegion;
 import kernel.maidlab.api.manager.entity.QManagerSchedule;
-import kernel.maidlab.api.matching.dto.AvailableManagerResponseDto;
+import kernel.maidlab.api.reservation.entity.QReservation;
+import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
+import kernel.maidlab.common.enums.Status;
 
 @Repository
-public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
+public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 
 	private final JPAQueryFactory QueryFactory;
 	// private final ManagerService managerService;
 
-	public ManagerRepositoryImpl(EntityManager em) {
+	public ManagerRepositoryCustomImpl(EntityManager em) {
 		this.QueryFactory = new JPAQueryFactory(em);
 		// this.managerService = managerService;
 	}
@@ -37,7 +38,7 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
 		QRegion region = QRegion.region;
 		QManagerSchedule managerSchedule = QManagerSchedule.managerSchedule;
 		System.out.println("region : " + region.regionName.toString());
-		// QReservation reservation = QReservation.reservation;
+		QReservation reservation = QReservation.reservation;
 		DayOfWeek days = Start.getDayOfWeek();
 		LocalTime startTime = Start.toLocalTime();
 		LocalTime endTime = End.toLocalTime();
@@ -55,32 +56,29 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
 				manager.name
 			))
 			.from(manager)
-			.join(managerRegion).on(managerRegion.ManagerId.eq(manager.id))
+			.join(managerRegion).on(managerRegion.managerId.eq(manager.id))
 			.join(region).on(managerRegion.regionId.eq(region.id))
-			.join(managerSchedule).on(managerSchedule.manager_id.eq(manager.id)) // manager_schedule 조인
+			.join(managerSchedule).on(managerSchedule.managerId.eq(manager.id)) // manager_schedule 조인
 			.where(
 				region.regionName.eq(gu),
-				managerSchedule.starttime.loe(startTime),          // 시작 시간보다 이르거나 같아야 함
-				managerSchedule.endtime.goe(endTime),              // 종료 시간보다 늦거나 같아야 함
-				managerSchedule.workday.eq(days)                   // 요일 일치
-				// manager.isVerified.eq(Manager.VerificationStatus.APPROVED),
-				// manager.isDeleted.isFalse(),
-				// manager.id.notIn(
-				//     JPAExpressions
-				//         .select(reservation.MatchManagerId)
-				//         .from(reservation)
-				//         .where(
-				//             reservation.MatchManagerId.isNotNull(),
-				//             reservation.status.ne(ReservationStatus.CANCELED)
-				//         )
-				// )
+				managerSchedule.startTime.loe(startTime),          // 시작 시간보다 이르거나 같아야 함
+				managerSchedule.endTime.goe(endTime),              // 종료 시간보다 늦거나 같아야 함
+				managerSchedule.workDay.eq(days),                  // 요일 일치
+				manager.isVerified.eq(Status.APPROVED),
+				manager.isDeleted.isFalse(),
+				manager.id.notIn(
+					JPAExpressions
+						.select(reservation.managerId)
+						.from(reservation)
+						.where(
+							reservation.managerId.isNotNull(),
+							reservation.status.ne(Status.CANCELED),
+							reservation.startTime.lt(Start),     // 예약 시작 < 요청 종료
+							reservation.endTime.gt(End)      // 예약 종료 > 요청 시작
+						)
+				)
 			)
 			.fetch();
-	}
-
-	@Override
-	public Optional<Manager> findByUuid(String uuid) {
-		return Optional.empty();
 	}
 
 }
