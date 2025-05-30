@@ -26,9 +26,9 @@ public class ManagerRegion {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long Id;
 
-	@Column(name = "managerid", nullable = false)
+	@Column(name = "manager_id", nullable = false)
 	private Long ManagerId;
 
-	@Column(name = "regionid", nullable = false)
+	@Column(name = "region_id", nullable = false)
 	private Long regionId;
 }

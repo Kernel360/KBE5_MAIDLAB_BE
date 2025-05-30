@@ -3,6 +3,7 @@ package kernel.maidlab.api.reservation.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 
@@ -26,6 +28,11 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "403", description = "권한 없음"),
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류"),})
 	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> allReservations(HttpServletRequest request);
+
+	@Operation(summary = "예약 상세 조회", description = "예약 상세 내역 조회", security = @SecurityRequirement(name = "JWT"))
+	ResponseEntity<ResponseDto<ReservationDetailResponseDto>> reservationDetail(@PathVariable Long reservationId,
+		HttpServletRequest request
+	);
 
 	@Operation(summary = "예약 테이블 생성", description = "예약 정보를 받아 예약 테이블을 생성합니다.", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "테이블 생성 성공"),
