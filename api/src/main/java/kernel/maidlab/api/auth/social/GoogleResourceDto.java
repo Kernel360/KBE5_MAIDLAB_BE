@@ -1,4 +1,4 @@
-package kernel.maidlab.api.auth.dto;
+package kernel.maidlab.api.auth.social;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

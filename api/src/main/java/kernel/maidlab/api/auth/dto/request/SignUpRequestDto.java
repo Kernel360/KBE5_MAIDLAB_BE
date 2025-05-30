@@ -1,14 +1,13 @@
 package kernel.maidlab.api.auth.dto.request;
 
+import kernel.maidlab.common.enums.Gender;
+import kernel.maidlab.common.enums.UserType;
+
 import java.time.LocalDate;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import kernel.maidlab.common.enums.Gender;
-import kernel.maidlab.common.enums.UserType;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

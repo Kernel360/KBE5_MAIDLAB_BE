@@ -7,9 +7,12 @@ public class JwtDto {
 
 	public static class ValidationResult {
 		private final boolean valid;
-		@Getter private final String message;
-		@Getter private final String uuid;
-		@Getter private final UserType userType;
+		@Getter
+		private final String message;
+		@Getter
+		private final String uuid;
+		@Getter
+		private final UserType userType;
 
 		public ValidationResult(boolean valid, String message, String uuid, UserType userType) {
 			this.valid = valid;
@@ -67,10 +70,14 @@ public class JwtDto {
 
 	public static class TempTokenInfo {
 		private final boolean valid;
-		@Getter private final String message;
-		@Getter private final String googleId;
-		@Getter private final String googleName;
-		@Getter private final UserType userType;
+		@Getter
+		private final String message;
+		@Getter
+		private final String googleId;
+		@Getter
+		private final String googleName;
+		@Getter
+		private final UserType userType;
 
 		private TempTokenInfo(boolean valid, String message, String googleId, String googleName, UserType userType) {
 			this.valid = valid;

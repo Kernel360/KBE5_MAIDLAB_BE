@@ -1,4 +1,4 @@
-package kernel.maidlab.api.auth.util;
+package kernel.maidlab.api.util;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.auth.entity.Consumer;

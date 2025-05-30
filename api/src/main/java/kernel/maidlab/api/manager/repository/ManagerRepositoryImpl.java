@@ -78,9 +78,4 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
 			.fetch();
 	}
 
-	@Override
-	public Optional<Manager> findByUuid(String uuid) {
-		return Optional.empty();
-	}
-
 }

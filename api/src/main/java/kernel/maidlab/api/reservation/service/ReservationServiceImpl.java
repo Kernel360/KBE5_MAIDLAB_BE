@@ -2,15 +2,13 @@ package kernel.maidlab.api.reservation.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import kernel.maidlab.api.auth.util.AuthUtil;
+import kernel.maidlab.api.util.AuthUtil;
 import kernel.maidlab.api.exception.custom.ReservationException;
-import kernel.maidlab.api.matching.entity.Matching;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;

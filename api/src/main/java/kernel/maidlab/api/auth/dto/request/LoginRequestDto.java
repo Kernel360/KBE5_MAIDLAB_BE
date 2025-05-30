@@ -1,9 +1,8 @@
 package kernel.maidlab.api.auth.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-
 import kernel.maidlab.common.enums.UserType;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

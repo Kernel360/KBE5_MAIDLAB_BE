@@ -9,5 +9,5 @@ import kernel.maidlab.api.matching.dto.AvailableManagerResponseDto;
 
 public interface ManagerRepositoryCustom {
 	List<AvailableManagerResponseDto> FindAvailableManagers(String site, LocalDateTime Start, LocalDateTime End);
-	Optional<Manager> findByUuid(String uuid);
+	// Optional<Manager> findByUuid(String uuid);
 }

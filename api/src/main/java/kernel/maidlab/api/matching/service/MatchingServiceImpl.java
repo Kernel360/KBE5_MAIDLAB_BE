@@ -3,19 +3,17 @@ package kernel.maidlab.api.matching.service;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
-import kernel.maidlab.api.auth.repository.ManagerRepository;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.exception.BaseException;
 import kernel.maidlab.api.matching.dto.AvailableManagerResponseDto;
 import kernel.maidlab.api.matching.dto.MatchingDto;
 import kernel.maidlab.api.matching.dto.MatchingRequestDto;
 import kernel.maidlab.api.matching.entity.Matching;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
-import kernel.maidlab.common.entity.Base;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 
