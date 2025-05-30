@@ -84,7 +84,6 @@ public class AuthController {
 		return authService.logout(req, res);
 	}
 
-
 	@DeleteMapping("/withdraw")
 	public ResponseEntity<ResponseDto<Void>> withdraw(
 		HttpServletRequest req,

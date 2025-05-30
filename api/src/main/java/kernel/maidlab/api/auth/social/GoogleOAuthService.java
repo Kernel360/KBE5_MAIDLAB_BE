@@ -1,4 +1,7 @@
-package kernel.maidlab.api.auth.service;
+package kernel.maidlab.api.auth.social;
+
+import kernel.maidlab.api.exception.BaseException;
+import kernel.maidlab.common.enums.ResponseType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -6,9 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import kernel.maidlab.api.auth.dto.GoogleTokenDto;
-import kernel.maidlab.api.exception.BaseException;
-import kernel.maidlab.common.enums.ResponseType;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import kernel.maidlab.api.auth.entity.Manager;
-import kernel.maidlab.api.auth.repository.ManagerRepository;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.exception.BaseException;
+import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
 import kernel.maidlab.api.matching.dto.response.MatchingResponseDto;
 import kernel.maidlab.api.matching.dto.request.MatchingRequestDto;

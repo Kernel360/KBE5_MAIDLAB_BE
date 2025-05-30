@@ -110,6 +110,8 @@ public class Consumer extends Base {
 	public void deleteAccount() {
 		this.isDeleted = true;
 
+	}
+
 	public void updateProfile(String profileImage, String address, String detailAddress){
 		this.profileImage = profileImage;
 		this.address = address;

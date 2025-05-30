@@ -1,6 +1,5 @@
-package kernel.maidlab.api.auth.client;
+package kernel.maidlab.api.auth.social;
 
-import kernel.maidlab.api.auth.dto.GoogleResourceDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
