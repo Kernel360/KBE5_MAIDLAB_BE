@@ -1,21 +1,6 @@
 package kernel.maidlab.api.auth.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
 import kernel.maidlab.common.entity.Base;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.Region;
@@ -60,6 +45,7 @@ public class Manager extends Base {
 	@Column(name = "birth", nullable = false)
 	private LocalDate birth;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "gender", nullable = false)
 	private Gender gender;
 
