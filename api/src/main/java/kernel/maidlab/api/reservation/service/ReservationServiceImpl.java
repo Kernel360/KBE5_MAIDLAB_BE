@@ -2,18 +2,27 @@ package kernel.maidlab.api.reservation.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.api.auth.entity.Manager;
+import kernel.maidlab.api.auth.repository.ManagerRepository;
 import kernel.maidlab.api.auth.util.AuthUtil;
 import kernel.maidlab.api.exception.custom.ReservationException;
+import kernel.maidlab.api.manager.entity.ManagerRegion;
+import kernel.maidlab.api.manager.repository.ManagerRegionRepository;
+import kernel.maidlab.api.manager.repository.RegionRepository;
+import kernel.maidlab.api.matching.entity.Matching;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.api.reservation.entity.Reservation;
 import kernel.maidlab.api.reservation.entity.ServiceDetailType;
@@ -32,8 +41,12 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ReservationRepository reservationRepository;
 	private final ServiceDetailTypeRepository serviceDetailTypeRepository;
 	private final MatchingRepository matchingRepository;
+	private final ManagerRepository managerRepository;
 	private final AuthUtil authUtil;
 	private final MatchingService matchingService;
+
+	private final ManagerRegionRepository managerRegionRepository;
+	private final RegionRepository regionRepository;
 
 	@Override
 	public List<ReservationResponseDto> allReservations(HttpServletRequest request) {
@@ -61,6 +74,46 @@ public class ReservationServiceImpl implements ReservationService {
 			.toList();
 	}
 
+	@Override
+	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+		Manager manager = managerRepository.findById(reservation.getManagerId())
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+
+		String mangerUuid = manager.getUuid();
+		Long managerId = manager.getId();
+		List<ManagerRegion> managerRegions = managerRegionRepository.findByManagerId(managerId);
+		List<String> regionNames = managerRegions.stream()
+			.map(mr -> regionRepository.findById(mr.getRegionId())
+				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR))
+				.getRegionName())
+			.collect(Collectors.toList());
+
+		return ReservationDetailResponseDto.builder()
+			.serviceType(reservation.getServiceDetailType().getServiceType().toString())
+			.serviceDetailType(reservation.getServiceDetailType().getServiceDetailType())
+			.address(reservation.getAddress())
+			.addressDetail(reservation.getAddressDetail())
+			.managerUuId(mangerUuid)
+			.managerName(manager.getName())
+			.managerProfileImageUrl(manager.getProfileImage())
+			.managerAverageRate(manager.getAverageRate())
+			.managerRegion(regionNames)
+			.managerPhoneNumber(manager.getPhoneNumber())
+			.housingType(reservation.getHousingType())
+			.roomSize(reservation.getRoomSize())
+			.housingInformation(reservation.getHousingInformation())
+			.reservationDate(reservation.getReservationDate())
+			.startTime(reservation.getStartTime())
+			.endTime(reservation.getEndTime())
+			.serviceAdd(reservation.getServiceAdd())
+			.pet(reservation.getPet())
+			.specialRequest(reservation.getSpecialRequest())
+			.totalPrice(reservation.getTotalPrice())
+			.build();
+	}
+
 	@Transactional
 	@Override
 	public void createReservation(ReservationRequestDto dto, HttpServletRequest request) {
@@ -79,7 +132,12 @@ public class ReservationServiceImpl implements ReservationService {
 		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
 			.orElseThrow(() -> new ReservationException(ResponseType.VALIDATION_FAILED));
 
-		Reservation reservation = Reservation.of(dto, consumerId, detailType);
+		// managerUuid → managerId 변환
+		Manager manager = (Manager)managerRepository.findByUuid(dto.getManagerUuId())
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+		Long managerId = manager.getId();
+
+		Reservation reservation = Reservation.of(dto, consumerId, managerId, detailType);
 		reservationRepository.save(reservation);
 	}
 
