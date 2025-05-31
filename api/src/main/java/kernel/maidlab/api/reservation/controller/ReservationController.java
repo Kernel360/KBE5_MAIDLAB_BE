@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
+import kernel.maidlab.api.reservation.dto.request.ReviewRegisterRequestDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.api.reservation.service.ReservationService;
@@ -90,6 +91,13 @@ public class ReservationController implements ReservationApi {
 	public ResponseEntity<ResponseDto<String>> cancel(@PathVariable Long reservationId, HttpServletRequest request) {
 		reservationService.cancel(reservationId, request);
 		return ResponseDto.success(ResponseType.SUCCESS, "취소 완료!");
+	}
+
+	@PostMapping("/{reservationId}/review")
+	public ResponseEntity<ResponseDto<String>> review(@PathVariable Long reservationId, @RequestBody
+		ReviewRegisterRequestDto dto, HttpServletRequest request) {
+		reservationService.registerReview(reservationId, dto, request);
+		return ResponseDto.success(ResponseType.SUCCESS, "리뷰 등록 완료!");
 	}
 
 }
