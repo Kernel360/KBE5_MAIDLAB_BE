@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.api.auth.repository.ManagerRepository;
+import kernel.maidlab.api.auth.util.AuthUtil;
 import kernel.maidlab.api.exception.BaseException;
 import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
 import kernel.maidlab.api.matching.dto.response.MatchingResponseDto;
@@ -24,10 +25,13 @@ public class MatchingServiceImpl implements MatchingService {
 
 	private final ManagerRepository managerRepository;
 	private final MatchingRepository matchingRepository;
+	private final AuthUtil authUtil;
 
-	public MatchingServiceImpl(ManagerRepository managerRepository, MatchingRepository matchingRepository) {
+	public MatchingServiceImpl(ManagerRepository managerRepository, MatchingRepository matchingRepository,
+		AuthUtil authUtil) {
 		this.managerRepository = managerRepository;
 		this.matchingRepository = matchingRepository;
+		this.authUtil = authUtil;
 	}
 
 	@Override
@@ -61,14 +65,29 @@ public class MatchingServiceImpl implements MatchingService {
 
 	@Transactional
 	@Override
-	public void changeManager(Long reservationId, Manager manager) {
+	public void changeManager(Long reservationId, Long managerId) {
 		Matching matching = matchingRepository.findByReservationId(reservationId);
-		matching.setManagerId(manager.getId());
+		matching.setManagerId(managerId);
+		System.out.println(managerId);
 	}
 
 	@Override
 	public List<MatchingResponseDto> allMatching(HttpServletRequest request) {
 		List<Matching> matchings = matchingRepository.findAll();
+		return matchings.stream()
+			.map(matching -> MatchingResponseDto.builder()
+				.reservationId(matching.getReservationId())
+				.managerId(matching.getManagerId())
+				.matchingStatus(matching.getMatchingStatus())
+				.build())
+			.toList();
+	}
+
+	@Override
+	public List<MatchingResponseDto> mymatching(HttpServletRequest request) {
+		Manager me = authUtil.getManager(request);
+		List<Matching> matchings;
+		matchings = matchingRepository.findByManagerId(me.getId());
 		return matchings.stream()
 			.map(matching -> MatchingResponseDto.builder()
 				.reservationId(matching.getReservationId())

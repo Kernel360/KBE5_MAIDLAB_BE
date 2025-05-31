@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.auth.util.AuthUtil;
 import kernel.maidlab.api.exception.BaseException;
 import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
 import kernel.maidlab.api.matching.dto.request.MatchingRequestDto;
@@ -28,24 +29,26 @@ import lombok.RequiredArgsConstructor;
 @RestController
 public class MatchingController implements MatchingApi {
 
+
+	// private final AuthUtil authUtil;
 	private final MatchingService matchingService;
-	private final MatchingRepository matchingRepository;
+	// private final MatchingRepository matchingRepository;
 	// private final RedisTemplate<String, Object> redisTemplate;
 	// private final RedisService redisService;
 
-	// @GetMapping
-	// @Override
-	// public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> allMatching(HttpServletRequest request) {
-	// 	List<MatchingResponseDto> response = matchingService.allMatching(request);
-	// 	return ResponseDto.success(ResponseType.SUCCESS, response);
-	// }
+
+
+	@GetMapping
+	@Override
+	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> getMatching(HttpServletRequest request) {
+		List<MatchingResponseDto> response = matchingService.mymatching(request);
+		return ResponseDto.success(ResponseType.SUCCESS, response);
+	}
+
 
 	@PostMapping("/matchmanager")
 	@Override
 	public ResponseEntity<List<AvailableManagerResponseDto>> matchManagers(@RequestBody MatchingRequestDto dto) {
-		System.out.println("startTime = " + dto.getStartTime());
-		System.out.println("endTime = " + dto.getEndTime());
-		System.out.println("address = " + dto.getAddress());
 		List<AvailableManagerResponseDto> AvailableManagers = matchingService.findAvailableManagers(dto);
 
 		// 후보군 작성을 위한 redis 설정으로 일단 일시중지

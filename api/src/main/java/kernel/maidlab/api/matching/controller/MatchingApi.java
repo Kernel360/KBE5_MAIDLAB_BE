@@ -19,9 +19,9 @@ import kernel.maidlab.common.dto.ResponseDto;
 
 @Tag(name = "Matching", description = "매칭 관련 API")
 public interface MatchingApi {
-	// 매칭 조회 관리자용으로 제작될 예정, 어드민 모듈에 들어가게 될 수도 있으므로 일단 주석처리
-	// @GetMapping
-	// ResponseEntity<ResponseDto<List<MatchingResponseDto>>> allMatching(HttpServletRequest request);
+
+	@GetMapping
+	ResponseEntity<ResponseDto<List<MatchingResponseDto>>> getMatching(HttpServletRequest request);
 
 	@Operation(summary = "매칭 매니저 조회", description = "choosemanager의 boolean값에 따라 직접 선택할지, 자동으로 지정될지 나누어서 실행됩니다.")
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "조회 성공"),
