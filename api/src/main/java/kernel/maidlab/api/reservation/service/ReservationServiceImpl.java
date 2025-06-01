@@ -57,6 +57,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ConsumerRepository consumerRepository;
 	private final ReviewRepository reviewRepository;
 
+	@Transactional
 	@Override
 	public void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request) {
 		Reservation reservation = reservationRepository.findById(reservationId)
@@ -67,6 +68,8 @@ public class ReservationServiceImpl implements ReservationService {
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		managerPreferenceRepository.save(new ManagerPreference(consumer,manager,dto.isLikes()));
+
+		// TODO : manager 평균 평점(average_rate) 관리 로직 넣기 -> manager 테이블에 review 당한 횟수와 평점 관리해서 계산하는게 더 효율적인 로직일듯
 
 		Review review = Review.of(dto, reservation);
 		reviewRepository.save(review);

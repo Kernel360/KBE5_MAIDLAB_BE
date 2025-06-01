@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import kernel.maidlab.api.reservation.dto.request.ReviewRegisterRequestDto;
 import kernel.maidlab.common.entity.Base;
@@ -15,7 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "reservation")
+@Table(name = "review")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Review extends Base {
@@ -37,21 +38,25 @@ public class Review extends Base {
 	@Column(name = "review_date", nullable = false)
 	private LocalDateTime reviewDate;
 
+
 	private Review(Long reservationId, Long managerId, Long consumerId, float rating, String comment,
-		ServiceDetailType serviceType, LocalDateTime reviewDate) {
+		ServiceDetailType serviceType ){
 		this.reservationId = reservationId;
 		this.managerId = managerId;
 		this.consumerId = consumerId;
 		this.rating = rating;
 		this.comment = comment;
 		this.serviceDetailType = serviceType;
-		this.reviewDate = reviewDate;
+	}
+	@PrePersist
+	public void prePersist() {
+		if (reviewDate == null) {
+			this.reviewDate = LocalDateTime.now();
+		}
 	}
 
-	// public static Review of(ReviewRegisterRequestDto dto, Long reservationId, Long consumerId, Long managerId) {
-	// 	return new Review();
 	public static Review of(ReviewRegisterRequestDto dto, Reservation reservation) {
 		return new Review(reservation.getId(), reservation.getManagerId(), reservation.getConsumerId(),
-			dto.getRating(), dto.getComment(), reservation.getServiceDetailType(),LocalDateTime.now());
+			dto.getRating(), dto.getComment(), reservation.getServiceDetailType());
 	}
 }
