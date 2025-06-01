@@ -38,15 +38,19 @@ public class Review extends Base {
 	@Column(name = "review_date", nullable = false)
 	private LocalDateTime reviewDate;
 
+	@Column(name = "is_consumer_to_manager", nullable = false)
+	private Boolean isConsumerToManager;
+
 
 	private Review(Long reservationId, Long managerId, Long consumerId, float rating, String comment,
-		ServiceDetailType serviceType ){
+		ServiceDetailType serviceType, Boolean isConsumerToManager ) {
 		this.reservationId = reservationId;
 		this.managerId = managerId;
 		this.consumerId = consumerId;
 		this.rating = rating;
 		this.comment = comment;
 		this.serviceDetailType = serviceType;
+		this.isConsumerToManager = isConsumerToManager;
 	}
 	@PrePersist
 	public void prePersist() {
@@ -55,8 +59,8 @@ public class Review extends Base {
 		}
 	}
 
-	public static Review of(ReviewRegisterRequestDto dto, Reservation reservation) {
+	public static Review of(ReviewRegisterRequestDto dto, Reservation reservation, Boolean isConsumerToManager) {
 		return new Review(reservation.getId(), reservation.getManagerId(), reservation.getConsumerId(),
-			dto.getRating(), dto.getComment(), reservation.getServiceDetailType());
+			dto.getRating(), dto.getComment(), reservation.getServiceDetailType(), isConsumerToManager);
 	}
 }
