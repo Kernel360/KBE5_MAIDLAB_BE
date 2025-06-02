@@ -17,7 +17,6 @@ import lombok.Setter;
 @Table(name = "matching")
 @Getter
 @NoArgsConstructor
-@Builder
 public class Matching extends Base {
 
 	@Column

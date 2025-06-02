@@ -195,7 +195,6 @@ public class ReservationServiceImpl implements ReservationService {
 			// TODO : 수요자에게 알림 보내기 (예약 성공)
 		} else {
 			matchingService.changeStatus(reservationId, Status.REJECTED);
-
 		}
 	}
 
@@ -256,7 +255,9 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 		reservation.cancel(LocalDateTime.now());
 		reservationRepository.save(reservation);
-		matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId).getId());
+		if(matchingRepository.existsById(matchingRepository.findByReservationId(reservationId).getId())) {
+			matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId).getId());
+		}
 	}
 
 
