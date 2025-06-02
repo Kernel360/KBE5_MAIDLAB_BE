@@ -36,8 +36,6 @@ public class MatchingController implements MatchingApi {
 	// private final RedisTemplate<String, Object> redisTemplate;
 	// private final RedisService redisService;
 
-
-
 	@GetMapping
 	@Override
 	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> getMatching(HttpServletRequest request) {

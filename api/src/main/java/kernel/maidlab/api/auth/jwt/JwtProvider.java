@@ -1,11 +1,9 @@
 package kernel.maidlab.api.auth.jwt;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import kernel.maidlab.api.auth.entity.Consumer;
 import kernel.maidlab.api.auth.entity.Manager;
-import kernel.maidlab.api.auth.repository.ConsumerRepository;
-import kernel.maidlab.api.auth.repository.ManagerRepository;
+import kernel.maidlab.api.consumer.repository.ConsumerRepository;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.common.enums.UserType;
 
 import io.jsonwebtoken.*;
@@ -13,11 +11,12 @@ import io.jsonwebtoken.security.Keys;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -187,14 +186,14 @@ public class JwtProvider {
 				.parseClaimsJws(token)
 				.getBody();
 
-			String type = (String) claims.get("type");
+			String type = (String)claims.get("type");
 			if (!"temp".equals(type)) {
 				return JwtDto.TempTokenInfo.failure("임시 토큰이 아닙니다.");
 			}
 
-			String googleId = (String) claims.get("googleId");
-			String googleName = (String) claims.get("googleName");
-			String userTypeStr = (String) claims.get("userType");
+			String googleId = (String)claims.get("googleId");
+			String googleName = (String)claims.get("googleName");
+			String userTypeStr = (String)claims.get("userType");
 
 			if (googleId == null || googleName == null || userTypeStr == null) {
 				return JwtDto.TempTokenInfo.failure("토큰에 필요한 정보가 없습니다.");

@@ -134,8 +134,9 @@ public class Reservation extends Base {
 		this.status = Status.PENDING;
 	}
 
-	public static Reservation of(ReservationRequestDto dto, Long consumerId, ServiceDetailType detailType) {
-		return new Reservation(dto.getManagerId(), consumerId, detailType, dto.getReservationDate(), dto.getStartTime(),
+	public static Reservation of(ReservationRequestDto dto, Long consumerId, Long managerId,
+		ServiceDetailType detailType) {
+		return new Reservation(managerId, consumerId, detailType, dto.getReservationDate(), dto.getStartTime(),
 			dto.getEndTime(), dto.getAddress(), dto.getAddressDetail(), dto.getHousingType(), dto.getRoomSize(),
 			dto.getHousingInformation(), dto.getServiceAdd(), dto.getPet(), dto.getSpecialRequest(),
 			dto.getTotalPrice());

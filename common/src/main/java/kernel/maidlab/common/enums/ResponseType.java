@@ -23,6 +23,7 @@ public enum ResponseType {
 	AUTHORIZATION_FAILED("AF", "Authorization Failed.", HttpStatus.UNAUTHORIZED),
 	LOGIN_FAILED("LF", "Login Failed.", HttpStatus.UNAUTHORIZED),
 	INVALID_REFRESH_TOKEN("RF", "Invalid refresh token.", HttpStatus.UNAUTHORIZED),
+	ACCOUNT_DELETED("AD", "Account has been deleted.", HttpStatus.UNAUTHORIZED),
 
 	// 403
 	DO_NOT_HAVE_PERMISSION("NP", "Do not have permission.", HttpStatus.FORBIDDEN),
