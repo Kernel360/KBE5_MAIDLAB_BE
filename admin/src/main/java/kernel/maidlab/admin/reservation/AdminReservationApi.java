@@ -28,12 +28,12 @@ public interface AdminReservationApi {
 		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
 		@ApiResponse(responseCode = "403", description = "권한 없음"),
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류"),})
-	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> adminReservations(HttpServletRequest request);
+	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> adminReservations(HttpServletRequest request , @RequestParam int page, @RequestParam int size);
 
 	@Operation(summary = "일별 예약 조회", description = "지정된 날짜별 예약 정보를 조회합니다.", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "조회 성공"),
 		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
 		@ApiResponse(responseCode = "403", description = "권한 없음"),
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류"),})
-	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> dailyReservations(@RequestParam LocalDate date);
+	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> dailyReservations(@RequestParam LocalDate date , @RequestParam int page, @RequestParam int size);
 }

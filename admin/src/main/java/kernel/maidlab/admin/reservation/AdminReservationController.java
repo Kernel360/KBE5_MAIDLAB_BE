@@ -24,15 +24,15 @@ public class AdminReservationController implements AdminReservationApi {
 
 	@Override
 	@GetMapping
-	public ResponseEntity<ResponseDto<List<ReservationResponseDto>>> adminReservations(HttpServletRequest request) {
-		List<ReservationResponseDto> response = reservationService.adminReservations(request);
+	public ResponseEntity<ResponseDto<List<ReservationResponseDto>>> adminReservations(HttpServletRequest request , @RequestParam int page, @RequestParam int size) {
+		List<ReservationResponseDto> response = reservationService.adminReservations(request , page, size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 
 	@GetMapping("/date")
 	@Override
-	public ResponseEntity<ResponseDto<List<ReservationResponseDto>>> dailyReservations(@RequestParam LocalDate date) {
-		List<ReservationResponseDto> response = reservationService.dailyReservations(date);
+	public ResponseEntity<ResponseDto<List<ReservationResponseDto>>> dailyReservations(@RequestParam LocalDate date , @RequestParam int page, @RequestParam int size) {
+		List<ReservationResponseDto> response = reservationService.dailyReservations(date , page,  size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 }

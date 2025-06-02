@@ -32,16 +32,16 @@ public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 	}
 
 	@Override
-	public List<AvailableManagerResponseDto> FindAvailableManagers(String gu, LocalDateTime Start, LocalDateTime End) {
+	public List<AvailableManagerResponseDto> findAvailableManagers(String gu, LocalDateTime start, LocalDateTime end) {
 		QManager manager = QManager.manager;
 		QManagerRegion managerRegion = QManagerRegion.managerRegion;
 		QRegion region = QRegion.region;
 		QManagerSchedule managerSchedule = QManagerSchedule.managerSchedule;
 		System.out.println("region : " + region.regionName.toString());
 		QReservation reservation = QReservation.reservation;
-		DayOfWeek days = Start.getDayOfWeek();
-		LocalTime startTime = Start.toLocalTime();
-		LocalTime endTime = End.toLocalTime();
+		DayOfWeek days = start.getDayOfWeek();
+		LocalTime startTime = start.toLocalTime();
+		LocalTime endTime = end.toLocalTime();
 		System.out.println("days: " + days);
 		// String uuid = QueryFactory
 		// 	.select(manager.uuid)
@@ -73,8 +73,8 @@ public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 						.where(
 							reservation.managerId.isNotNull(),
 							reservation.status.ne(Status.CANCELED),
-							reservation.startTime.lt(Start),     // 예약 시작 < 요청 종료
-							reservation.endTime.gt(End)      // 예약 종료 > 요청 시작
+							reservation.startTime.lt(start),     // 예약 시작 < 요청 종료
+							reservation.endTime.gt(end)      // 예약 종료 > 요청 시작
 						)
 				)
 			)

@@ -38,8 +38,8 @@ public class MatchingController implements MatchingApi {
 
 	@GetMapping
 	@Override
-	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> getMatching(HttpServletRequest request) {
-		List<MatchingResponseDto> response = matchingService.myMatching(request);
+	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> getMatching(HttpServletRequest request, @RequestParam int page, @RequestParam int size) {
+		List<MatchingResponseDto> response = matchingService.myMatching(request, page, size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 

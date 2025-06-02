@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -272,12 +275,12 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
-	public List<ReservationResponseDto> dailyReservations(LocalDate date) {
-		List<Reservation> reservations;
+	public List<ReservationResponseDto> dailyReservations(LocalDate date, int page, int size) {
+		Page<Reservation> reservations;
 		LocalDateTime start = date.atStartOfDay();
 		LocalDateTime end = date.plusDays(1).atStartOfDay();
-
-		reservations = reservationRepository.findAllByReservationDateBetween(start, end);
+		Pageable pageable = PageRequest.of(page, size);
+		reservations = reservationRepository.findAllByReservationDateBetween(start, end, pageable);
 
 		return reservations.stream()
 			.map(reservation -> ReservationResponseDto.builder()
@@ -293,9 +296,10 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
-	public List<ReservationResponseDto> adminReservations(HttpServletRequest request) {
-		List<Reservation> reservations;
-		reservations = reservationRepository.findAll();
+	public List<ReservationResponseDto> adminReservations(HttpServletRequest request, int page, int size) {
+		Page<Reservation> reservations;
+		Pageable pageable = PageRequest.of(page, size);
+		reservations = reservationRepository.findAll(pageable);
 		return reservations.stream()
 			.map(reservation -> ReservationResponseDto.builder()
 				.reservationId(reservation.getId())

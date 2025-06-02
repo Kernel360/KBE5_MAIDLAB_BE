@@ -28,17 +28,16 @@ public class AdminMatchingController implements AdminMatchingApi {
 
 	@GetMapping
 	@Override
-	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> allMatching(HttpServletRequest request) {
-		List<MatchingResponseDto> response = matchingService.allMatching(request);
+	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> allMatching(HttpServletRequest request, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+		List<MatchingResponseDto> response = matchingService.allMatching(request, page, size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 
 	@GetMapping("/status")
 	@Override
 	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> statusMatching(Status status,
-		HttpServletRequest request) {
-		List<MatchingResponseDto> response = matchingService.statusMatching(status);
-		System.out.println(status);
+		HttpServletRequest request , @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+		List<MatchingResponseDto> response = matchingService.statusMatching(status, page, size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 
