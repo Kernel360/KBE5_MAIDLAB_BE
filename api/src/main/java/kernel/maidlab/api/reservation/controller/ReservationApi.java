@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
+import kernel.maidlab.api.reservation.dto.request.ReviewRegisterRequestDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
@@ -75,4 +76,8 @@ public interface ReservationApi {
 
 	@Operation(summary = "예약 취소", description = "예약 취소 요청", security = @SecurityRequirement(name = "JWT"))
 	ResponseEntity<ResponseDto<String>> cancel(@PathVariable Long reservationId, HttpServletRequest request);
+
+	@Operation(summary = "리뷰 등록", description = "리뷰 등록 요청", security = @SecurityRequirement(name = "JWT"))
+	ResponseEntity<ResponseDto<String>> review(@PathVariable Long reservationId, @RequestBody
+	ReviewRegisterRequestDto dto, HttpServletRequest request);
 }
