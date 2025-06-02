@@ -1,4 +1,4 @@
-package kernel.maidlab.common.enums;
+package kernel.maidlab.api.board.eum;
 
 import lombok.Getter;
 
