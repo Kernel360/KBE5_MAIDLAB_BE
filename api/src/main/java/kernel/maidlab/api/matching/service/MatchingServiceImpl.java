@@ -65,9 +65,9 @@ public class MatchingServiceImpl implements MatchingService {
 
 	@Transactional
 	@Override
-	public void changeManager(Long reservationId, Manager manager) {
+	public void changeManager(Long reservationId, Long managerId) {
 		Matching matching = matchingRepository.findByReservationId(reservationId);
-		matching.setManagerId(manager.getId());
+		matching.setManagerId(managerId);
 	}
 
 	@Override
@@ -95,7 +95,20 @@ public class MatchingServiceImpl implements MatchingService {
 				.build())
 			.toList();
 	}
-  
+
+	@Override
+	public List<MatchingResponseDto> statusMatching(Status status) {
+		List<Matching> matchings;
+		matchings = matchingRepository.findAllByMatchingStatus(status);
+		return matchings.stream()
+			.map(matching -> MatchingResponseDto.builder()
+				.reservationId(matching.getReservationId())
+				.managerId(matching.getManagerId())
+				.matchingStatus(matching.getMatchingStatus())
+				.build())
+			.toList();
+	}
+
 	private String extractGuFromAddress(String address) {
 		// "구" 단위 추출 (예: "서울시 강남구 역삼동" -> "강남구")
 		// 단위를 바꾸고 싶을때는 filter의 endsWith 만 바꾸면 됨
