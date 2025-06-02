@@ -1,8 +1,8 @@
 package kernel.maidlab.api.reservation.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -21,7 +21,6 @@ import kernel.maidlab.api.exception.custom.ReservationException;
 import kernel.maidlab.api.manager.entity.ManagerRegion;
 import kernel.maidlab.api.manager.repository.ManagerRegionRepository;
 import kernel.maidlab.api.manager.repository.RegionRepository;
-import kernel.maidlab.api.matching.entity.Matching;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
@@ -270,6 +269,44 @@ public class ReservationServiceImpl implements ReservationService {
 			log.warn("금액 불일치 - client={}, server={}", dto.getTotalPrice(), serverCalculatedPrice);
 			throw new ReservationException(ResponseType.VALIDATION_FAILED);
 		}
+	}
+
+	@Override
+	public List<ReservationResponseDto> dailyReservations(LocalDate date) {
+		List<Reservation> reservations;
+		LocalDateTime start = date.atStartOfDay();
+		LocalDateTime end = date.plusDays(1).atStartOfDay();
+
+		reservations = reservationRepository.findAllByReservationDateBetween(start, end);
+
+		return reservations.stream()
+			.map(reservation -> ReservationResponseDto.builder()
+				.reservationId(reservation.getId())
+				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
+				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
+				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
+				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
+				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
+				.totalPrice(reservation.getTotalPrice())
+				.build())
+			.toList();
+	}
+
+	@Override
+	public List<ReservationResponseDto> adminReservations(HttpServletRequest request) {
+		List<Reservation> reservations;
+		reservations = reservationRepository.findAll();
+		return reservations.stream()
+			.map(reservation -> ReservationResponseDto.builder()
+				.reservationId(reservation.getId())
+				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
+				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
+				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
+				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
+				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
+				.totalPrice(reservation.getTotalPrice())
+				.build())
+			.toList();
 	}
 
 	private Long calculateTotalPrice(ReservationRequestDto dto, Long basePrice) {
