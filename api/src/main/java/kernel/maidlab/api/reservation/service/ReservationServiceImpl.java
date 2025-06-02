@@ -9,8 +9,13 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.api.auth.entity.Consumer;
 import kernel.maidlab.api.auth.entity.Manager;
+import kernel.maidlab.api.consumer.entity.ManagerPreference;
+import kernel.maidlab.api.consumer.repository.ConsumerRepository;
+import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.reservation.repository.ReviewRepository;
 import kernel.maidlab.api.util.AuthUtil;
 import kernel.maidlab.api.exception.custom.ReservationException;
 import kernel.maidlab.api.manager.entity.ManagerRegion;
@@ -22,9 +27,11 @@ import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
+import kernel.maidlab.api.reservation.dto.request.ReviewRegisterRequestDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.api.reservation.entity.Reservation;
+import kernel.maidlab.api.reservation.entity.Review;
 import kernel.maidlab.api.reservation.entity.ServiceDetailType;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
 import kernel.maidlab.api.reservation.repository.ServiceDetailTypeRepository;
@@ -44,9 +51,37 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ManagerRepository managerRepository;
 	private final AuthUtil authUtil;
 	private final MatchingService matchingService;
-
+	private final ManagerPreferenceRepository managerPreferenceRepository;
 	private final ManagerRegionRepository managerRegionRepository;
 	private final RegionRepository regionRepository;
+	private final ConsumerRepository consumerRepository;
+	private final ReviewRepository reviewRepository;
+
+	@Transactional
+	@Override
+	public void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request) {
+		UserType userType = authUtil.getUserType(request);
+		Boolean isConsumerToManager;
+		if (userType==UserType.CONSUMER){
+			isConsumerToManager = true;
+		} else {
+			isConsumerToManager = false;
+		}
+
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+		Consumer consumer = consumerRepository.findById(reservation.getConsumerId())
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+		Manager manager = managerRepository.findById(reservation.getManagerId())
+				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+
+		managerPreferenceRepository.save(new ManagerPreference(consumer,manager,dto.isLikes()));
+
+		// TODO : manager 평균 평점(average_rate) 관리 로직 넣기 -> manager 테이블에 review 당한 횟수와 평점 관리해서 계산하는게 더 효율적인 로직일듯
+
+		Review review = Review.of(dto, reservation,isConsumerToManager);
+		reviewRepository.save(review);
+	}
 
 	@Override
 	public List<ReservationResponseDto> allReservations(HttpServletRequest request) {
@@ -223,6 +258,7 @@ public class ReservationServiceImpl implements ReservationService {
 		reservationRepository.save(reservation);
 		matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId).getId());
 	}
+
 
 	@Override
 	public void checkTotalPrice(ReservationRequestDto dto) {
