@@ -7,13 +7,18 @@ import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.consumer.dto.request.ConsumerProfileRequestDto;
 import kernel.maidlab.api.consumer.dto.response.BlackListedManagerResponseDto;
+import kernel.maidlab.api.consumer.dto.response.ConsumerListResponseDto;
 import kernel.maidlab.api.consumer.dto.response.LikedManagerResponseDto;
 import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Slf4j
@@ -89,5 +94,16 @@ public class ConsumerService {
                 orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저 입니다."));
 
         return managerPreferenceRepository.deleteByConsumerIdAndManagerIdAndPreferenceIsTrue(consumer.getId(), manager.getId());
+    }
+
+    //관리자용 전체조회로직
+	public Page<ConsumerListResponseDto> getConsumerBypage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return consumerRepository.findAll(pageable)
+            .map(consumer -> new ConsumerListResponseDto(
+                consumer.getPhoneNumber(),
+                consumer.getName(),
+                consumer.getUuid()
+            ));
     }
 }
