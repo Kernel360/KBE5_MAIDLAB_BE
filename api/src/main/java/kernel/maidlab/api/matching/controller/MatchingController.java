@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.auth.util.AuthUtil;
+import kernel.maidlab.api.util.AuthUtil;
 import kernel.maidlab.api.exception.BaseException;
 import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
 import kernel.maidlab.api.matching.dto.request.MatchingRequestDto;
@@ -39,7 +39,7 @@ public class MatchingController implements MatchingApi {
 	@GetMapping
 	@Override
 	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> getMatching(HttpServletRequest request) {
-		List<MatchingResponseDto> response = matchingService.mymatching(request);
+		List<MatchingResponseDto> response = matchingService.myMatching(request);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 
