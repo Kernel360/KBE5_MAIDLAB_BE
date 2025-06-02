@@ -61,6 +61,9 @@ public class Manager extends Base {
 	@Column(name = "average_rate")
 	private Float averageRate;
 
+	@Column(name = "total_reviewed_cnt")
+	private Long totalReviewedCnt;
+
 	@Column(name = "bank")
 	private String bank;
 
@@ -97,6 +100,7 @@ public class Manager extends Base {
 		this.gender = gender;
 		this.birth = birth;
 		this.averageRate = 0.0F;
+		this.totalReviewedCnt = 0L;
 		this.isVerified = Status.PENDING;
 		this.isDeleted = false;
 	}
@@ -111,6 +115,11 @@ public class Manager extends Base {
 		Manager manager = new Manager(phoneNumber, null, name, gender, birth);
 		manager.socialType = socialType;
 		return manager;
+	}
+
+	public void updateAverageRate(Float averageRate) {
+		this.averageRate = averageRate;
+		this.totalReviewedCnt+=1;
 	}
 
 	public void updateRefreshToken(String refreshToken) {
