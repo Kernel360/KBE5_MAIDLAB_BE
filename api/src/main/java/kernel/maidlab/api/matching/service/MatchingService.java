@@ -18,9 +18,9 @@ public interface MatchingService {
 
 	void changeManager(Long reservationId, Long managerId);
 
-	List<MatchingResponseDto> allMatching(HttpServletRequest request);
+	List<MatchingResponseDto> allMatching(HttpServletRequest request, int page, int size);
 
-	List<MatchingResponseDto> myMatching(HttpServletRequest request);
+	List<MatchingResponseDto> myMatching(HttpServletRequest request, int page, int size);
 
-	List<MatchingResponseDto> statusMatching(Status status);
+	List<MatchingResponseDto> statusMatching(Status status, int page, int size);
 }

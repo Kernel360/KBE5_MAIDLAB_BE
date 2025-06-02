@@ -24,7 +24,7 @@ public interface MatchingApi {
 		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
 		@ApiResponse(responseCode = "403", description = "권한 없음"),
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류")})
-	ResponseEntity<ResponseDto<List<MatchingResponseDto>>> getMatching(HttpServletRequest request);
+	ResponseEntity<ResponseDto<List<MatchingResponseDto>>> getMatching(HttpServletRequest request, @RequestParam int page, @RequestParam int size);
 
 	@Operation(summary = "매칭 매니저 조회", description = "choosemanager의 boolean값에 따라 직접 선택할지, 자동으로 지정될지 나누어서 실행됩니다.")
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "조회 성공"),
