@@ -7,31 +7,32 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.common.entity.Base;
+import kernel.maidlab.common.entity.ServiceType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "manager_region")
+@Table(name = "manager_service")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ManagerRegion extends Base {
+public class ManagerService extends Base {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "manager_id", nullable = false)
-	private Manager managerId;
+	private Manager manager;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "region_id", nullable = false)
-	private Region regionId;
+	@JoinColumn(name = "service_id", nullable = false)
+	private ServiceType serviceType;
 
-	private ManagerRegion(Manager managerId, Region regionId) {
-		this.managerId = managerId;
-		this.regionId = regionId;
+	private ManagerService(Manager manager, ServiceType serviceType) {
+		this.manager = manager;
+		this.serviceType = serviceType;
 	}
 
-	public static ManagerRegion managerRegion(Manager managerId, Region regionId) {
-		return new ManagerRegion(managerId, regionId);
+	public static ManagerService managerService(Manager manager, ServiceType serviceType) {
+		return new ManagerService(manager, serviceType);
 	}
 
 }
