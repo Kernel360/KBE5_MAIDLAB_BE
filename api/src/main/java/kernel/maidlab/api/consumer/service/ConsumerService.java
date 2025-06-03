@@ -3,6 +3,7 @@ package kernel.maidlab.api.consumer.service;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.entity.Consumer;
 import kernel.maidlab.api.auth.entity.Manager;
+import kernel.maidlab.api.consumer.dto.response.ConsumerProfileResponseDto;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.consumer.dto.request.ConsumerProfileRequestDto;
@@ -11,6 +12,7 @@ import kernel.maidlab.api.consumer.dto.response.ConsumerListResponseDto;
 import kernel.maidlab.api.consumer.dto.response.LikedManagerResponseDto;
 import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
+import kernel.maidlab.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,6 +37,8 @@ public class ConsumerService {
         return consumerRepository.findByUuid(uuid)
                 .orElseThrow((()-> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
     }
+
+
 
     public void updateConsumerProfile(Consumer consumer, ConsumerProfileRequestDto consumerProfileRequestDto){
         String profileImage = consumerProfileRequestDto.getProfileImage();
@@ -105,5 +109,22 @@ public class ConsumerService {
                 consumer.getName(),
                 consumer.getUuid()
             ));
+    }
+
+    public ConsumerProfileResponseDto getConsumer(long id) {
+        Consumer consumer = consumerRepository.findById(id)
+            .orElseThrow((()-> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
+
+        ConsumerProfileResponseDto consumerProfileResponseDto = ConsumerProfileResponseDto.builder()
+            .profileImage(consumer.getProfileImage())
+            .phoneNumber(consumer.getPhoneNumber())
+            .name(consumer.getName())
+            .birth(consumer.getBirth())
+            .gender(consumer.getGender())
+            .address(consumer.getAddress())
+            .detailAddress(consumer.getDetailAddress())
+            .build();
+
+        return consumerProfileResponseDto;
     }
 }
