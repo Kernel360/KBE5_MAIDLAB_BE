@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "manager_service")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ManagerService extends Base {
+public class ManagerServiceType extends Base {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "manager_id", nullable = false)
@@ -26,13 +26,13 @@ public class ManagerService extends Base {
 	@JoinColumn(name = "service_id", nullable = false)
 	private ServiceType serviceType;
 
-	private ManagerService(Manager manager, ServiceType serviceType) {
+	private ManagerServiceType(Manager manager, ServiceType serviceType) {
 		this.manager = manager;
 		this.serviceType = serviceType;
 	}
 
-	public static ManagerService managerService(Manager manager, ServiceType serviceType) {
-		return new ManagerService(manager, serviceType);
+	public static ManagerServiceType managerServiceType(Manager manager, ServiceType serviceType) {
+		return new ManagerServiceType(manager, serviceType);
 	}
 
 }

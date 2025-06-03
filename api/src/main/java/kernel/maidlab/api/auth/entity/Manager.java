@@ -9,6 +9,7 @@ import kernel.maidlab.common.enums.Status;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -86,8 +87,8 @@ public class Manager extends Base {
 
 	@ElementCollection(targetClass = Region.class, fetch = FetchType.LAZY)
 	@CollectionTable(
-			name = "manager_region",
-			joinColumns = @JoinColumn(name = "manager_id")
+		name = "manager_region",
+		joinColumns = @JoinColumn(name = "manager_id")
 	)
 	@Column(name = "region", nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -119,7 +120,7 @@ public class Manager extends Base {
 
 	public void updateAverageRate(Float averageRate) {
 		this.averageRate = averageRate;
-		this.totalReviewedCnt+=1;
+		this.totalReviewedCnt += 1;
 	}
 
 	public void updateRefreshToken(String refreshToken) {
@@ -132,6 +133,20 @@ public class Manager extends Base {
 
 	public void deleteAccount() {
 		this.isDeleted = true;
+	}
+
+	public void updateProfileImage(String profileImage) {
+		this.profileImage = profileImage;
+	}
+
+	public void updateIntroduceText(String introduceText) {
+		this.introduceText = introduceText;
+	}
+
+	public void updateBasicInfo(String name, LocalDate birth, Gender gender) {
+		this.name = name;
+		this.birth = birth;
+		this.gender = gender;
 	}
 
 	@PrePersist
