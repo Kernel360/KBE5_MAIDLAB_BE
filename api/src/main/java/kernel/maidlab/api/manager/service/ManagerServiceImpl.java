@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.api.manager.dto.ManagerResponseDto;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
@@ -47,6 +48,18 @@ public class ManagerServiceImpl implements ManagerService {
 			.build();
 		return managerResponseDto;
 	}
+	@Transactional
+	@Override
+	public void approveManager(Long managerId) {
+		Manager manager = managerRepository.findById(managerId).orElse(null);
+		manager.approve();
+	}
 
+	@Transactional
+	@Override
+	public void rejectManager(Long managerId) {
+		Manager manager = managerRepository.findById(managerId).orElse(null);
+		manager.reject();
+	}
 
 }

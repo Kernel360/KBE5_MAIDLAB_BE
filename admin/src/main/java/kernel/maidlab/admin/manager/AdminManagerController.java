@@ -3,6 +3,7 @@ package kernel.maidlab.admin.manager;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +37,20 @@ public class AdminManagerController implements AdminManagerApi{
 	public ResponseEntity<ResponseDto<ManagerResponseDto>> getManager(@PathVariable("managerId") Long managerId) {
 		ManagerResponseDto response = managerService.getManager(managerId);
 		return ResponseDto.success(response);
+	}
+
+	@PatchMapping("/{managerId}/Approve")
+	@Override
+	public ResponseEntity<ResponseDto<String>> approveManager(@PathVariable("managerId") Long managerId){
+		managerService.approveManager(managerId);
+		return ResponseDto.success("매니저 승인 완료");
+	}
+
+	@PatchMapping("/{managerId}/reject")
+	@Override
+	public ResponseEntity<ResponseDto<String>> rejectManager(@PathVariable("managerId") Long managerId){
+		managerService.rejectManager(managerId);
+		return ResponseDto.success("매니저 거절 완료");
 	}
 
 }
