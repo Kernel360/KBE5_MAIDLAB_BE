@@ -24,7 +24,7 @@ public class Board extends Base {
     @JoinColumn(name = "manager_id")
     private Manager manager;
 
-    @OneToOne(mappedBy = "board", cascade = CascadeType.ALL, optional = true, fetch = FetchType.LAZY)
+   @OneToOne(mappedBy = "board", cascade = CascadeType.ALL)
     private Answer answer;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -41,7 +41,7 @@ public class Board extends Base {
     private String content;
 
     @Column(nullable = false)
-    private boolean isAnswer;
+    private boolean answered;
 
     public Board(Consumer consumer, BoardType boardType, String title, String content) {
         this.consumer = consumer;
