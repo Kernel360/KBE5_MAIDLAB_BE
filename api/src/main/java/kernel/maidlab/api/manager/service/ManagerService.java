@@ -17,4 +17,6 @@ public interface ManagerService {
 	ResponseEntity<ResponseDto<ProfileResponseDto>> getProfile(HttpServletRequest req);
 
 	ResponseEntity<ResponseDto<Void>> updateProfile(ProfileUpdateRequestDto req, HttpServletRequest httpReq);
+
+	ResponseEntity<ResponseDto<ReviewListResponseDto>> getMyReviews(HttpServletRequest req);
 }

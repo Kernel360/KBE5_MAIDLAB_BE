@@ -50,4 +50,12 @@ public class ManagerController {
 
 		return managerService.updateProfile(req, httpReq);
 	}
+
+	@GetMapping("/myReviews")
+	public ResponseEntity<ResponseDto<ReviewListResponseDto>> getMyReviews(
+		HttpServletRequest req) {
+
+		return managerService.getMyReviews(req);
+	}
+
 }

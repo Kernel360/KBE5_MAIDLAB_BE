@@ -15,6 +15,7 @@ import kernel.maidlab.api.manager.dto.response.*;
 import kernel.maidlab.api.manager.dto.object.*;
 import kernel.maidlab.api.manager.entity.*;
 import kernel.maidlab.api.manager.repository.*;
+import kernel.maidlab.api.reservation.repository.ReviewRepository;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
@@ -24,6 +25,7 @@ import kernel.maidlab.common.entity.ServiceType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +42,7 @@ public class ManagerServiceImpl implements ManagerService {
 	private final ManagerDocumentRepository managerDocumentRepository;
 	private final ServiceTypeRepository serviceTypeRepository;
 	private final RegionRepository regionRepository;
+	private final ReviewRepository reviewRepository;
 	private final JwtProvider jwtProvider;
 
 	private Manager getManagerFromToken(HttpServletRequest req) {
@@ -239,5 +242,31 @@ public class ManagerServiceImpl implements ManagerService {
 		managerRepository.save(manager);
 
 		return ResponseDto.success();
+	}
+
+	// 리뷰 목록 조회
+	@Override
+	@Transactional(readOnly = true)
+	public ResponseEntity<ResponseDto<ReviewListResponseDto>> getMyReviews(HttpServletRequest req) {
+		Manager manager = getManagerFromToken(req);
+
+		List<Object[]> reviewData = reviewRepository.findManagerReviewDetails(manager.getId());
+
+		List<ReviewListItem> reviewItems = reviewData.stream()
+			.map(data -> new ReviewListItem(
+				String.valueOf(data[0]), // reviewId
+				BigDecimal.valueOf(((Number)data[1]).doubleValue()), // rating
+				(String)data[2], // consumerName
+				(String)data[3], // comment
+				(String)data[4], // serviceType
+				(String)data[5]  // serviceDetailType
+			))
+			.collect(Collectors.toList());
+
+		ReviewListResponseDto responseDto = new ReviewListResponseDto(
+			reviewItems
+		);
+
+		return ResponseDto.success(responseDto);
 	}
 }
