@@ -34,7 +34,6 @@ public class AdminConsumerController implements AdminConsumerApi {
 	public ResponseEntity<ConsumerProfileResponseDto> getConsumer(@PathVariable("consumerId") int consumerId) {
 		ConsumerProfileResponseDto response = consumerService.getConsumer(consumerId);
 		return ResponseEntity.ok(response);
-
 	}
 
 }
