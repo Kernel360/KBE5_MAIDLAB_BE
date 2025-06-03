@@ -1,7 +1,6 @@
 package kernel.maidlab.common.entity;
 
-import com.querydsl.core.annotations.QueryExclude;
-
+import com.querydsl.core.annotations.QuerySupertype;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,8 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@QuerySupertype
 @MappedSuperclass
-@QueryExclude
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Base {
 
