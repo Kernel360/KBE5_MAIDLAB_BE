@@ -1,5 +1,7 @@
 package kernel.maidlab.api.reservation.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -30,5 +32,5 @@ public class ServiceDetailType {
 	private ServiceType serviceType;
 
 	@Column(nullable = false)
-	private Long servicePrice;
+	private BigDecimal servicePrice;
 }

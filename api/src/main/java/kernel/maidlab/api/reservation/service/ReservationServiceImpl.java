@@ -1,8 +1,8 @@
 package kernel.maidlab.api.reservation.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -15,13 +15,14 @@ import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.reservation.entity.Settlement;
 import kernel.maidlab.api.reservation.repository.ReviewRepository;
+import kernel.maidlab.api.reservation.repository.SettlementRepository;
 import kernel.maidlab.api.util.AuthUtil;
 import kernel.maidlab.api.exception.custom.ReservationException;
 import kernel.maidlab.api.manager.entity.ManagerRegion;
 import kernel.maidlab.api.manager.repository.ManagerRegionRepository;
 import kernel.maidlab.api.manager.repository.RegionRepository;
-import kernel.maidlab.api.matching.entity.Matching;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
@@ -56,17 +57,13 @@ public class ReservationServiceImpl implements ReservationService {
 	private final RegionRepository regionRepository;
 	private final ConsumerRepository consumerRepository;
 	private final ReviewRepository reviewRepository;
+	private final SettlementRepository settlementRepository;
 
 	@Transactional
 	@Override
 	public void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request) {
 		UserType userType = authUtil.getUserType(request);
-		Boolean isConsumerToManager;
-		if (userType==UserType.CONSUMER){
-			isConsumerToManager = true;
-		} else {
-			isConsumerToManager = false;
-		}
+		Boolean isConsumerToManager = userType == UserType.CONSUMER;
 
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
@@ -179,7 +176,7 @@ public class ReservationServiceImpl implements ReservationService {
 			.orElseThrow(() -> new ReservationException(ResponseType.VALIDATION_FAILED));
 
 		// managerUuid → managerId 변환
-		Manager manager = (Manager)managerRepository.findByUuid(dto.getManagerUuId())
+		Manager manager = managerRepository.findByUuid(dto.getManagerUuId())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 		Long managerId = manager.getId();
 
@@ -246,8 +243,12 @@ public class ReservationServiceImpl implements ReservationService {
 		if (reservation.getCheckoutTime() != null) {
 			throw new ReservationException(ResponseType.ALREADY_CHECKED_OUT);
 		}
+
 		reservation.checkout(dto.getCheckTime());
 		reservationRepository.save(reservation);
+
+		// 정산 테이블 생성
+		settlementRepository.save(Settlement.of(reservation));
 	}
 
 	@Transactional
@@ -276,21 +277,22 @@ public class ReservationServiceImpl implements ReservationService {
 	public void checkTotalPrice(ReservationRequestDto dto) {
 		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		Long serverCalculatedPrice = calculateTotalPrice(dto, detailType.getServicePrice());
+		BigDecimal serverCalculatedPrice = calculateTotalPrice(dto, detailType.getServicePrice());
 		if (!serverCalculatedPrice.equals(dto.getTotalPrice())) {
 			log.warn("금액 불일치 - client={}, server={}", dto.getTotalPrice(), serverCalculatedPrice);
 			throw new ReservationException(ResponseType.VALIDATION_FAILED);
 		}
 	}
 
-	private Long calculateTotalPrice(ReservationRequestDto dto, Long basePrice) {
+	private BigDecimal calculateTotalPrice(ReservationRequestDto dto, BigDecimal basePrice) {
 
-		long additional = 0L;
+		BigDecimal additional = BigDecimal.ZERO;
 
-		if (dto.getServiceAdd() != null && dto.getServiceAdd().equals("COOK")) {
-			additional += 10_000;
+		if ("COOK".equals(dto.getServiceAdd())) {
+			additional = additional.add(BigDecimal.valueOf(10_000));
 		}
-		return basePrice + additional;
+
+		return basePrice.add(additional);
 	}
 }
 
