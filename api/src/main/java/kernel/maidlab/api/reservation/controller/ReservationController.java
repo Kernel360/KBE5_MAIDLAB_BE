@@ -21,7 +21,6 @@ import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReviewRegisterRequestDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
-import kernel.maidlab.api.reservation.dto.response.SettlementResponseDto;
 import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
 import kernel.maidlab.api.reservation.service.ReservationService;
 import kernel.maidlab.common.dto.ResponseDto;
