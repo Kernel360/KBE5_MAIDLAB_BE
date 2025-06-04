@@ -32,5 +32,9 @@ public interface ReservationService {
 
 	void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request);
 
+	List<ReservationResponseDto> dailyReservations(LocalDate date , int page, int size);
+
+	List<ReservationResponseDto> adminReservations(HttpServletRequest request , int page, int size);
+
 	WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate);
 }

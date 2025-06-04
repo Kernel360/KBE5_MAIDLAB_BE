@@ -9,6 +9,9 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -249,7 +252,6 @@ public class ReservationServiceImpl implements ReservationService {
 		if (reservation.getCheckoutTime() != null) {
 			throw new ReservationException(ResponseType.ALREADY_CHECKED_OUT);
 		}
-
 		reservation.checkout(dto.getCheckTime());
 		reservationRepository.save(reservation);
 
@@ -278,6 +280,7 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 	}
 
+
 	@Override
 	public void checkTotalPrice(ReservationRequestDto dto) {
 		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
@@ -288,6 +291,46 @@ public class ReservationServiceImpl implements ReservationService {
 			throw new ReservationException(ResponseType.VALIDATION_FAILED);
 		}
 	}
+
+	@Override
+	public List<ReservationResponseDto> dailyReservations(LocalDate date, int page, int size) {
+		Page<Reservation> reservations;
+		LocalDateTime start = date.atStartOfDay();
+		LocalDateTime end = date.plusDays(1).atStartOfDay();
+		Pageable pageable = PageRequest.of(page, size);
+		reservations = reservationRepository.findAllByReservationDateBetween(start, end, pageable);
+
+		return reservations.stream()
+			.map(reservation -> ReservationResponseDto.builder()
+				.reservationId(reservation.getId())
+				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
+				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
+				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
+				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
+				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
+				.totalPrice(reservation.getTotalPrice())
+				.build())
+			.toList();
+	}
+
+	@Override
+	public List<ReservationResponseDto> adminReservations(HttpServletRequest request, int page, int size) {
+		Page<Reservation> reservations;
+		Pageable pageable = PageRequest.of(page, size);
+		reservations = reservationRepository.findAll(pageable);
+		return reservations.stream()
+			.map(reservation -> ReservationResponseDto.builder()
+				.reservationId(reservation.getId())
+				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
+				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
+				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
+				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
+				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
+				.totalPrice(reservation.getTotalPrice())
+				.build())
+			.toList();
+	}
+
 
 	private BigDecimal calculateTotalPrice(ReservationRequestDto dto, BigDecimal basePrice) {
 
