@@ -1,5 +1,6 @@
 package kernel.maidlab.api.board.dto.request;
 
+import kernel.maidlab.api.board.dto.ImageDto;
 import kernel.maidlab.api.board.eum.BoardType;
 import lombok.Getter;
 
@@ -11,5 +12,5 @@ public class ConsumerBoardRequestDto {
     private BoardType boardType;
     private String title;
     private String content;
-    private List<String> imageUrls;
+    private List<ImageDto> images;
 }

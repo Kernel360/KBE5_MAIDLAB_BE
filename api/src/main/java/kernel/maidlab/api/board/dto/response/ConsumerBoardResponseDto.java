@@ -19,6 +19,7 @@ public class ConsumerBoardResponseDto {
 
     // 정적 팩토리 메서드
     public static ConsumerBoardResponseDto from(BoardQueryDto boardQueryDto){
+
         ConsumerBoardResponseDto boardDto = new ConsumerBoardResponseDto();
         boardDto.title = boardQueryDto.getTitle();
         boardDto.content = boardQueryDto.getContent();
