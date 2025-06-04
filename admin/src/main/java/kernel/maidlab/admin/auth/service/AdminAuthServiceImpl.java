@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.jwt.AdminJwtDto;
+import kernel.maidlab.admin.auth.jwt.AdminJwtFilter;
 import kernel.maidlab.admin.auth.jwt.AdminJwtProvider;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
 import kernel.maidlab.admin.auth.dto.request.AdminLoginRequestDto;
@@ -40,7 +41,6 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 	public ResponseEntity<ResponseDto<LoginResponseDto>> adminLogin(AdminLoginRequestDto req, HttpServletResponse res) {
 		Admin admin = adminRepository.findByAdminKey(req.getAdminKey())
 			.orElseThrow(() -> {
-				log.error("Admin을 찾을 수 없음 - AdminKey: {}", req.getAdminKey());
 				throw new BaseException(ResponseType.LOGIN_FAILED);
 			});
 
@@ -62,7 +62,6 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 			expirationTime
 		);
 
-		log.info("관리자 로그인 성공 - AdminKey: {}", admin.getAdminKey());
 		return ResponseDto.success(responseDto);
 	}
 
@@ -84,31 +83,17 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 			expirationTime
 		);
 
-		log.info("관리자 토큰 갱신 성공");
 		return ResponseDto.success(responseDto);
 	}
 
 	// 관리자 로그아웃
 	@Override
 	public ResponseEntity<ResponseDto<Void>> logout(HttpServletRequest req, HttpServletResponse res) {
-		String accessToken = adminJwtProvider.extractToken(req);
-
-		if (accessToken == null) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		AdminJwtDto.AdminValidationResult validationResult = adminJwtProvider.validateAdminAccessToken(accessToken);
-
-		if (!validationResult.isValid()) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		String adminKey = validationResult.getAdminKey();
+		String adminKey = (String) req.getAttribute(AdminJwtFilter.CURRENT_ADMIN_KEY_VALUE);
 
 		adminJwtProvider.removeAdminRefreshToken(adminKey);
 		cookieUtil.clearRefreshTokenCookie(res);
 
-		log.info("관리자 로그아웃 성공 - AdminKey: {}", adminKey);
 		return ResponseDto.success(null);
 	}
 }
