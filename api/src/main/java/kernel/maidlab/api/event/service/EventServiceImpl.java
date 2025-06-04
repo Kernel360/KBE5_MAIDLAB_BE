@@ -32,7 +32,6 @@ public class EventServiceImpl implements EventService {
 
 	private final EventRepository eventRepository;
 	private final AdminRepository adminRepository;
-	private final AdminJwtProvider adminJwtProvider;
 
 	// 이벤트 전체 조회
 	@Override
@@ -75,19 +74,7 @@ public class EventServiceImpl implements EventService {
 	// 이벤트 생성
 	@Override
 	public ResponseEntity<ResponseDto<Void>> createEvent(EventRequestDto eventRequestDto, HttpServletRequest req) {
-		String accessToken = adminJwtProvider.extractToken(req);
-
-		if (accessToken == null) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		AdminJwtDto.AdminValidationResult validationResult = adminJwtProvider.validateAdminAccessToken(accessToken);
-
-		if (!validationResult.isValid()) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		String adminKey = validationResult.getAdminKey();
+		String adminKey = (String) req.getAttribute(AdminJwtFilter.CURRENT_ADMIN_KEY_VALUE);
 
 		Admin admin = adminRepository.findByAdminKeyAndIsDeletedFalse(adminKey)
 			.orElseThrow(() -> {
@@ -111,19 +98,7 @@ public class EventServiceImpl implements EventService {
 	// 이벤트 수정
 	@Override
 	public ResponseEntity<ResponseDto<Void>> updateEvent(Long eventId, EventRequestDto eventRequestDto, HttpServletRequest req) {
-		String accessToken = adminJwtProvider.extractToken(req);
-
-		if (accessToken == null) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		AdminJwtDto.AdminValidationResult validationResult = adminJwtProvider.validateAdminAccessToken(accessToken);
-
-		if (!validationResult.isValid()) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		String adminKey = validationResult.getAdminKey();
+		String adminKey = (String) req.getAttribute(AdminJwtFilter.CURRENT_ADMIN_KEY_VALUE);
 
 		Admin admin = adminRepository.findByAdminKeyAndIsDeletedFalse(adminKey)
 			.orElseThrow(() -> {
@@ -148,19 +123,7 @@ public class EventServiceImpl implements EventService {
 	// 이벤트 삭제 (물리 삭제)
 	@Override
 	public ResponseEntity<ResponseDto<Void>> deleteEvent(Long eventId, HttpServletRequest req) {
-		String accessToken = adminJwtProvider.extractToken(req);
-
-		if (accessToken == null) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		AdminJwtDto.AdminValidationResult validationResult = adminJwtProvider.validateAdminAccessToken(accessToken);
-
-		if (!validationResult.isValid()) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		String adminKey = validationResult.getAdminKey();
+		String adminKey = (String) req.getAttribute(AdminJwtFilter.CURRENT_ADMIN_KEY_VALUE);
 
 		Admin admin = adminRepository.findByAdminKeyAndIsDeletedFalse(adminKey)
 			.orElseThrow(() -> {
