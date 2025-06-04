@@ -27,7 +27,7 @@ public interface AdminManagerApi {
 
 	ResponseEntity<ResponseDto<ManagerResponseDto>> getManager(@PathVariable("managerId") Long managerId);
 
-	@PatchMapping("/{managerId}/Approve")
+	@PatchMapping("/{managerId}/approve")
 	ResponseEntity<ResponseDto<String>> approveManager(@PathVariable("managerId") Long managerId);
 
 	@PatchMapping("/{managerId}/reject")

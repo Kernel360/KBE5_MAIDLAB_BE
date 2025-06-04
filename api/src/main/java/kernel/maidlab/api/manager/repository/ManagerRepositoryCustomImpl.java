@@ -74,9 +74,9 @@ public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 						.from(reservation)
 						.where(
 							reservation.managerId.isNotNull(),
-							reservation.status.ne(Status.CANCELED),
-							reservation.startTime.lt(start),     // 예약 시작 < 요청 종료
-							reservation.endTime.gt(end)      // 예약 종료 > 요청 시작
+							reservation.status.eq(Status.APPROVED),
+							reservation.startTime.lt(end),     // 예약 시작 < 요청 종료
+							reservation.endTime.gt(start)      // 예약 종료 > 요청 시작
 						)
 				)
 			)
