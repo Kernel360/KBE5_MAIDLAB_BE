@@ -2,7 +2,7 @@ package kernel.maidlab.api.board.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.board.dto.request.ConsumerBoardRequestDto;
-import kernel.maidlab.api.board.dto.response.ConsumerBoardDetailResponse;
+import kernel.maidlab.api.board.dto.response.ConsumerBoardDetailResponseDto;
 import kernel.maidlab.api.board.dto.response.ConsumerBoardResponseDto;
 import kernel.maidlab.api.board.service.ConsumerBoardService;
 import kernel.maidlab.common.dto.ResponseDto;
@@ -40,11 +40,11 @@ public class ConsumerBoardController {
 
     //  수요자 글 상세 조회
     @GetMapping("/{boardId}")
-    public ResponseEntity<ResponseDto<ConsumerBoardDetailResponse>> getConsumerBoard(
+    public ResponseEntity<ResponseDto<ConsumerBoardDetailResponseDto>> getConsumerBoard(
             HttpServletRequest request,
             @PathVariable("boardId")Long boardId) throws AccessDeniedException {
 
-        ConsumerBoardDetailResponse consumerBoardDetailDto = consumerBoardService.getConsumerBoard(request, boardId);
+        ConsumerBoardDetailResponseDto consumerBoardDetailDto = consumerBoardService.getConsumerBoard(request, boardId);
         return ResponseDto.success(consumerBoardDetailDto);
     }
 

@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.auth.entity.Consumer;
 import kernel.maidlab.api.board.dto.BoardQueryDto;
 import kernel.maidlab.api.board.dto.request.ConsumerBoardRequestDto;
-import kernel.maidlab.api.board.dto.response.ConsumerBoardDetailResponse;
+import kernel.maidlab.api.board.dto.response.ConsumerBoardDetailResponseDto;
 import kernel.maidlab.api.board.dto.response.ConsumerBoardResponseDto;
 import kernel.maidlab.api.board.entity.Board;
 import kernel.maidlab.api.board.entity.Image;
@@ -57,8 +57,8 @@ public class ConsumerBoardServiceImpl implements ConsumerBoardService{
     }
 
     // 수요자 글 상세 조회
-    public ConsumerBoardDetailResponse getConsumerBoard(HttpServletRequest request,
-                                 Long boardId) throws AccessDeniedException {
+    public ConsumerBoardDetailResponseDto getConsumerBoard(HttpServletRequest request,
+                                                           Long boardId) throws AccessDeniedException {
 
         // 검증 로직
         Consumer consumer = authUtil.getConsumer(request);
@@ -78,7 +78,7 @@ public class ConsumerBoardServiceImpl implements ConsumerBoardService{
 
         List<Image> images = imageRepository.findAllByBoardId(boardId);
 
-        return ConsumerBoardDetailResponse.from(board, images);
+        return ConsumerBoardDetailResponseDto.from(board, images);
 
     }
 
