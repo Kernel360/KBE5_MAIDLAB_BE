@@ -86,7 +86,7 @@ public class ManagerServiceImpl implements ManagerService {
 
 		if (req.getRegions() != null && !req.getRegions().isEmpty()) {
 			for (RegionListItem regionItem : req.getRegions()) {
-				Region region = regionRepository.findByRegion(regionItem.getRegion())
+				Region region = regionRepository.findByRegionName(regionItem.getRegion())
 					.orElseThrow(() -> new BaseException(ResponseType.VALIDATION_FAILED));
 
 				ManagerRegion managerRegion = ManagerRegion.managerRegion(manager, region);
@@ -219,7 +219,7 @@ public class ManagerServiceImpl implements ManagerService {
 
 		if (req.getRegions() != null && !req.getRegions().isEmpty()) {
 			for (RegionListItem regionItem : req.getRegions()) {
-				Region region = regionRepository.findByRegion(regionItem.getRegion())
+				Region region = regionRepository.findByRegionName(regionItem.getRegion())
 					.orElseThrow(() -> new BaseException(ResponseType.VALIDATION_FAILED));
 
 				ManagerRegion managerRegion = ManagerRegion.managerRegion(manager, region);

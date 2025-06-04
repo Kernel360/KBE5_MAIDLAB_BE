@@ -44,7 +44,7 @@ public class MatchingServiceImpl implements MatchingService {
 		String gu = extractGuFromAddress(dto.getAddress());
 		System.out.println(gu);
 
-		return managerRepository.FindAvailableManagers(gu, StartTime, EndTime);
+		return managerRepository.findAvailableManagers(gu, StartTime, EndTime);
 	}
 
 	@Override

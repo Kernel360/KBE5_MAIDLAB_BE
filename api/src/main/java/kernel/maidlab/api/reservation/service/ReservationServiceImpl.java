@@ -129,9 +129,9 @@ public class ReservationServiceImpl implements ReservationService {
 
 		String mangerUuid = manager.getUuid();
 		Long managerId = manager.getId();
-		List<ManagerRegion> managerRegions = managerRegionRepository.findByManagerId(managerId);
+		List<ManagerRegion> managerRegions = managerRegionRepository.findByManagerId(manager);
 		List<String> regionNames = managerRegions.stream()
-			.map(mr -> regionRepository.findById(mr.getRegionId())
+			.map(mr -> regionRepository.findById(mr.getRegionId().getId())
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR))
 				.getRegionName())
 			.collect(Collectors.toList());

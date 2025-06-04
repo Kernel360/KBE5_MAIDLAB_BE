@@ -1,5 +1,6 @@
 package kernel.maidlab.api.manager.repository;
 
+import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.api.manager.entity.ManagerRegion;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,9 +13,9 @@ import java.util.List;
 
 @Repository
 public interface ManagerRegionRepository extends JpaRepository<ManagerRegion, String> {
-	List<ManagerRegion> findByManagerId(Long managerId);
+	List<ManagerRegion> findByManagerId(Manager manager);
 
-	@Query(value = "SELECT r.region FROM manager_region mr JOIN region r ON mr.region_id = r.id WHERE mr.manager_id = :managerId", nativeQuery = true)
+	@Query(value = "SELECT r.region FROM manager_region mr JOIN region r ON mr.region_id = r.id WHERE mr.managerId.id = :managerId", nativeQuery = true)
 	List<String> findRegionNamesByManagerId(@Param("managerId") Long managerId);
 
 	@Modifying
