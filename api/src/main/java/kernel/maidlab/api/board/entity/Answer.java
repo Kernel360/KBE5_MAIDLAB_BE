@@ -11,10 +11,10 @@ import lombok.Getter;
 @Getter
 public class Answer extends Base {
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String answer;
-
     @OneToOne
     @JoinColumn(name = "board_id")
     private Board board;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String content;
 }
