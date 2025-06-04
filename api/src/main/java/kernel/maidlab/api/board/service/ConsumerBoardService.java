@@ -2,8 +2,10 @@ package kernel.maidlab.api.board.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.board.dto.request.ConsumerBoardRequestDto;
+import kernel.maidlab.api.board.dto.response.ConsumerBoardDetailResponse;
 import kernel.maidlab.api.board.dto.response.ConsumerBoardResponseDto;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 public interface ConsumerBoardService {
@@ -15,4 +17,6 @@ public interface ConsumerBoardService {
     // 수요자 게시글 전체 조회
     List<ConsumerBoardResponseDto>  getConsumerBoardList(HttpServletRequest request);
 
+    // 수요자 게시글 상세 조회
+    ConsumerBoardDetailResponse getConsumerBoard(HttpServletRequest request, Long id) throws AccessDeniedException;
 }
