@@ -377,7 +377,7 @@ public class AuthServiceImpl implements AuthService {
 			managerRepository.save(manager);
 		}
 
-		jwtProvider.removeRefreshToken(uuid, UserType.MANAGER);
+		jwtProvider.removeRefreshToken(uuid, userType);
 
 		return ResponseDto.success(null);
 	}
@@ -416,7 +416,7 @@ public class AuthServiceImpl implements AuthService {
 
 		}
 
-		jwtProvider.removeRefreshToken(uuid, UserType.MANAGER);
+		jwtProvider.removeRefreshToken(uuid, userType);
 		cookieUtil.clearRefreshTokenCookie(res);
 
 		return ResponseDto.success(null);

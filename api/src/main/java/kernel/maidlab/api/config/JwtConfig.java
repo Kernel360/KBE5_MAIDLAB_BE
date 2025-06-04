@@ -35,22 +35,4 @@ public class JwtConfig {
 		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 		return (user instanceof Manager) ? (Manager)user : null;
 	}
-
-	public static void checkConsumerAuth(HttpServletRequest request) {
-		if (isNotAuthenticated(request)) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-		if (getCurrentConsumer(request) == null) {
-			throw new BaseException(ResponseType.DO_NOT_HAVE_PERMISSION);
-		}
-	}
-
-	public static void checkManagerAuth(HttpServletRequest request) {
-		if (isNotAuthenticated(request)) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-		if (getCurrentManager(request) == null) {
-			throw new BaseException(ResponseType.DO_NOT_HAVE_PERMISSION);
-		}
-	}
 }
