@@ -1,4 +1,4 @@
-package kernel.maidlab.admin.event.dto.object;
+package kernel.maidlab.api.event.dto.object;
 
 import java.time.LocalDateTime;
 

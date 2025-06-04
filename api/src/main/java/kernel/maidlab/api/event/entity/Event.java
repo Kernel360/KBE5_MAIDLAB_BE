@@ -1,4 +1,4 @@
-package kernel.maidlab.admin.event.entity;
+package kernel.maidlab.api.event.entity;
 
 import java.time.LocalDateTime;
 
