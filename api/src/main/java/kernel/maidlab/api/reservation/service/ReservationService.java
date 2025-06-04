@@ -10,6 +10,7 @@ import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReviewRegisterRequestDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
 
 public interface ReservationService {
 	void createReservation(ReservationRequestDto dto, HttpServletRequest request);
@@ -34,4 +35,6 @@ public interface ReservationService {
 	List<ReservationResponseDto> dailyReservations(LocalDate date , int page, int size);
 
 	List<ReservationResponseDto> adminReservations(HttpServletRequest request , int page, int size);
+
+	WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate);
 }

@@ -1,5 +1,6 @@
 package kernel.maidlab.api.reservation.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -61,7 +62,7 @@ public class Reservation extends Base {
 	private String specialRequest;
 
 	@Column(name = "total_price", nullable = false)
-	private Long totalPrice;
+	private BigDecimal totalPrice;
 
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -115,7 +116,7 @@ public class Reservation extends Base {
 	private Reservation(Long managerId, Long consumerId, ServiceDetailType serviceDetailType,
 		LocalDateTime reservationDate, LocalDateTime startTime, LocalDateTime endTime, String address,
 		String addressDetail, String housingType, Integer roomSize, String housingInformation, String serviceAdd,
-		String pet, String specialRequest, Long totalPrice) {
+		String pet, String specialRequest, BigDecimal totalPrice) {
 		this.managerId = managerId;
 		this.consumerId = consumerId;
 		this.serviceDetailType = serviceDetailType;

@@ -1,9 +1,13 @@
 package kernel.maidlab.api.reservation.service;
 
+import static java.util.stream.Collectors.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +22,11 @@ import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.reservation.dto.response.SettlementResponseDto;
+import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
+import kernel.maidlab.api.reservation.entity.Settlement;
 import kernel.maidlab.api.reservation.repository.ReviewRepository;
+import kernel.maidlab.api.reservation.repository.SettlementRepository;
 import kernel.maidlab.api.util.AuthUtil;
 import kernel.maidlab.api.exception.custom.ReservationException;
 import kernel.maidlab.api.manager.entity.ManagerRegion;
@@ -58,32 +66,28 @@ public class ReservationServiceImpl implements ReservationService {
 	private final RegionRepository regionRepository;
 	private final ConsumerRepository consumerRepository;
 	private final ReviewRepository reviewRepository;
+	private final SettlementRepository settlementRepository;
 
 	@Transactional
 	@Override
 	public void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request) {
 		UserType userType = authUtil.getUserType(request);
-		Boolean isConsumerToManager;
-		if (userType==UserType.CONSUMER){
-			isConsumerToManager = true;
-		} else {
-			isConsumerToManager = false;
-		}
+		Boolean isConsumerToManager = userType == UserType.CONSUMER;
 
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 		Consumer consumer = consumerRepository.findById(reservation.getConsumerId())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 		Manager manager = managerRepository.findById(reservation.getManagerId())
-				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		// 매니저 선호도 테이블 관리
-		managerPreferenceRepository.save(new ManagerPreference(consumer,manager,dto.isLikes()));
+		managerPreferenceRepository.save(new ManagerPreference(consumer, manager, dto.isLikes()));
 
 		// 매니저 평균 평점(average_rate) 관리
 		Long totalReviewedCnt = manager.getTotalReviewedCnt();
 		Float averageRate = manager.getAverageRate();
-		if ( totalReviewedCnt == 0){
+		if (totalReviewedCnt == 0) {
 			manager.updateAverageRate(dto.getRating());
 		} else {
 			Float newAverageRate = (totalReviewedCnt * averageRate + dto.getRating()) / (totalReviewedCnt + 1);
@@ -92,7 +96,7 @@ public class ReservationServiceImpl implements ReservationService {
 		managerRepository.save(manager);
 
 		// 리뷰 등록
-		Review review = Review.of(dto, reservation,isConsumerToManager);
+		Review review = Review.of(dto, reservation, isConsumerToManager);
 		reviewRepository.save(review);
 	}
 
@@ -136,7 +140,7 @@ public class ReservationServiceImpl implements ReservationService {
 			.map(mr -> regionRepository.findById(mr.getRegionId())
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR))
 				.getRegionName())
-			.collect(Collectors.toList());
+			.collect(toList());
 
 		return ReservationDetailResponseDto.builder()
 			.serviceType(reservation.getServiceDetailType().getServiceType().toString())
@@ -181,7 +185,7 @@ public class ReservationServiceImpl implements ReservationService {
 			.orElseThrow(() -> new ReservationException(ResponseType.VALIDATION_FAILED));
 
 		// managerUuid → managerId 변환
-		Manager manager = (Manager)managerRepository.findByUuid(dto.getManagerUuId())
+		Manager manager = managerRepository.findByUuid(dto.getManagerUuId())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 		Long managerId = manager.getId();
 
@@ -250,6 +254,9 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 		reservation.checkout(dto.getCheckTime());
 		reservationRepository.save(reservation);
+
+		// 정산 테이블 생성
+		settlementRepository.save(Settlement.of(reservation));
 	}
 
 	@Transactional
@@ -268,7 +275,7 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 		reservation.cancel(LocalDateTime.now());
 		reservationRepository.save(reservation);
-		if(matchingRepository.existsById(matchingRepository.findByReservationId(reservationId).getId())) {
+		if (matchingRepository.existsById(matchingRepository.findByReservationId(reservationId).getId())) {
 			matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId).getId());
 		}
 	}
@@ -278,7 +285,7 @@ public class ReservationServiceImpl implements ReservationService {
 	public void checkTotalPrice(ReservationRequestDto dto) {
 		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		Long serverCalculatedPrice = calculateTotalPrice(dto, detailType.getServicePrice());
+		BigDecimal serverCalculatedPrice = calculateTotalPrice(dto, detailType.getServicePrice());
 		if (!serverCalculatedPrice.equals(dto.getTotalPrice())) {
 			log.warn("금액 불일치 - client={}, server={}", dto.getTotalPrice(), serverCalculatedPrice);
 			throw new ReservationException(ResponseType.VALIDATION_FAILED);
@@ -324,14 +331,41 @@ public class ReservationServiceImpl implements ReservationService {
 			.toList();
 	}
 
-	private Long calculateTotalPrice(ReservationRequestDto dto, Long basePrice) {
 
-		long additional = 0L;
+	private BigDecimal calculateTotalPrice(ReservationRequestDto dto, BigDecimal basePrice) {
 
-		if (dto.getServiceAdd() != null && dto.getServiceAdd().equals("COOK")) {
-			additional += 10_000;
+		BigDecimal additional = BigDecimal.ZERO;
+
+		if ("COOK".equals(dto.getServiceAdd())) {
+			additional = additional.add(BigDecimal.valueOf(10_000));
 		}
-		return basePrice + additional;
+
+		return basePrice.add(additional);
+	}
+
+	public WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate) {
+		Long managerId = authUtil.getManager(request).getId();
+		LocalDateTime start = startDate.atStartOfDay();
+		LocalDateTime end = start.plusDays(7).with(LocalTime.MIN);
+
+		List<Settlement> settlements = settlementRepository.findByManagerIdAndCreatedAtBetween(managerId, start, end);
+
+		BigDecimal totalAmount = BigDecimal.ZERO;
+		List<SettlementResponseDto> responseList = new ArrayList<>();
+
+		for (Settlement settlement : settlements) {
+			ServiceDetailType detailType = serviceDetailTypeRepository.findById(settlement.getServiceDetailTypeId())
+				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+
+			totalAmount = totalAmount.add(settlement.getAmount());
+
+			responseList.add(new SettlementResponseDto(settlement.getId(), settlement.getServiceType(),
+				detailType.getServiceDetailType(), settlement.getStatus(), settlement.getPlatformFee(),
+				settlement.getAmount()));
+
+		}
+		return new WeeklySettlementResponseDto(totalAmount, responseList);
 	}
 }
+
 

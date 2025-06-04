@@ -1,5 +1,7 @@
 package kernel.maidlab.api.reservation.dto.response;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,5 +16,5 @@ public class ReservationResponseDto {
 	private String reservationDate;
 	private String startTime;
 	private String endTime;
-	private Long totalPrice;
+	private BigDecimal totalPrice;
 }

@@ -1,5 +1,6 @@
 package kernel.maidlab.api.reservation.dto.response;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,6 +40,6 @@ public class ReservationDetailResponseDto {
 
 	private String specialRequest;
 
-	private Long totalPrice;
+	private BigDecimal totalPrice;
 
 }

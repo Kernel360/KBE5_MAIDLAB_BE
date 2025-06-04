@@ -1,8 +1,8 @@
 package kernel.maidlab.api.reservation.dto.request;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -28,6 +28,6 @@ public class ReservationRequestDto {
 
 	private String specialRequest;
 
-	private Long totalPrice;
+	private BigDecimal totalPrice;
 
 }
