@@ -3,17 +3,24 @@ package kernel.maidlab.api.consumer.service;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.entity.Consumer;
 import kernel.maidlab.api.auth.entity.Manager;
+import kernel.maidlab.api.consumer.dto.response.ConsumerProfileResponseDto;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.consumer.dto.request.ConsumerProfileRequestDto;
 import kernel.maidlab.api.consumer.dto.response.BlackListedManagerResponseDto;
+import kernel.maidlab.api.consumer.dto.response.ConsumerListResponseDto;
 import kernel.maidlab.api.consumer.dto.response.LikedManagerResponseDto;
 import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
+import kernel.maidlab.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Slf4j
@@ -30,6 +37,8 @@ public class ConsumerService {
         return consumerRepository.findByUuid(uuid)
                 .orElseThrow((()-> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
     }
+
+
 
     public void updateConsumerProfile(Consumer consumer, ConsumerProfileRequestDto consumerProfileRequestDto){
         String profileImage = consumerProfileRequestDto.getProfileImage();
@@ -89,5 +98,33 @@ public class ConsumerService {
                 orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저 입니다."));
 
         return managerPreferenceRepository.deleteByConsumerIdAndManagerIdAndPreferenceIsTrue(consumer.getId(), manager.getId());
+    }
+
+    //관리자용 전체조회로직
+	public Page<ConsumerListResponseDto> getConsumerBypage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return consumerRepository.findAll(pageable)
+            .map(consumer -> new ConsumerListResponseDto(
+                consumer.getPhoneNumber(),
+                consumer.getName(),
+                consumer.getUuid()
+            ));
+    }
+
+    public ConsumerProfileResponseDto getConsumer(long id) {
+        Consumer consumer = consumerRepository.findById(id)
+            .orElseThrow((()-> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
+
+        ConsumerProfileResponseDto consumerProfileResponseDto = ConsumerProfileResponseDto.builder()
+            .profileImage(consumer.getProfileImage())
+            .phoneNumber(consumer.getPhoneNumber())
+            .name(consumer.getName())
+            .birth(consumer.getBirth())
+            .gender(consumer.getGender())
+            .address(consumer.getAddress())
+            .detailAddress(consumer.getDetailAddress())
+            .build();
+
+        return consumerProfileResponseDto;
     }
 }

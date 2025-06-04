@@ -1,5 +1,6 @@
 package kernel.maidlab.api.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,4 +30,8 @@ public interface ReservationService {
 	ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request);
 
 	void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request);
+
+	List<ReservationResponseDto> dailyReservations(LocalDate date , int page, int size);
+
+	List<ReservationResponseDto> adminReservations(HttpServletRequest request , int page, int size);
 }

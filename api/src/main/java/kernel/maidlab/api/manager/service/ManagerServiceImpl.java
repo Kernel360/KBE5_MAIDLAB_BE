@@ -1,11 +1,15 @@
 package kernel.maidlab.api.manager.service;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.api.auth.jwt.JwtDto;
 import kernel.maidlab.api.auth.jwt.JwtProvider;
@@ -24,6 +28,9 @@ import kernel.maidlab.common.entity.ServiceType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import kernel.maidlab.api.manager.dto.ManagerResponseDto;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.manager.dto.ManagerListResponseDto;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -244,6 +251,48 @@ public class ManagerServiceImpl implements ManagerService {
 		return ResponseDto.success();
 	}
 
+	@Override
+	public Page<ManagerListResponseDto> getManagerBypage(int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		return managerRepository.findAll(pageable)
+			.map(manager -> new ManagerListResponseDto(
+				manager.getName(),
+				manager.getUuid(),
+				manager.getId()
+			));
+	}
+
+	@Override
+	public ManagerResponseDto getManager(Long id){
+		Manager manager = managerRepository.findById(id).orElse(null);
+		System.out.println(manager.getId());
+		ManagerResponseDto managerResponseDto = ManagerResponseDto.builder()
+			.uuid(manager.getUuid())
+			.phoneNumber(manager.getPhoneNumber())
+			.name(manager.getName())
+			.birth(manager.getBirth())
+			.gender(manager.getGender())
+			.averageRate(manager.getAverageRate())
+			.region(manager.getRegions())
+			.isVerified(manager.getIsVerified())
+			.isDeleted(manager.getIsDeleted())
+			.build();
+		return managerResponseDto;
+	}
+	@Transactional
+	@Override
+	public void approveManager(Long managerId) {
+		Manager manager = managerRepository.findById(managerId).orElse(null);
+		manager.approve();
+	}
+
+	@Transactional
+	@Override
+	public void rejectManager(Long managerId) {
+		Manager manager = managerRepository.findById(managerId).orElse(null);
+		manager.reject();
+	}
+
 	// 리뷰 목록 조회
 	@Override
 	@Transactional(readOnly = true)
@@ -269,4 +318,5 @@ public class ManagerServiceImpl implements ManagerService {
 
 		return ResponseDto.success(responseDto);
 	}
+
 }

@@ -161,5 +161,12 @@ public class Manager extends Base {
 		return this.id;
 	}
 
+	public void approve() {
+		this.isVerified = Status.APPROVED;
+	}
+
+	public void reject() {
+		this.isVerified = Status.REJECTED;
+	}
 }
 
