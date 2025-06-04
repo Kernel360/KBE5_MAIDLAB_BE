@@ -93,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
 			managerRepository.save(manager);
 		}
 
-		return ResponseDto.success(null);
+		return ResponseDto.success();
 	}
 
 	// 휴대폰 로그인
@@ -392,7 +392,7 @@ public class AuthServiceImpl implements AuthService {
 
 		jwtProvider.removeRefreshToken(uuid, UserType.MANAGER);
 
-		return ResponseDto.success(null);
+		return ResponseDto.success();
 	}
 
 	// 로그아웃

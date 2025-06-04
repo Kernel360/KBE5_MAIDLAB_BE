@@ -3,6 +3,7 @@ package kernel.maidlab.api.manager.repository;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -43,6 +44,7 @@ public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 		LocalTime startTime = start.toLocalTime();
 		LocalTime endTime = end.toLocalTime();
 		System.out.println("days: " + days);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 		// String uuid = QueryFactory
 		// 	.select(manager.uuid)
 		// 	.from(manager)
@@ -56,14 +58,14 @@ public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 				manager.name
 			))
 			.from(manager)
-			.join(managerRegion).on(managerRegion.managerId.eq(manager.id))
-			.join(region).on(managerRegion.regionId.eq(region.id))
-			.join(managerSchedule).on(managerSchedule.managerId.eq(manager.id)) // manager_schedule 조인
+			.join(managerRegion).on(managerRegion.managerId.id.eq(manager.id))
+			.join(region).on(managerRegion.regionId.id.eq(region.id))
+			.join(managerSchedule).on(managerSchedule.manager.id.eq(manager.id)) // manager_schedule 조인
 			.where(
 				region.regionName.eq(gu),
-				managerSchedule.startTime.loe(startTime),          // 시작 시간보다 이르거나 같아야 함
-				managerSchedule.endTime.goe(endTime),              // 종료 시간보다 늦거나 같아야 함
-				managerSchedule.workDay.eq(days),                  // 요일 일치
+				managerSchedule.availableStartTime.loe(startTime.format(formatter)),          // 시작 시간보다 이르거나 같아야 함
+				managerSchedule.availableEndTime.goe(endTime.format(formatter)),              // 종료 시간보다 늦거나 같아야 함
+				managerSchedule.availableDay.eq(days.toString()),                  // 요일 일치
 				manager.isVerified.eq(Status.APPROVED),
 				manager.isDeleted.isFalse(),
 				manager.id.notIn(
@@ -72,9 +74,9 @@ public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 						.from(reservation)
 						.where(
 							reservation.managerId.isNotNull(),
-							reservation.status.ne(Status.CANCELED),
-							reservation.startTime.lt(start),     // 예약 시작 < 요청 종료
-							reservation.endTime.gt(end)      // 예약 종료 > 요청 시작
+							reservation.status.eq(Status.APPROVED),
+							reservation.startTime.lt(end),     // 예약 시작 < 요청 종료
+							reservation.endTime.gt(start)      // 예약 종료 > 요청 시작
 						)
 				)
 			)

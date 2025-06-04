@@ -39,7 +39,7 @@ public class AdminManagerController implements AdminManagerApi{
 		return ResponseDto.success(response);
 	}
 
-	@PatchMapping("/{managerId}/Approve")
+	@PatchMapping("/{managerId}/approve")
 	@Override
 	public ResponseEntity<ResponseDto<String>> approveManager(@PathVariable("managerId") Long managerId){
 		managerService.approveManager(managerId);

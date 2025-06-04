@@ -1,6 +1,6 @@
 package kernel.maidlab.api.manager.repository;
 
-import kernel.maidlab.api.manager.entity.Region;
+import kernel.maidlab.common.entity.ServiceType;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface RegionRepository extends JpaRepository<Region, Long> {
-	Optional<Region> findByRegionName(String region);
+public interface ServiceTypeRepository extends JpaRepository<ServiceType, Long> {
+	Optional<ServiceType> findByServiceType(String serviceType);
 }
