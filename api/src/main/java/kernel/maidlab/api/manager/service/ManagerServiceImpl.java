@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import jakarta.transaction.Transactional;
+// import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.api.auth.jwt.JwtDto;
 import kernel.maidlab.api.auth.jwt.JwtProvider;
