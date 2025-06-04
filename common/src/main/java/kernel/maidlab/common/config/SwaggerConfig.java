@@ -28,6 +28,10 @@ public class SwaggerConfig {
         localServer.setUrl("http://localhost:8080");
         localServer.setDescription("Local Server");
 
+        Server beServer = new Server();
+        beServer.setUrl("https://api-maidlab.duckdns.org");
+        beServer.setDescription("BackEndServer");
+
         return new OpenAPI()
                 .info(apiInfo())
                 .addSecurityItem(securityRequirement)
