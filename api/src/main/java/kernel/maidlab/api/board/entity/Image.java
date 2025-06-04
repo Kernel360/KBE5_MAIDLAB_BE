@@ -20,5 +20,8 @@ public class Image extends Base {
     private Board board;
 
     @Column(name = "image_url", nullable = false)
-    private String imageUrl;
+    private String imagePath;
+
+    @Column(nullable = false)
+    private String name;
 }
