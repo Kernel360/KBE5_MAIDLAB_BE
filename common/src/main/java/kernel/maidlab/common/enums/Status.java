@@ -11,6 +11,7 @@ public enum Status {
 	MATCHED("매칭완료"),
 	WORKING("작업중"),
 	CANCELED("취소"),
+	FAILURE("실패"),
 	COMPLETED("완료");
 
 	private final String value;

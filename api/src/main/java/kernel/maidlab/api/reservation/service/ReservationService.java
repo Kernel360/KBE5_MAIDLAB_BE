@@ -1,5 +1,6 @@
 package kernel.maidlab.api.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReviewRegisterRequestDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
 
 public interface ReservationService {
 	void createReservation(ReservationRequestDto dto, HttpServletRequest request);
@@ -29,4 +31,6 @@ public interface ReservationService {
 	ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request);
 
 	void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request);
+
+	WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate);
 }

@@ -1,9 +1,13 @@
 package kernel.maidlab.api.reservation.service;
 
+import static java.util.stream.Collectors.*;
+
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -15,6 +19,8 @@ import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.reservation.dto.response.SettlementResponseDto;
+import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
 import kernel.maidlab.api.reservation.entity.Settlement;
 import kernel.maidlab.api.reservation.repository.ReviewRepository;
 import kernel.maidlab.api.reservation.repository.SettlementRepository;
@@ -70,15 +76,15 @@ public class ReservationServiceImpl implements ReservationService {
 		Consumer consumer = consumerRepository.findById(reservation.getConsumerId())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 		Manager manager = managerRepository.findById(reservation.getManagerId())
-				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		// 매니저 선호도 테이블 관리
-		managerPreferenceRepository.save(new ManagerPreference(consumer,manager,dto.isLikes()));
+		managerPreferenceRepository.save(new ManagerPreference(consumer, manager, dto.isLikes()));
 
 		// 매니저 평균 평점(average_rate) 관리
 		Long totalReviewedCnt = manager.getTotalReviewedCnt();
 		Float averageRate = manager.getAverageRate();
-		if ( totalReviewedCnt == 0){
+		if (totalReviewedCnt == 0) {
 			manager.updateAverageRate(dto.getRating());
 		} else {
 			Float newAverageRate = (totalReviewedCnt * averageRate + dto.getRating()) / (totalReviewedCnt + 1);
@@ -87,7 +93,7 @@ public class ReservationServiceImpl implements ReservationService {
 		managerRepository.save(manager);
 
 		// 리뷰 등록
-		Review review = Review.of(dto, reservation,isConsumerToManager);
+		Review review = Review.of(dto, reservation, isConsumerToManager);
 		reviewRepository.save(review);
 	}
 
@@ -131,7 +137,7 @@ public class ReservationServiceImpl implements ReservationService {
 			.map(mr -> regionRepository.findById(mr.getRegionId())
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR))
 				.getRegionName())
-			.collect(Collectors.toList());
+			.collect(toList());
 
 		return ReservationDetailResponseDto.builder()
 			.serviceType(reservation.getServiceDetailType().getServiceType().toString())
@@ -267,11 +273,10 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 		reservation.cancel(LocalDateTime.now());
 		reservationRepository.save(reservation);
-		if(matchingRepository.existsById(matchingRepository.findByReservationId(reservationId).getId())) {
+		if (matchingRepository.existsById(matchingRepository.findByReservationId(reservationId).getId())) {
 			matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId).getId());
 		}
 	}
-
 
 	@Override
 	public void checkTotalPrice(ReservationRequestDto dto) {
@@ -294,5 +299,30 @@ public class ReservationServiceImpl implements ReservationService {
 
 		return basePrice.add(additional);
 	}
+
+	public WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate) {
+		Long managerId = authUtil.getManager(request).getId();
+		LocalDateTime start = startDate.atStartOfDay();
+		LocalDateTime end = start.plusDays(7).with(LocalTime.MIN);
+
+		List<Settlement> settlements = settlementRepository.findByManagerIdAndCreatedAtBetween(managerId, start, end);
+
+		BigDecimal totalAmount = BigDecimal.ZERO;
+		List<SettlementResponseDto> responseList = new ArrayList<>();
+
+		for (Settlement settlement : settlements) {
+			ServiceDetailType detailType = serviceDetailTypeRepository.findById(settlement.getServiceDetailTypeId())
+				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+
+			totalAmount = totalAmount.add(settlement.getAmount());
+
+			responseList.add(new SettlementResponseDto(settlement.getId(), settlement.getServiceType(),
+				detailType.getServiceDetailType(), settlement.getStatus(), settlement.getPlatformFee(),
+				settlement.getAmount()));
+
+		}
+		return new WeeklySettlementResponseDto(totalAmount, responseList);
+	}
 }
+
 

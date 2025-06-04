@@ -1,7 +1,9 @@
 package kernel.maidlab.api.reservation.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +21,8 @@ import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReviewRegisterRequestDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.api.reservation.dto.response.SettlementResponseDto;
+import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
 import kernel.maidlab.api.reservation.service.ReservationService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
@@ -39,8 +44,7 @@ public class ReservationController implements ReservationApi {
 	@GetMapping("/{reservationId}")
 	@Override
 	public ResponseEntity<ResponseDto<ReservationDetailResponseDto>> reservationDetail(@PathVariable Long reservationId,
-		HttpServletRequest request
-	) {
+		HttpServletRequest request) {
 		ReservationDetailResponseDto data = reservationService.getReservationDetail(reservationId, request);
 		return ResponseDto.success(ResponseType.SUCCESS, data);
 	}
@@ -93,11 +97,20 @@ public class ReservationController implements ReservationApi {
 		return ResponseDto.success(ResponseType.SUCCESS, "취소 완료!");
 	}
 
+	@Override
 	@PostMapping("/{reservationId}/review")
-	public ResponseEntity<ResponseDto<String>> review(@PathVariable Long reservationId, @RequestBody
-		ReviewRegisterRequestDto dto, HttpServletRequest request) {
+	public ResponseEntity<ResponseDto<String>> review(@PathVariable Long reservationId,
+		@RequestBody ReviewRegisterRequestDto dto, HttpServletRequest request) {
 		reservationService.registerReview(reservationId, dto, request);
 		return ResponseDto.success(ResponseType.SUCCESS, "리뷰 등록 완료!");
+	}
+
+	@Override
+	@GetMapping("/settlements/weekly-details")
+	public ResponseEntity<ResponseDto<WeeklySettlementResponseDto>> getWeeklySettlements(HttpServletRequest request,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate) {
+		WeeklySettlementResponseDto data = reservationService.getWeeklySettlements(request, startDate);
+		return ResponseDto.success(ResponseType.SUCCESS, data);
 	}
 
 }

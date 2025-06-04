@@ -1,11 +1,13 @@
 package kernel.maidlab.api.reservation.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,6 +21,7 @@ import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
 import kernel.maidlab.api.reservation.dto.request.ReviewRegisterRequestDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 
 @Tag(name = "Reservation", description = "예약 관련 API")
@@ -32,8 +35,7 @@ public interface ReservationApi {
 
 	@Operation(summary = "예약 상세 조회", description = "예약 상세 내역 조회", security = @SecurityRequirement(name = "JWT"))
 	ResponseEntity<ResponseDto<ReservationDetailResponseDto>> reservationDetail(@PathVariable Long reservationId,
-		HttpServletRequest request
-	);
+		HttpServletRequest request);
 
 	@Operation(summary = "예약 테이블 생성", description = "예약 정보를 받아 예약 테이블을 생성합니다.", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "테이블 생성 성공"),
@@ -78,6 +80,10 @@ public interface ReservationApi {
 	ResponseEntity<ResponseDto<String>> cancel(@PathVariable Long reservationId, HttpServletRequest request);
 
 	@Operation(summary = "리뷰 등록", description = "리뷰 등록 요청", security = @SecurityRequirement(name = "JWT"))
-	ResponseEntity<ResponseDto<String>> review(@PathVariable Long reservationId, @RequestBody
-	ReviewRegisterRequestDto dto, HttpServletRequest request);
+	ResponseEntity<ResponseDto<String>> review(@PathVariable Long reservationId,
+		@RequestBody ReviewRegisterRequestDto dto, HttpServletRequest request);
+
+	@Operation(summary = "정산 조회", description = "주간 정산 조회 요청", security = @SecurityRequirement(name = "JWT"))
+	ResponseEntity<ResponseDto<WeeklySettlementResponseDto>> getWeeklySettlements(HttpServletRequest request,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate);
 }
