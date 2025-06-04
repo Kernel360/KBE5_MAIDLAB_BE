@@ -21,7 +21,6 @@ public class AdminJwtFilter implements Filter {
 
 	private static final Logger log = LoggerFactory.getLogger(AdminJwtFilter.class);
 
-	// request에 저장할 키 이름들
 	public static final String CURRENT_ADMIN_KEY = "currentAdmin";
 	public static final String CURRENT_ADMIN_KEY_VALUE = "currentAdminKey";
 
@@ -80,16 +79,8 @@ public class AdminJwtFilter implements Filter {
 						httpRequest.setAttribute(CURRENT_ADMIN_KEY, admin);
 						httpRequest.setAttribute(CURRENT_ADMIN_KEY_VALUE, adminKey);
 						authenticated = true;
-
-						log.debug("관리자 인증 성공 - AdminKey: {}", adminKey);
-					} else {
-						log.debug("관리자 조회 실패 또는 삭제된 계정 - AdminKey: {}", adminKey);
 					}
-				} else {
-					log.debug("관리자 토큰 검증 실패: {}", validationResult.getMessage());
 				}
-			} else {
-				log.debug("관리자 토큰이 없음");
 			}
 
 		} catch (Exception e) {
