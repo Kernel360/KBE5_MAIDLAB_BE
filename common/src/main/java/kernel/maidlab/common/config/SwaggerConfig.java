@@ -36,7 +36,7 @@ public class SwaggerConfig {
                 .info(apiInfo())
                 .addSecurityItem(securityRequirement)
                 .components(components)
-                .servers(List.of(localServer));
+                .servers(List.of(localServer, beServer));
     }
 
     private Info apiInfo() {
