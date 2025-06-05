@@ -1,8 +1,17 @@
 package kernel.maidlab.common.enums;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
 
-@Schema(description = "서비스 유형", example = "HOUSEKEEPING")
+@Getter
 public enum ServiceType {
-	HOUSEKEEPING, CLEANING, CARE // 가사, 청소, 돌봄
+
+	HOUSEKEEPING("가사"),
+	CARE("돌봄");
+
+	private final String value;
+
+	ServiceType(String value) {
+		this.value = value;
+	}
+
 }

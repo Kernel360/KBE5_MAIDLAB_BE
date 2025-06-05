@@ -1,4 +1,4 @@
-package kernel.maidlab.api.event.service;
+package kernel.maidlab.admin.event.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,15 +9,14 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.admin.auth.entity.Admin;
-import kernel.maidlab.admin.auth.jwt.AdminJwtDto;
-import kernel.maidlab.admin.auth.jwt.AdminJwtProvider;
+import kernel.maidlab.admin.auth.jwt.AdminJwtFilter;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.api.event.dto.object.EventListItem;
-import kernel.maidlab.api.event.dto.request.EventRequestDto;
-import kernel.maidlab.api.event.dto.response.EventListResponseDto;
-import kernel.maidlab.api.event.dto.response.EventResponseDto;
-import kernel.maidlab.api.event.entity.Event;
-import kernel.maidlab.api.event.repository.EventRepository;
+import kernel.maidlab.admin.event.dto.object.EventListItem;
+import kernel.maidlab.admin.event.dto.request.EventRequestDto;
+import kernel.maidlab.admin.event.dto.response.EventListResponseDto;
+import kernel.maidlab.admin.event.dto.response.EventResponseDto;
+import kernel.maidlab.admin.event.entity.Event;
+import kernel.maidlab.admin.event.repository.EventRepository;
 import kernel.maidlab.api.exception.BaseException;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
@@ -91,7 +90,6 @@ public class EventServiceImpl implements EventService {
 
 		eventRepository.save(event);
 
-		log.info("이벤트 생성 완료 - AdminKey: {}, Title: {}", adminKey, eventRequestDto.getTitle());
 		return ResponseDto.success();
 	}
 

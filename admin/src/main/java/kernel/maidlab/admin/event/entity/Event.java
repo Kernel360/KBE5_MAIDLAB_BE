@@ -1,4 +1,4 @@
-package kernel.maidlab.api.event.entity;
+package kernel.maidlab.admin.event.entity;
 
 import java.time.LocalDateTime;
 
@@ -30,7 +30,7 @@ public class Event extends Base {
 	@Column(name = "title")
 	private String title;
 
-	@Column(name = "image_url")
+	@Column(name = "main_image_url")
 	private String mainImageUrl;
 
 	@Column(name = "image_url")
@@ -47,9 +47,10 @@ public class Event extends Base {
 	@Column(name = "update_at", nullable = false)
 	private LocalDateTime updateAt;
 
-	private Event(Admin admin, String title, String imageUrl, String content) {
+	private Event(Admin admin, String title,String mainImageUrl, String imageUrl, String content) {
 		this.admin = admin;
 		this.title = title;
+		this.mainImageUrl = mainImageUrl;
 		this.imageUrl = imageUrl;
 		this.content = content;
 	}

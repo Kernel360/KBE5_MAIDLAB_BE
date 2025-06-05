@@ -1,4 +1,4 @@
-package kernel.maidlab.api.event.controller;
+package kernel.maidlab.admin.event.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import kernel.maidlab.api.event.dto.request.EventRequestDto;
-import kernel.maidlab.api.event.dto.response.EventListResponseDto;
-import kernel.maidlab.api.event.dto.response.EventResponseDto;
-import kernel.maidlab.api.event.service.EventService;
+import kernel.maidlab.admin.event.dto.request.EventRequestDto;
+import kernel.maidlab.admin.event.dto.response.EventListResponseDto;
+import kernel.maidlab.admin.event.dto.response.EventResponseDto;
+import kernel.maidlab.admin.event.service.EventService;
 import kernel.maidlab.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 

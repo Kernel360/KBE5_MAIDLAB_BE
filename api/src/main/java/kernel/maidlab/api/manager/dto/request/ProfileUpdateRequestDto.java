@@ -22,13 +22,10 @@ public class ProfileUpdateRequestDto {
 	@NotBlank
 	private String name;
 
-	@NotBlank
 	private LocalDate birth;
 
-	@NotBlank
 	private Gender gender;
 
-	@NotBlank
 	private List<ServiceListItem> serviceTypes;
 
 	@NotBlank

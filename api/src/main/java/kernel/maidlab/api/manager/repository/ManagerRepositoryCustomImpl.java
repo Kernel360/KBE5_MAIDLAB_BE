@@ -58,7 +58,7 @@ public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 				manager.name
 			))
 			.from(manager)
-			.join(managerRegion).on(managerRegion.managerId.id.eq(manager.id))
+			.join(managerRegion).on(managerRegion.manager.id.eq(manager.id))
 			.join(region).on(managerRegion.regionId.id.eq(region.id))
 			.join(managerSchedule).on(managerSchedule.manager.id.eq(manager.id)) // manager_schedule 조인
 			.where(

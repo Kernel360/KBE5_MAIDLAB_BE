@@ -4,6 +4,7 @@ import jakarta.servlet.Filter;
 
 import kernel.maidlab.api.auth.jwt.JwtFilter;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class FilterConfig {
 
 	@Bean
+	@ConditionalOnClass(JwtFilter.class)
 	public FilterRegistrationBean<Filter> jwtFilterRegistration(JwtFilter jwtFilter) {
 		FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>();
 		registration.setFilter(jwtFilter);

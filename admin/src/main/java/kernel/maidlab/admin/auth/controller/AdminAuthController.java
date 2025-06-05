@@ -17,7 +17,7 @@ import kernel.maidlab.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/admin/auth")
+@RequestMapping("/api/admin/auth")
 @RequiredArgsConstructor
 public class AdminAuthController {
 
