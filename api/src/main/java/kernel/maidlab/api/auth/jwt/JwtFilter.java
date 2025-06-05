@@ -46,6 +46,12 @@ public class JwtFilter implements Filter {
 		HttpServletResponse httpResponse = (HttpServletResponse)response;
 		String uri = httpRequest.getRequestURI();
 
+		// admin 경로는 이 필터에서 처리하지 않음
+		if (uri.startsWith("/api/admin/")) {
+			chain.doFilter(request, response);
+			return;
+		}
+
 		if (AUTH_WHITELIST.contains(uri)) {
 			chain.doFilter(request, response); // 필터 우회
 			return;
