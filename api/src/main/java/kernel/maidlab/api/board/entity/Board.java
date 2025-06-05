@@ -59,4 +59,7 @@ public class Board extends Base {
         );
     }
 
+    public void makeAnswer() {
+        this.answered = true;
+    }
 }

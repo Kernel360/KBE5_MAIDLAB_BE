@@ -113,7 +113,7 @@ public class ConsumerBoardServiceImpl implements ConsumerBoardService {
 	public void createAnswer(AnswerRequestDto requestDto, HttpServletRequest request, Long boardId) {
 
 		Optional<Board> board = boardRepository.findById(boardId);
-
+        board.get().makeAnswer();
 		Answer answer = Answer.createAnswer(requestDto, board.get());
 		answerRepository.save(answer);
 
