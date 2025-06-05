@@ -12,6 +12,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,8 @@ import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.reservation.dto.response.AdminSettlementResponseDto;
+import kernel.maidlab.api.reservation.dto.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.api.reservation.dto.response.SettlementResponseDto;
 import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
 import kernel.maidlab.api.reservation.entity.Settlement;
@@ -280,7 +283,6 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 	}
 
-
 	@Override
 	public void checkTotalPrice(ReservationRequestDto dto) {
 		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
@@ -331,7 +333,6 @@ public class ReservationServiceImpl implements ReservationService {
 			.toList();
 	}
 
-
 	private BigDecimal calculateTotalPrice(ReservationRequestDto dto, BigDecimal basePrice) {
 
 		BigDecimal additional = BigDecimal.ZERO;
@@ -343,6 +344,7 @@ public class ReservationServiceImpl implements ReservationService {
 		return basePrice.add(additional);
 	}
 
+	@Override
 	public WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate) {
 		Long managerId = authUtil.getManager(request).getId();
 		LocalDateTime start = startDate.atStartOfDay();
@@ -366,6 +368,43 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 		return new WeeklySettlementResponseDto(totalAmount, responseList);
 	}
+
+	@Override
+	public AdminWeeklySettlementResponseDto getAdminWeeklySettlements(LocalDate startDate, int page, int size) {
+		LocalDateTime start = startDate.atStartOfDay();
+		LocalDateTime end = start.plusDays(7).with(LocalTime.MIN);
+
+		// 페이지 정렬 : pending 먼저, 최신순
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc("status"), Sort.Order.desc("createdAt")));
+
+		// 페이징된 settlement 조회
+		Page<Settlement> settlementPage = settlementRepository.findByCreatedAtBetween(start, end, pageable);
+
+		List<Settlement> allSettlementsInWeek = settlementRepository.findAllByCreatedAtBetween(start, end);
+		BigDecimal totalAmount = allSettlementsInWeek.stream()
+			.map(Settlement::getAmount)
+			.reduce(BigDecimal.ZERO, BigDecimal::add);
+
+		Page<AdminSettlementResponseDto> dtoPage = settlementPage.map(settlement -> {
+			ServiceDetailType detailType = serviceDetailTypeRepository.findById(settlement.getServiceDetailTypeId())
+				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+			Manager manager = managerRepository.findById(settlement.getManagerId())
+				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+
+			return new AdminSettlementResponseDto(
+				settlement.getId(),
+				manager.getName(),
+				settlement.getServiceType(),
+				detailType.getServiceDetailType(),
+				settlement.getStatus(),
+				settlement.getAmount(),
+				settlement.getCreatedAt()
+			);
+		});
+
+		return new AdminWeeklySettlementResponseDto(totalAmount, dtoPage);
+	}
+
 }
 
 

@@ -3,10 +3,10 @@ package kernel.maidlab.admin.reservation;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,9 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
-import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
-import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
+import kernel.maidlab.api.reservation.dto.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
@@ -29,7 +27,8 @@ public interface AdminReservationApi {
 		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
 		@ApiResponse(responseCode = "403", description = "권한 없음"),
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류"),})
-	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> adminReservations(HttpServletRequest request , @RequestParam int page, @RequestParam int size);
+	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> adminReservations(HttpServletRequest request,
+		@RequestParam int page, @RequestParam int size);
 
 	@GetMapping("/{reservationId}")
 	ResponseEntity<ResponseDto<ReservationDetailResponseDto>> getReservation(HttpServletRequest request,
@@ -40,5 +39,11 @@ public interface AdminReservationApi {
 		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
 		@ApiResponse(responseCode = "403", description = "권한 없음"),
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류"),})
-	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> dailyReservations(@RequestParam LocalDate date , @RequestParam int page, @RequestParam int size);
+	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> dailyReservations(@RequestParam LocalDate date,
+		@RequestParam int page, @RequestParam int size);
+
+	@Operation(summary = "주간 정산 조회", description = "admin용 매니저들의 주간 정산 조회", security = @SecurityRequirement(name = "JWT"))
+	ResponseEntity<ResponseDto<AdminWeeklySettlementResponseDto>> getAdminWeeklySettlements(
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @RequestParam int page,
+		@RequestParam int size);
 }
