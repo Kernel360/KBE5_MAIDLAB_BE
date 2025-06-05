@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthApi {
 
 	private final AuthService authService;
 	private final CookieUtil cookieUtil;
@@ -32,8 +32,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<ResponseDto<LoginResponseDto>> login(
-		@Validated @RequestBody LoginRequestDto req,
+	public ResponseEntity<ResponseDto<LoginResponseDto>> login(@Validated @RequestBody LoginRequestDto req,
 		HttpServletResponse res) {
 
 		return authService.login(req, res);
@@ -41,24 +40,20 @@ public class AuthController {
 
 	@PostMapping("/social-login")
 	public ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLogin(
-		@Validated @RequestBody SocialLoginRequestDto req,
-		HttpServletResponse res) {
+		@Validated @RequestBody SocialLoginRequestDto req, HttpServletResponse res) {
 
 		return authService.socialLogin(req, res);
 	}
 
 	@PostMapping("/social-sign-up")
-	public ResponseEntity<ResponseDto<Void>> socialSignUp(
-		@Validated @RequestBody SocialSignUpRequestDto req,
+	public ResponseEntity<ResponseDto<Void>> socialSignUp(@Validated @RequestBody SocialSignUpRequestDto req,
 		HttpServletRequest httpReq) {
 
 		return authService.socialSignUp(req, httpReq);
 	}
 
 	@PostMapping("/refresh")
-	public ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(
-		HttpServletRequest req,
-		HttpServletResponse res) {
+	public ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(HttpServletRequest req, HttpServletResponse res) {
 
 		String refreshToken = cookieUtil.getRefreshTokenFromCookie(req);
 
@@ -70,24 +65,20 @@ public class AuthController {
 	}
 
 	@PatchMapping("/change-password")
-	public ResponseEntity<ResponseDto<Void>> changePw(
-		@Validated @RequestBody ChangePwRequestDto changePwRequestDto, HttpServletRequest req) {
+	public ResponseEntity<ResponseDto<Void>> changePw(@Validated @RequestBody ChangePwRequestDto changePwRequestDto,
+		HttpServletRequest req) {
 
 		return authService.changePw(changePwRequestDto, req);
 	}
 
 	@PostMapping("/logout")
-	public ResponseEntity<ResponseDto<Void>> logout(
-		HttpServletRequest req,
-		HttpServletResponse res) {
+	public ResponseEntity<ResponseDto<Void>> logout(HttpServletRequest req, HttpServletResponse res) {
 
 		return authService.logout(req, res);
 	}
 
 	@DeleteMapping("/withdraw")
-	public ResponseEntity<ResponseDto<Void>> withdraw(
-		HttpServletRequest req,
-		HttpServletResponse res) {
+	public ResponseEntity<ResponseDto<Void>> withdraw(HttpServletRequest req, HttpServletResponse res) {
 
 		return authService.withdraw(req, res);
 	}

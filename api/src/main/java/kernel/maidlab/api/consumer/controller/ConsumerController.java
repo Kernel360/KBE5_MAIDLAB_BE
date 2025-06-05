@@ -16,6 +16,7 @@ import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,8 +34,8 @@ public class ConsumerController implements ConsumerApi {
 	// 프로필
 	@Override
 	@PatchMapping("/profile")
-	public ResponseEntity updateProfile(HttpServletRequest request,
-										@RequestBody ConsumerProfileRequestDto consumerProfileRequestDto) {
+	public ResponseEntity<ResponseDto<Void>> updateProfile(HttpServletRequest request,
+		@RequestBody ConsumerProfileRequestDto consumerProfileRequestDto) {
 		String uuid = getUuidByToken(request);
 		Consumer findedConsumer = consumerService.getConsumer(uuid);
 		consumerService.updateConsumerProfile(findedConsumer, consumerProfileRequestDto);
@@ -44,41 +45,42 @@ public class ConsumerController implements ConsumerApi {
 	// 조회
 	@Override
 	@GetMapping("/profile")
-	public ResponseEntity getProfile(HttpServletRequest request) {
+	public ResponseEntity<ResponseDto<ConsumerProfileResponseDto>> getProfile(HttpServletRequest request) {
 
 		String uuid = getUuidByToken(request);
 		Consumer findedConsumer = consumerService.getConsumer(uuid);
-		ConsumerProfileResponseDto consumerProfileResponseDto = ConsumerProfileResponseDto
-				.builder()
-				.profileImage(findedConsumer.getProfileImage())
-				.phoneNumber(findedConsumer.getPhoneNumber())
-				.name(findedConsumer.getName())
-				.birth(findedConsumer.getBirth())
-				.gender(findedConsumer.getGender())
-				.address(findedConsumer.getAddress())
-				.detailAddress(findedConsumer.getDetailAddress())
-				.build();
+		ConsumerProfileResponseDto consumerProfileResponseDto = ConsumerProfileResponseDto.builder()
+			.profileImage(findedConsumer.getProfileImage())
+			.phoneNumber(findedConsumer.getPhoneNumber())
+			.name(findedConsumer.getName())
+			.birth(findedConsumer.getBirth())
+			.gender(findedConsumer.getGender())
+			.address(findedConsumer.getAddress())
+			.detailAddress(findedConsumer.getDetailAddress())
+			.build();
 
 		return ResponseDto.success(ResponseType.SUCCESS, consumerProfileResponseDto);
 	}
 
+	@Override
 	@GetMapping("/mypage")
-	public ResponseEntity getMypage(HttpServletRequest request){
+	public ResponseEntity<ResponseDto<ConsumerMyPageDto>> getMypage(HttpServletRequest request) {
 
 		String uuid = getUuidByToken(request);
 		Consumer findedConsumer = consumerService.getConsumer(uuid);
 		ConsumerMyPageDto myPageDto = ConsumerMyPageDto.builder()
-				.name(findedConsumer.getName())
-				.point(findedConsumer.getPoint())
-				.profileImage(findedConsumer.getProfileImage())
-				.build();
+			.name(findedConsumer.getName())
+			.point(findedConsumer.getPoint())
+			.profileImage(findedConsumer.getProfileImage())
+			.build();
 
 		return ResponseDto.success(ResponseType.SUCCESS, myPageDto);
 	}
 
 	// 찜한 매니저 조회
+	@Override
 	@GetMapping("/likes")
-	public ResponseEntity getLikeManagers(HttpServletRequest request){
+	public ResponseEntity<ResponseDto<List<LikedManagerResponseDto>>> getLikeManagers(HttpServletRequest request) {
 
 		String uuid = getUuidByToken(request);
 		Consumer consumer = consumerService.getConsumer(uuid);
@@ -87,21 +89,24 @@ public class ConsumerController implements ConsumerApi {
 	}
 
 	// 블랙리스트 매니저 조회
+	@Override
 	@GetMapping("/blacklists")
-	public ResponseEntity getBlackListManagers(HttpServletRequest request){
+	public ResponseEntity<ResponseDto<List<BlackListedManagerResponseDto>>> getBlackListManagers(
+		HttpServletRequest request) {
 
 		String uuid = getUuidByToken(request);
 		Consumer consumer = consumerService.getConsumer(uuid);
-		List<BlackListedManagerResponseDto> blackListedManagerList = consumerService.getBlackListedManagerList(consumer);
+		List<BlackListedManagerResponseDto> blackListedManagerList = consumerService.getBlackListedManagerList(
+			consumer);
 		return ResponseDto.success(ResponseType.SUCCESS, blackListedManagerList);
 	}
 
 	// 찜/블랙리스트 매니저 등록
+	@Override
 	@PostMapping("/preference/{managerUuid}")
-	public ResponseEntity createLikedOrBlackListedManager(
-			HttpServletRequest request,
-			@PathVariable("managerUuid")String managerUuid,
-			@RequestBody @Valid PreferenceRequestDto preferenceRequestDto){
+	public ResponseEntity<ResponseDto<Void>> createLikedOrBlackListedManager(HttpServletRequest request,
+		@PathVariable("managerUuid") String managerUuid,
+		@RequestBody @Valid PreferenceRequestDto preferenceRequestDto) {
 
 		String consumerUuid = getUuidByToken(request);
 		boolean preference = preferenceRequestDto.isPreference();
@@ -113,11 +118,10 @@ public class ConsumerController implements ConsumerApi {
 	}
 
 	// 찜한 매니저 삭제
+	@Override
 	@DeleteMapping("/likes/{managerUuid}")
-	public ResponseEntity removeLikedManager(
-			HttpServletRequest request,
-			@PathVariable("managerUuid")String managerUuid
-	){
+	public ResponseEntity<ResponseDto<Void>> removeLikedManager(HttpServletRequest request,
+		@PathVariable("managerUuid") String managerUuid) {
 
 		String consumerUuid = getUuidByToken(request);
 		log.info("수요자 uuid : {}", consumerUuid);
@@ -130,7 +134,6 @@ public class ConsumerController implements ConsumerApi {
 
 		return ResponseDto.success(null);
 	}
-
 
 	private String getUuidByToken(HttpServletRequest request) {
 
