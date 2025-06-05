@@ -351,21 +351,8 @@ public class AuthServiceImpl implements AuthService {
 	// 비밀번호 재설정
 	@Override
 	public ResponseEntity<ResponseDto<Void>> changePw(ChangePwRequestDto changePwRequestDto, HttpServletRequest req) {
-
-		String accessToken = jwtProvider.extractToken(req);
-
-		if (accessToken == null) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		JwtDto.ValidationResult validationResult = jwtProvider.validateAccessToken(accessToken);
-
-		if (!validationResult.isValid()) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		String uuid = validationResult.getUuid();
-		UserType userType = validationResult.getUserType();
+		String uuid = (String)req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
+		UserType userType = (UserType)req.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
 		String encodedNewPassword = passwordUtil.encryptPassword(changePwRequestDto.getPassword());
 
 		if (userType == UserType.CONSUMER) {
@@ -390,7 +377,7 @@ public class AuthServiceImpl implements AuthService {
 			managerRepository.save(manager);
 		}
 
-		jwtProvider.removeRefreshToken(uuid, UserType.MANAGER);
+		jwtProvider.removeRefreshToken(uuid, userType);
 
 		return ResponseDto.success();
 	}
@@ -398,21 +385,8 @@ public class AuthServiceImpl implements AuthService {
 	// 로그아웃
 	@Override
 	public ResponseEntity<ResponseDto<Void>> logout(HttpServletRequest req, HttpServletResponse res) {
-
-		String accessToken = jwtProvider.extractToken(req);
-
-		if (accessToken == null) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		JwtDto.ValidationResult validationResult = jwtProvider.validateAccessToken(accessToken);
-
-		if (!validationResult.isValid()) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		String uuid = validationResult.getUuid();
-		UserType userType = validationResult.getUserType();
+		String uuid = (String)req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
+		UserType userType = (UserType)req.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
 
 		jwtProvider.removeRefreshToken(uuid, userType);
 		cookieUtil.clearRefreshTokenCookie(res);
@@ -423,19 +397,8 @@ public class AuthServiceImpl implements AuthService {
 	// 회원탈퇴
 	@Override
 	public ResponseEntity<ResponseDto<Void>> withdraw(HttpServletRequest req, HttpServletResponse res) {
-
-		String accessToken = jwtProvider.extractToken(req);
-		if (accessToken == null) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		JwtDto.ValidationResult validationResult = jwtProvider.validateAccessToken(accessToken);
-		if (!validationResult.isValid()) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		String uuid = validationResult.getUuid();
-		UserType userType = validationResult.getUserType();
+		String uuid = (String)req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
+		UserType userType = (UserType)req.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
 
 		if (userType == UserType.CONSUMER) {
 			Consumer consumer = consumerRepository.findByUuid(uuid)
@@ -453,7 +416,7 @@ public class AuthServiceImpl implements AuthService {
 
 		}
 
-		jwtProvider.removeRefreshToken(uuid, UserType.MANAGER);
+		jwtProvider.removeRefreshToken(uuid, userType);
 		cookieUtil.clearRefreshTokenCookie(res);
 
 		return ResponseDto.success(null);
