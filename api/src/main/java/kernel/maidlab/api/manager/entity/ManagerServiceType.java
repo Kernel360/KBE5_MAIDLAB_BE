@@ -1,5 +1,6 @@
 package kernel.maidlab.api.manager.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -7,7 +8,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.common.entity.Base;
-import kernel.maidlab.common.entity.ServiceType;
+import kernel.maidlab.common.enums.ServiceType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +23,7 @@ public class ManagerServiceType extends Base {
 	@JoinColumn(name = "manager_id", nullable = false)
 	private Manager manager;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "service_id", nullable = false)
+	@Column(name = "service_type", nullable = false)
 	private ServiceType serviceType;
 
 	private ManagerServiceType(Manager manager, ServiceType serviceType) {
