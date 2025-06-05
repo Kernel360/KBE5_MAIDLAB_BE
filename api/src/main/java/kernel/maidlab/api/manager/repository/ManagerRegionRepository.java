@@ -15,10 +15,10 @@ import java.util.List;
 public interface ManagerRegionRepository extends JpaRepository<ManagerRegion, String> {
 	List<ManagerRegion> findByManagerId(Manager manager);
 
-	@Query(value = "SELECT r.region FROM manager_region mr JOIN region r ON mr.region_id = r.id WHERE mr.managerId.id = :managerId", nativeQuery = true)
+	@Query("SELECT r.regionName FROM ManagerRegion mr JOIN mr.regionId r WHERE mr.manager.id = :managerId")
 	List<String> findRegionNamesByManagerId(@Param("managerId") Long managerId);
 
 	@Modifying
-	@Query("DELETE FROM ManagerSchedule ms WHERE ms.manager.id = :managerId")
+	@Query("DELETE FROM ManagerRegion mr WHERE mr.manager.id = :managerId")
 	void deleteByManagerId(@Param("managerId") Long managerId);
 }

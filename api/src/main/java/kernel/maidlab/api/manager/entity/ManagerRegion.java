@@ -19,19 +19,19 @@ public class ManagerRegion extends Base {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "manager_id", nullable = false)
-	private Manager managerId;
+	private Manager manager;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "region_id", nullable = false)
 	private Region regionId;
 
-	private ManagerRegion(Manager managerId, Region regionId) {
-		this.managerId = managerId;
+	private ManagerRegion(Manager manager, Region regionId) {
+		this.manager = manager;
 		this.regionId = regionId;
 	}
 
-	public static ManagerRegion managerRegion(Manager managerId, Region regionId) {
-		return new ManagerRegion(managerId, regionId);
+	public static ManagerRegion managerRegion(Manager manager, Region regionId) {
+		return new ManagerRegion(manager, regionId);
 	}
 
 }
