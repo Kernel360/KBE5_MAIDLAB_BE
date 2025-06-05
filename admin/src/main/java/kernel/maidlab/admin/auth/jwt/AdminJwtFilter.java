@@ -35,7 +35,8 @@ public class AdminJwtFilter implements Filter {
 	// 관리자 인증이 필요 없는 URL들
 	private static final Set<String> ADMIN_AUTH_WHITELIST = Set.of(
 		"/api/admin/auth/login",
-		"/api/admin/auth/refresh"
+		"/api/admin/auth/refresh",
+		"/api/events"
 	);
 
 	@Override
@@ -47,16 +48,20 @@ public class AdminJwtFilter implements Filter {
 		HttpServletResponse httpResponse = (HttpServletResponse)response;
 		String uri = httpRequest.getRequestURI();
 
-		// 관리자 모듈이 아닌 경우 필터 우회
-		if (!uri.startsWith("/api/admin/")) {
+		// 필터 우회
+		boolean isAdminModule = uri.startsWith("/api/admin/");
+		boolean isEventCUD = uri.startsWith("/api/event") &&
+			!httpRequest.getMethod().equals("GET");
+
+		if (!isAdminModule && !isEventCUD) {
 			chain.doFilter(request, response);
 			return;
 		}
 
-		// 인증이 필요 없는 URL인 경우 필터 우회
 		if (ADMIN_AUTH_WHITELIST.contains(uri)) {
 			chain.doFilter(request, response);
 			return;
+
 		}
 
 		log.debug("관리자 JWT 인증 필터 시작 - URL: {}", uri);
