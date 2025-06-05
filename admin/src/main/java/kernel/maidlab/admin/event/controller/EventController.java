@@ -22,39 +22,39 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class EventController {
+public class EventController implements EventApi {
 
 	private final EventService eventService;
 
+	@Override
 	@GetMapping("/events")
 	public ResponseEntity<ResponseDto<EventListResponseDto>> getAllEvents() {
 		return eventService.getAllEvents();
 	}
 
+	@Override
 	@GetMapping("/event/{eventId}")
 	public ResponseEntity<ResponseDto<EventResponseDto>> getEventById(@PathVariable Long eventId) {
 		return eventService.getEvent(eventId);
 	}
 
+	@Override
 	@PostMapping("/event")
-	public ResponseEntity<ResponseDto<Void>> createEvent(
-		@Valid @RequestBody EventRequestDto eventRequestDto,
+	public ResponseEntity<ResponseDto<Void>> createEvent(@Valid @RequestBody EventRequestDto eventRequestDto,
 		HttpServletRequest req) {
 		return eventService.createEvent(eventRequestDto, req);
 	}
 
+	@Override
 	@PatchMapping("/event/{eventId}")
-	public ResponseEntity<ResponseDto<Void>> updateEvent(
-		@PathVariable Long eventId,
-		@Valid @RequestBody EventRequestDto eventRequestDto,
-		HttpServletRequest req) {
+	public ResponseEntity<ResponseDto<Void>> updateEvent(@PathVariable Long eventId,
+		@Valid @RequestBody EventRequestDto eventRequestDto, HttpServletRequest req) {
 		return eventService.updateEvent(eventId, eventRequestDto, req);
 	}
 
+	@Override
 	@DeleteMapping("/event/{eventId}")
-	public ResponseEntity<ResponseDto<Void>> deleteEvent(
-		@PathVariable Long eventId,
-		HttpServletRequest req) {
+	public ResponseEntity<ResponseDto<Void>> deleteEvent(@PathVariable Long eventId, HttpServletRequest req) {
 		return eventService.deleteEvent(eventId, req);
 	}
 }
