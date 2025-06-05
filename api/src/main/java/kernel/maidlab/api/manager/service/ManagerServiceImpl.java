@@ -22,9 +22,9 @@ import kernel.maidlab.api.manager.repository.*;
 import kernel.maidlab.api.reservation.repository.ReviewRepository;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.ServiceType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.entity.ServiceType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +47,6 @@ public class ManagerServiceImpl implements ManagerService {
 	private final ManagerRegionRepository managerRegionRepository;
 	private final ManagerScheduleRepository managerScheduleRepository;
 	private final ManagerDocumentRepository managerDocumentRepository;
-	private final ServiceTypeRepository serviceTypeRepository;
 	private final RegionRepository regionRepository;
 	private final ReviewRepository reviewRepository;
 	private final JwtProvider jwtProvider;
@@ -82,12 +81,13 @@ public class ManagerServiceImpl implements ManagerService {
 
 		if (req.getServiceTypes() != null && !req.getServiceTypes().isEmpty()) {
 			for (ServiceListItem serviceItem : req.getServiceTypes()) {
-				ServiceType serviceType = serviceTypeRepository.findByServiceType(
-						serviceItem.getServiceType())
-					.orElseThrow(() -> new BaseException(ResponseType.VALIDATION_FAILED));
-
-				ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager, serviceType);
-				managerServiceTypeRepository.save(managerServiceType);
+				try {
+					ServiceType serviceTypeEnum = ServiceType.valueOf(serviceItem.getServiceType());
+					ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager, serviceTypeEnum);
+					managerServiceTypeRepository.save(managerServiceType);
+				} catch (IllegalArgumentException e) {
+					throw new BaseException(ResponseType.VALIDATION_FAILED);
+				}
 			}
 		}
 
@@ -156,10 +156,7 @@ public class ManagerServiceImpl implements ManagerService {
 	public ResponseEntity<ResponseDto<ProfileResponseDto>> getProfile(HttpServletRequest req) {
 		Manager manager = getManagerFromToken(req);
 
-		List<String> serviceTypeNames = managerServiceTypeRepository.findServiceTypeNamesByManagerId(manager.getId());
-		List<kernel.maidlab.common.enums.ServiceType> services = serviceTypeNames.stream()
-			.map(kernel.maidlab.common.enums.ServiceType::valueOf)
-			.collect(Collectors.toList());
+		List<ServiceType> services = managerServiceTypeRepository.findServiceTypesByManagerId(manager.getId());
 
 		List<String> regionNames = managerRegionRepository.findRegionNamesByManagerId(manager.getId());
 		List<RegionListItem> regions = regionNames.stream()
@@ -215,12 +212,13 @@ public class ManagerServiceImpl implements ManagerService {
 
 		if (req.getServiceTypes() != null && !req.getServiceTypes().isEmpty()) {
 			for (ServiceListItem serviceItem : req.getServiceTypes()) {
-				ServiceType serviceType = serviceTypeRepository.findByServiceType(
-						serviceItem.getServiceType())
-					.orElseThrow(() -> new BaseException(ResponseType.VALIDATION_FAILED));
-
-				ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager, serviceType);
-				managerServiceTypeRepository.save(managerServiceType);
+				try {
+					ServiceType serviceTypeEnum = ServiceType.valueOf(serviceItem.getServiceType());
+					ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager, serviceTypeEnum);
+					managerServiceTypeRepository.save(managerServiceType);
+				} catch (IllegalArgumentException e) {
+					throw new BaseException(ResponseType.VALIDATION_FAILED);
+				}
 			}
 		}
 
