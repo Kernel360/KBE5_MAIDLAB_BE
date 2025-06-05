@@ -30,7 +30,7 @@ public class Event extends Base {
 	@Column(name = "title")
 	private String title;
 
-	@Column(name = "image_url")
+	@Column(name = "main_image_url")
 	private String mainImageUrl;
 
 	@Column(name = "image_url")
