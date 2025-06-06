@@ -1,6 +1,7 @@
 package kernel.maidlab.api.auth.entity;
 
 import jakarta.persistence.*;
+import kernel.maidlab.api.board.common.UserBase;
 import kernel.maidlab.common.entity.Base;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.Region;
@@ -24,7 +25,7 @@ import java.util.UUID;
 	@Index(name = "idx_manager_phone_number", columnList = "phone_number", unique = true)})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Manager extends Base {
+public class Manager extends Base implements UserBase {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
