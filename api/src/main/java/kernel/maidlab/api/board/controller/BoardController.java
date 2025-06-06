@@ -23,7 +23,6 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    // 수요자 게시판 글 생성
     @PostMapping
     public ResponseEntity<ResponseDto<String>> createBoard(
             HttpServletRequest request,
