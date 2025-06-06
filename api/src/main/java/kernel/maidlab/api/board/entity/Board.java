@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import kernel.maidlab.api.auth.entity.Consumer;
 import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.api.board.dto.request.BoardUpdateRequestDto;
-import kernel.maidlab.api.board.dto.request.ConsumerBoardRequestDto;
+import kernel.maidlab.api.board.dto.request.BoardRequestDto;
 import kernel.maidlab.api.board.eum.BoardType;
 import kernel.maidlab.common.entity.Base;
 import lombok.Getter;
@@ -67,12 +67,12 @@ public class Board extends Base {
         this.content = content;
     }
 
-    public static Board createConsumerBoard(Consumer consumer, ConsumerBoardRequestDto consumerBoardRequestDto){
+    public static Board createConsumerBoard(Consumer consumer, BoardRequestDto boardRequestDto){
         return new Board(
                 consumer,
-                consumerBoardRequestDto.getBoardType(),
-                consumerBoardRequestDto.getTitle(),
-                consumerBoardRequestDto.getContent()
+                boardRequestDto.getBoardType(),
+                boardRequestDto.getTitle(),
+                boardRequestDto.getContent()
         );
     }
 

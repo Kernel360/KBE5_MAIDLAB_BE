@@ -9,9 +9,9 @@ import kernel.maidlab.api.board.common.UserBase;
 import kernel.maidlab.api.board.dto.BoardQueryDto;
 import kernel.maidlab.api.board.dto.ImageDto;
 import kernel.maidlab.api.board.dto.request.BoardUpdateRequestDto;
-import kernel.maidlab.api.board.dto.request.ConsumerBoardRequestDto;
-import kernel.maidlab.api.board.dto.response.ConsumerBoardDetailResponseDto;
-import kernel.maidlab.api.board.dto.response.ConsumerBoardResponseDto;
+import kernel.maidlab.api.board.dto.request.BoardRequestDto;
+import kernel.maidlab.api.board.dto.response.BoardDetailResponseDto;
+import kernel.maidlab.api.board.dto.response.BoardResponseDto;
 import kernel.maidlab.api.board.entity.Board;
 import kernel.maidlab.api.board.entity.Image;
 import kernel.maidlab.api.board.repository.BoardRepository;
@@ -42,16 +42,16 @@ public class BoardServiceImpl implements BoardService {
     // 게시판 글 생성
     public void createConsumerBoard(
             HttpServletRequest request,
-            ConsumerBoardRequestDto consumerBoardRequestDto) {
+            BoardRequestDto boardRequestDto) {
 
 
         // todo: 사용자에 따른 게시판 생성 로직 리팩토링 필요
         // 현재 수요자 기준으로 게시핀이 생성됨
         Consumer consumer = authUtil.getConsumer(request);
-        Board board = Board.createConsumerBoard(consumer, consumerBoardRequestDto);
+        Board board = Board.createConsumerBoard(consumer, boardRequestDto);
         boardRepository.save(board);
 
-        consumerBoardRequestDto.getImages()
+        boardRequestDto.getImages()
                 .forEach((imageDto) -> imageRepository.save(
                         new Image(
                                 board,
@@ -61,7 +61,7 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 전체 조회
     @Transactional(readOnly = true)
-    public List<ConsumerBoardResponseDto> getConsumerBoardList(HttpServletRequest request) {
+    public List<BoardResponseDto> getConsumerBoardList(HttpServletRequest request) {
 
         Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
         UserType userType = (UserType) request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
@@ -69,13 +69,13 @@ public class BoardServiceImpl implements BoardService {
         List<BoardQueryDto> boardQueryDtoList = getBoardQueryDtoList(user, userType);
 
         return boardQueryDtoList.stream()
-                .map(ConsumerBoardResponseDto::from)
+                .map(BoardResponseDto::from)
                 .toList();
     }
 
     // 수요자 글 상세 조회
     @Transactional(readOnly = true)
-    public ConsumerBoardDetailResponseDto getConsumerBoard(
+    public BoardDetailResponseDto getConsumerBoard(
             HttpServletRequest request,
             Long boardId
     ) throws AccessDeniedException {
@@ -99,7 +99,7 @@ public class BoardServiceImpl implements BoardService {
 
         List<Image> images = imageRepository.findAllByBoardId(boardId);
 
-        return ConsumerBoardDetailResponseDto.from(board, images);
+        return BoardDetailResponseDto.from(board, images);
 
     }
 

@@ -2,9 +2,9 @@ package kernel.maidlab.api.board.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.board.dto.request.BoardUpdateRequestDto;
-import kernel.maidlab.api.board.dto.request.ConsumerBoardRequestDto;
-import kernel.maidlab.api.board.dto.response.ConsumerBoardDetailResponseDto;
-import kernel.maidlab.api.board.dto.response.ConsumerBoardResponseDto;
+import kernel.maidlab.api.board.dto.request.BoardRequestDto;
+import kernel.maidlab.api.board.dto.response.BoardDetailResponseDto;
+import kernel.maidlab.api.board.dto.response.BoardResponseDto;
 import kernel.maidlab.api.board.service.BoardService;
 import kernel.maidlab.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -27,27 +27,27 @@ public class BoardController {
     @PostMapping
     public ResponseEntity<ResponseDto<String>> createBoard(
             HttpServletRequest request,
-            @RequestBody ConsumerBoardRequestDto consumerBoardRequestDto){
+            @RequestBody BoardRequestDto boardRequestDto){
 
-        boardService.createConsumerBoard(request, consumerBoardRequestDto);
+        boardService.createConsumerBoard(request, boardRequestDto);
         return ResponseDto.success("게시글이 성공적으로 등록완료 되었습니다.");
     }
 
     // 수요자의 작성글 전체 조회
     @GetMapping
-    public ResponseEntity<ResponseDto<List<ConsumerBoardResponseDto>>> getConsumerBoardList(HttpServletRequest request){
+    public ResponseEntity<ResponseDto<List<BoardResponseDto>>> getConsumerBoardList(HttpServletRequest request){
 
-        List<ConsumerBoardResponseDto> consumerBoardList = boardService.getConsumerBoardList(request);
+        List<BoardResponseDto> consumerBoardList = boardService.getConsumerBoardList(request);
         return ResponseDto.success(consumerBoardList);
     }
 
     //  수요자 글 상세 조회
     @GetMapping("/{boardId}")
-    public ResponseEntity<ResponseDto<ConsumerBoardDetailResponseDto>> getConsumerBoard(
+    public ResponseEntity<ResponseDto<BoardDetailResponseDto>> getConsumerBoard(
             HttpServletRequest request,
             @PathVariable("boardId")Long boardId) throws AccessDeniedException {
 
-        ConsumerBoardDetailResponseDto consumerBoardDetailDto = boardService.getConsumerBoard(request, boardId);
+        BoardDetailResponseDto consumerBoardDetailDto = boardService.getConsumerBoard(request, boardId);
         return ResponseDto.success(consumerBoardDetailDto);
     }
 
