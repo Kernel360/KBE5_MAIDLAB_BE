@@ -1,6 +1,7 @@
 package kernel.maidlab.api.auth.entity;
 
 import jakarta.persistence.*;
+import kernel.maidlab.api.board.common.UserBase;
 import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.common.entity.Base;
 import kernel.maidlab.common.enums.Gender;
@@ -23,7 +24,7 @@ import java.util.UUID;
 	@Index(name = "idx_consumer_phone_number", columnList = "phone_number", unique = true)})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Consumer extends Base {
+public class Consumer extends Base implements UserBase {
 
 	@Column(name = "uuid", nullable = false, unique = true)
 	private String uuid;

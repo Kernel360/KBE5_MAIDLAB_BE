@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class BoardQueryDto {
-//    b.answered, b.boardType, b.title, b.content, b.consumer.id
+
     private Long consumerId;
     private String title;
     private String content;
