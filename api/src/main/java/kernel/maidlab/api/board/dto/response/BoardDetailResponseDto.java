@@ -17,7 +17,7 @@ public class BoardDetailResponseDto {
 
     private String title;
     private String content;
-    private boolean answered;
+    private boolean isAnswered;
     private BoardType boardType;
 //    private LocalDateTime createAt
     private List<ImageDto> images;
@@ -29,12 +29,12 @@ public class BoardDetailResponseDto {
         return new BoardDetailResponseDto(
                 board.getTitle(),
                 board.getContent(),
-                board.isAnswered(),
+                board.getIsAnswered(),
                 board.getBoardType(),
                 images.stream()
                         .map(ImageDto::from)
                         .toList(),
-                board.isAnswered() ? AnswerResponseDto.from(board.getAnswer()) : null
+                board.getIsAnswered() ? AnswerResponseDto.from(board.getAnswer()) : null
         );
     }
 

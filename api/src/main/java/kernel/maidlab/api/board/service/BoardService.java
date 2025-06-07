@@ -3,6 +3,7 @@ package kernel.maidlab.api.board.service;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.board.dto.request.AnswerRequestDto;
 import kernel.maidlab.api.board.dto.request.BoardRequestDto;
+import kernel.maidlab.api.board.dto.request.BoardUpdateRequestDto;
 import kernel.maidlab.api.board.dto.response.BoardDetailResponseDto;
 import kernel.maidlab.api.board.dto.response.BoardResponseDto;
 
@@ -24,6 +25,10 @@ public interface BoardService {
     List<BoardResponseDto> getAllRefundBoardList(HttpServletRequest request, int page, int size);
 
     List<BoardResponseDto> getAllConsultationBoardList(HttpServletRequest request, int page, int size);
+
+    void modifyBoard(HttpServletRequest request, Long id, BoardUpdateRequestDto boardUpdateRequestDto);
+
+    void deleteBoard(HttpServletRequest request, Long boardId);
 
     void createAnswer(AnswerRequestDto requestDto, HttpServletRequest request, Long boardId);
 

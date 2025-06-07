@@ -1,7 +1,10 @@
 package kernel.maidlab.api.board.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+
 import kernel.maidlab.api.board.dto.request.BoardRequestDto;
+import kernel.maidlab.api.board.dto.request.BoardUpdateRequestDto;
 import kernel.maidlab.api.board.dto.response.BoardDetailResponseDto;
 import kernel.maidlab.api.board.dto.response.BoardResponseDto;
 import kernel.maidlab.api.board.service.BoardService;
@@ -24,8 +27,9 @@ public class BoardController {
 
     // 수요자 게시판 글 생성
     @PostMapping
-    public ResponseEntity<ResponseDto<String>> createBoard(HttpServletRequest request,
-                                      @RequestBody BoardRequestDto boardRequestDto){
+    public ResponseEntity<ResponseDto<String>> createBoard(
+            HttpServletRequest request,
+            @RequestBody BoardRequestDto boardRequestDto){
         boardService.createConsumerBoard(request, boardRequestDto);
         return ResponseDto.success("게시글이 성공적으로 등록완료 되었습니다.");
     }
@@ -48,10 +52,26 @@ public class BoardController {
         return ResponseDto.success(consumerBoardDetailDto);
     }
 
+    // 게시판 글 수정
+    @PatchMapping("/{boardId}")
+    public ResponseEntity<ResponseDto<Object>> updateBoard(
+            HttpServletRequest request,
+            @PathVariable("boardId")Long boardId,
+            @RequestBody BoardUpdateRequestDto boardUpdateRequestDto
+    ){
+        boardService.modifyBoard(request, boardId, boardUpdateRequestDto);
+        return ResponseDto.success("게시글 수정이 완료되었습니다.");
+    }
 
-    // 답변 생성
+    //게시글 삭제
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<ResponseDto<Object>> deleteBoard(
+            HttpServletRequest request,
+            @PathVariable("boardId") Long boardId
+    ){
+        boardService.deleteBoard(request, boardId);
+        return ResponseDto.success("게시글이 삭제되었습니다.");
 
-    // 답변 수정
-
+    }
 
 }
