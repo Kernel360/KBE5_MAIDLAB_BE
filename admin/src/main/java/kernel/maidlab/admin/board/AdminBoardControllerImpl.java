@@ -26,7 +26,7 @@ public class AdminBoardControllerImpl implements AdminBoardApi {
 
 	private final BoardService boardService;
 
-	@GetMapping
+	@GetMapping("/refund")
 	@Override
 	public ResponseEntity<ResponseDto<List<BoardResponseDto>>> refund(HttpServletRequest request,
 																	  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
