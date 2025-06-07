@@ -11,18 +11,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.board.dto.request.AnswerRequestDto;
-import kernel.maidlab.api.board.dto.response.ConsumerBoardResponseDto;
+import kernel.maidlab.api.board.dto.response.BoardResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 
 public interface AdminBoardApi {
 
 	@GetMapping
-	ResponseEntity<ResponseDto<List<ConsumerBoardResponseDto>>> refund(HttpServletRequest request,
-		@RequestParam int page, @RequestParam int size);
+	ResponseEntity<ResponseDto<List<BoardResponseDto>>> refund(HttpServletRequest request,
+                                                               @RequestParam int page, @RequestParam int size);
 
 	@GetMapping("/consultation")
-	ResponseEntity<ResponseDto<List<ConsumerBoardResponseDto>>> consultation(HttpServletRequest request,
-		@RequestParam int page, @RequestParam int size);
+	ResponseEntity<ResponseDto<List<BoardResponseDto>>> consultation(HttpServletRequest request,
+                                                                     @RequestParam int page, @RequestParam int size);
 
 	@PostMapping("/answer")
 	ResponseEntity<ResponseDto<String>> answer(AnswerRequestDto requestDto, HttpServletRequest request, Long boardId);

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConsumerBoardResponseDto {
+public class BoardResponseDto {
 
     private String title;
     private String content;
@@ -18,9 +18,9 @@ public class ConsumerBoardResponseDto {
     //createAt - Base엔티티 수정시 추가 예정
 
     // 정적 팩토리 메서드
-    public static ConsumerBoardResponseDto from(BoardQueryDto boardQueryDto){
+    public static BoardResponseDto from(BoardQueryDto boardQueryDto){
 
-        ConsumerBoardResponseDto boardDto = new ConsumerBoardResponseDto();
+        BoardResponseDto boardDto = new BoardResponseDto();
         boardDto.title = boardQueryDto.getTitle();
         boardDto.content = boardQueryDto.getContent();
         boardDto.answered = boardQueryDto.isAnswered();

@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class ConsumerBoardRequestDto {
+public class BoardRequestDto {
 
     private BoardType boardType;
     private String title;
