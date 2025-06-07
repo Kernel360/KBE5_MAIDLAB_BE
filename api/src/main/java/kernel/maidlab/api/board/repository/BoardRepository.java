@@ -15,9 +15,9 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
 
     // 나중에 쿼리dsl로 바꿀 예정
     // todo: 나중에 쿼리dsl로 바꿀 예정
-    @Query("SELECT b, a " +
+    @Query("SELECT b " +
             "FROM Board b " +
-            "LEFT JOIN FETCH b.answer a " +
+            "LEFT JOIN FETCH b.answer " +
             "WHERE b.id = :boardId " +
             "AND b.isAnswered = true " +
             "AND b .isDeleted = false")
