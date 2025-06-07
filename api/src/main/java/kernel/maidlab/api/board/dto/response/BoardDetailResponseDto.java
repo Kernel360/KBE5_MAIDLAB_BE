@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConsumerBoardDetailResponseDto {
+public class BoardDetailResponseDto {
 
     private String title;
     private String content;
@@ -24,9 +24,9 @@ public class ConsumerBoardDetailResponseDto {
     private AnswerResponseDto answer;
 
 
-    public static ConsumerBoardDetailResponseDto from (Board board, List<Image> images){
+    public static BoardDetailResponseDto from (Board board, List<Image> images){
 
-        return new ConsumerBoardDetailResponseDto(
+        return new BoardDetailResponseDto(
                 board.getTitle(),
                 board.getContent(),
                 board.isAnswered(),

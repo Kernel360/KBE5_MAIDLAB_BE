@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.board.dto.request.AnswerRequestDto;
-import kernel.maidlab.api.board.dto.response.ConsumerBoardResponseDto;
-import kernel.maidlab.api.board.service.ConsumerBoardService;
+import kernel.maidlab.api.board.dto.response.BoardResponseDto;
+import kernel.maidlab.api.board.service.BoardService;
 import kernel.maidlab.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 
@@ -24,21 +24,21 @@ import lombok.RequiredArgsConstructor;
 public class AdminBoardControllerImpl implements AdminBoardApi {
 
 
-	private final ConsumerBoardService boardService;
+	private final BoardService boardService;
 
 	@GetMapping
 	@Override
-	public ResponseEntity<ResponseDto<List<ConsumerBoardResponseDto>>> refund(HttpServletRequest request,
-		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-		List<ConsumerBoardResponseDto> dto = boardService.getAllRefundBoardList(request, page, size);
+	public ResponseEntity<ResponseDto<List<BoardResponseDto>>> refund(HttpServletRequest request,
+																	  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+		List<BoardResponseDto> dto = boardService.getAllRefundBoardList(request, page, size);
 		return ResponseDto.success(dto);
 	}
 
 	@GetMapping("/consultation")
 	@Override
-	public ResponseEntity<ResponseDto<List<ConsumerBoardResponseDto>>> consultation(HttpServletRequest request,
-		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-		List<ConsumerBoardResponseDto> dto = boardService.getAllConsultationBoardList(request, page, size);
+	public ResponseEntity<ResponseDto<List<BoardResponseDto>>> consultation(HttpServletRequest request,
+																			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+		List<BoardResponseDto> dto = boardService.getAllConsultationBoardList(request, page, size);
 		return ResponseDto.success(dto);
 	}
 

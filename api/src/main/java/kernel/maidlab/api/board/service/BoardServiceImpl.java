@@ -5,9 +5,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.auth.entity.Consumer;
 import kernel.maidlab.api.board.dto.BoardQueryDto;
 import kernel.maidlab.api.board.dto.request.AnswerRequestDto;
-import kernel.maidlab.api.board.dto.request.ConsumerBoardRequestDto;
-import kernel.maidlab.api.board.dto.response.ConsumerBoardDetailResponseDto;
-import kernel.maidlab.api.board.dto.response.ConsumerBoardResponseDto;
+import kernel.maidlab.api.board.dto.request.BoardRequestDto;
+import kernel.maidlab.api.board.dto.response.BoardDetailResponseDto;
+import kernel.maidlab.api.board.dto.response.BoardResponseDto;
 import kernel.maidlab.api.board.entity.Answer;
 import kernel.maidlab.api.board.entity.Board;
 import kernel.maidlab.api.board.entity.Image;
@@ -29,7 +29,7 @@ import java.util.Optional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ConsumerBoardServiceImpl implements ConsumerBoardService {
+public class BoardServiceImpl implements BoardService {
 
 	private final BoardRepository boardRepository;
 	private final ImageRepository imageRepository;
@@ -37,13 +37,13 @@ public class ConsumerBoardServiceImpl implements ConsumerBoardService {
     private final AnswerRepository answerRepository;
 	// 수요자 게시판 글 생성
 	public void createConsumerBoard(HttpServletRequest request,
-		ConsumerBoardRequestDto consumerBoardRequestDto) {
+		BoardRequestDto boardRequestDto) {
 
 		Consumer consumer = authUtil.getConsumer(request);
-		Board board = Board.createConsumerBoard(consumer, consumerBoardRequestDto);
+		Board board = Board.createConsumerBoard(consumer, boardRequestDto);
 		boardRepository.save(board);
 
-		consumerBoardRequestDto.getImages()
+		boardRequestDto.getImages()
 			.forEach((imageDto) -> imageRepository.save(
 				new Image(
 					board,
@@ -53,19 +53,19 @@ public class ConsumerBoardServiceImpl implements ConsumerBoardService {
 
 	// 수요자 게시글 전체 조회
 	@Transactional(readOnly = true)
-	public List<ConsumerBoardResponseDto> getConsumerBoardList(HttpServletRequest request) {
+	public List<BoardResponseDto> getConsumerBoardList(HttpServletRequest request) {
 
 		String uuid = authUtil.getUuid(request);
 		List<BoardQueryDto> boardQueryDto = boardRepository.findAllByConsumerUuid(uuid);
 
 		return boardQueryDto.stream()
-			.map(ConsumerBoardResponseDto::from)
+			.map(BoardResponseDto::from)
 			.toList();
 	}
 
 	// 수요자 글 상세 조회
-	public ConsumerBoardDetailResponseDto getConsumerBoard(HttpServletRequest request,
-		Long boardId) throws AccessDeniedException {
+	public BoardDetailResponseDto getConsumerBoard(HttpServletRequest request,
+												   Long boardId) throws AccessDeniedException {
 
 		// 검증 로직
 		Consumer consumer = authUtil.getConsumer(request);
@@ -85,27 +85,27 @@ public class ConsumerBoardServiceImpl implements ConsumerBoardService {
 
 		List<Image> images = imageRepository.findAllByBoardId(boardId);
 
-		return ConsumerBoardDetailResponseDto.from(board, images);
+		return BoardDetailResponseDto.from(board, images);
 
 	}
 
 	@Override
-	public List<ConsumerBoardResponseDto> getAllRefundBoardList(HttpServletRequest request, int page, int size) {
+	public List<BoardResponseDto> getAllRefundBoardList(HttpServletRequest request, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		List<BoardQueryDto> boardQueryDto = boardRepository.findAllByManagerIdNull(pageable);
 
 		return boardQueryDto.stream()
-			.map(ConsumerBoardResponseDto::from)
+			.map(BoardResponseDto::from)
 			.toList();
 	}
 
 	@Override
-	public List<ConsumerBoardResponseDto> getAllConsultationBoardList(HttpServletRequest request, int page, int size) {
+	public List<BoardResponseDto> getAllConsultationBoardList(HttpServletRequest request, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		List<BoardQueryDto> boardQueryDto = boardRepository.findAllByConsumerIdNull(pageable);
 
 		return boardQueryDto.stream()
-			.map(ConsumerBoardResponseDto::from)
+			.map(BoardResponseDto::from)
 			.toList();
 	}
 
