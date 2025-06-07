@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import kernel.maidlab.api.auth.entity.Consumer;
 import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.api.board.dto.request.BoardRequestDto;
+import kernel.maidlab.api.board.dto.request.BoardUpdateRequestDto;
 import kernel.maidlab.common.entity.Base;
 import kernel.maidlab.api.board.eum.BoardType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -27,8 +29,8 @@ public class Board extends Base {
    @OneToOne(mappedBy = "board", cascade = CascadeType.ALL)
     private Answer answer;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Image> imageList;
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -40,8 +42,23 @@ public class Board extends Base {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
-    private boolean answered;
+    @Column(name = "is_answered", nullable = false)
+    private boolean isAnswered;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
+    public boolean getIsAnswered(){
+        return  isAnswered;
+    }
+
+    public boolean getIsDeleted(){
+        return isDeleted;
+    }
+
+    public void updateIsDelete(boolean isDeleted){
+        this.isDeleted = isDeleted;
+    }
 
     public Board(Consumer consumer, BoardType boardType, String title, String content) {
         this.consumer = consumer;
@@ -59,7 +76,17 @@ public class Board extends Base {
         );
     }
 
+    public List<Image> getImages() {
+        return images != null ? images : Collections.emptyList();
+    }
+
+    public void boardUpdate(BoardUpdateRequestDto dto) {
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
+        this.boardType = dto.getBoardType();
+    }
+
     public void makeAnswer() {
-        this.answered = true;
+        this.isAnswered = true;
     }
 }
