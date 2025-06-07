@@ -48,13 +48,11 @@ public class BoardServiceImpl implements BoardService {
 	// 게시판 글 생성
 	public void createConsumerBoard(
 			HttpServletRequest request,
-			BoardRequestDto boardRequestDto) {
+			BoardRequestDto boardRequestDto)
+	{
+		UserBase user = (UserBase) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 
-
-		// todo: 사용자에 따른 게시판 생성 로직 리팩토링 필요
-		// 현재 수요자 기준으로 게시핀이 생성됨
-		Consumer consumer = authUtil.getConsumer(request);
-		Board board = Board.createConsumerBoard(consumer, boardRequestDto);
+		Board board = Board.createConsumerBoard(user, boardRequestDto);
 		boardRepository.save(board);
 
 		boardRequestDto.getImages()
@@ -65,13 +63,11 @@ public class BoardServiceImpl implements BoardService {
 								imageDto.getName())));
 	}
 
-
-
 	// 게시글 전체 조회
 	@Transactional(readOnly = true)
 	public List<BoardResponseDto> getConsumerBoardList(HttpServletRequest request) {
 
-		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		UserBase user = (UserBase) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 		UserType userType = (UserType) request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
 
 		List<BoardQueryDto> boardQueryDtoList = getBoardQueryDtoList(user, userType);
@@ -88,14 +84,13 @@ public class BoardServiceImpl implements BoardService {
 			Long boardId
 	) throws AccessDeniedException {
 
-		// todo: 사용자에 따른 상세 접근 필요
-		// 검증 로직
-		Consumer consumer = authUtil.getConsumer(request);
+		UserBase user = (UserBase) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+
 		Board board = boardRepository.findByIdAndIsDeletedFalse(boardId)
 				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시물 입니다."));
 
 		// 토큰으로 찾은 수요자id와 PathVariable로 넘어온 게시판id로 찾은 consumerId와 비교
-		if (!consumer.getId().equals(board.getConsumer().getId())) {
+		if (!board.isAccessibleBy(user)) {
 			throw new AccessDeniedException("해당 게시글에 접근할 권한이 없습니다.");
 		}
 
@@ -162,7 +157,7 @@ public class BoardServiceImpl implements BoardService {
 
 
 	// user타입에 따른 board 조회
-	public List<BoardQueryDto> getBoardQueryDtoList (Object user, UserType userType) {
+	public List<BoardQueryDto> getBoardQueryDtoList (UserBase user, UserType userType) {
 
 		if (userType == UserType.CONSUMER) {
 			Consumer consumer = (Consumer) user;
@@ -188,7 +183,6 @@ public class BoardServiceImpl implements BoardService {
 			default -> throw new IllegalArgumentException("유효하지 않은 사용자 유형 입니다.");
 		};
 	}
-
 
 	// 이미지 수정 로직
 	// todo:너무 많은 역할을 담담하고 있음 - 추후 리펙토링 필요
