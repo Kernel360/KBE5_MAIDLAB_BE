@@ -13,4 +13,14 @@ public class BoardRequestDto {
     private String title;
     private String content;
     private List<ImageDto> images;
+
+    @Override
+    public String toString() {
+        return "ConsumerBoardRequestDto{" +
+                "boardType=" + boardType +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", images=" + images +
+                '}';
+    }
 }
