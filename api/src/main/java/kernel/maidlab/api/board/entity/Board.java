@@ -3,6 +3,7 @@ package kernel.maidlab.api.board.entity;
 import jakarta.persistence.*;
 import kernel.maidlab.api.auth.entity.Consumer;
 import kernel.maidlab.api.auth.entity.Manager;
+import kernel.maidlab.api.board.common.UserBase;
 import kernel.maidlab.api.board.dto.request.BoardRequestDto;
 import kernel.maidlab.api.board.dto.request.BoardUpdateRequestDto;
 import kernel.maidlab.common.entity.Base;
@@ -60,20 +61,40 @@ public class Board extends Base {
         this.isDeleted = isDeleted;
     }
 
-    public Board(Consumer consumer, BoardType boardType, String title, String content) {
-        this.consumer = consumer;
+    public Board(UserBase user, BoardType boardType, String title, String content) {
+        if (user instanceof Consumer consumer) {
+            this.consumer = consumer;
+        } else if (user instanceof Manager manager) {
+            this.manager = manager;
+        } else {
+            throw new IllegalArgumentException("지원하지 않는 사용자 타입입니다.");
+        }
+
         this.boardType = boardType;
         this.title = title;
         this.content = content;
     }
 
-    public static Board createConsumerBoard(Consumer consumer, BoardRequestDto boardRequestDto){
-        return new Board(
-                consumer,
-                boardRequestDto.getBoardType(),
-                boardRequestDto.getTitle(),
-                boardRequestDto.getContent()
-        );
+    public static Board createConsumerBoard(UserBase user, BoardRequestDto boardRequestDto){
+
+        if (user instanceof Consumer) {
+            return new Board(
+                    (Consumer) user,
+                    boardRequestDto.getBoardType(),
+                    boardRequestDto.getTitle(),
+                    boardRequestDto.getContent()
+            );
+
+        } else if (user instanceof Manager) {
+            return new Board(
+                    (Manager) user,
+                    boardRequestDto.getBoardType(),
+                    boardRequestDto.getTitle(),
+                    boardRequestDto.getContent());
+
+        } else {
+            throw new IllegalArgumentException("지원하지 않는 사용자 타입입니다.");
+        }
     }
 
     public List<Image> getImages() {
@@ -88,5 +109,15 @@ public class Board extends Base {
 
     public void makeAnswer() {
         this.isAnswered = true;
+    }
+
+    public boolean isAccessibleBy(UserBase user) {
+        if (user instanceof Consumer consumer) {
+            return this.consumer != null && this.consumer.getId().equals(consumer.getId());
+        }
+        if (user instanceof Manager manager) {
+            return this.manager != null && this.manager.getId().equals(manager.getId());
+        }
+        return false;
     }
 }
