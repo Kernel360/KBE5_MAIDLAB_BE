@@ -37,6 +37,7 @@ public interface AdminBoardApi {
 	@PostMapping("/answer")
 	@Operation(summary = "답변 게시물 생성", description = "답변 게시판의 게시물을 생성합니다.")
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "게시물 생성 성공 (SU)"),
+		@ApiResponse(responseCode = "400", description = "Validation failed (VF)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<String>> answer(AnswerRequestDto requestDto, HttpServletRequest request, Long boardId);
@@ -44,6 +45,7 @@ public interface AdminBoardApi {
 	@PatchMapping("/answer/{answerId}")
 	@Operation(summary = "답변 게시물 수정", description = "답변 게시판의 게시물을 수정합니다.")
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "게시물 수정 성공 (SU)"),
+		@ApiResponse(responseCode = "400", description = "Validation failed (VF)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<String>> answer(AnswerRequestDto requestDto, @PathVariable Long answerId);
