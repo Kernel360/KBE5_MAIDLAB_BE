@@ -13,7 +13,7 @@ public class BoardResponseDto {
 
     private String title;
     private String content;
-    private boolean answered;
+    private boolean isAnswered;
     private BoardType boardType;
     //createAt - Base엔티티 수정시 추가 예정
 
@@ -23,7 +23,7 @@ public class BoardResponseDto {
         BoardResponseDto boardDto = new BoardResponseDto();
         boardDto.title = boardQueryDto.getTitle();
         boardDto.content = boardQueryDto.getContent();
-        boardDto.answered = boardQueryDto.isAnswered();
+        boardDto.isAnswered = boardQueryDto.isAnswered();
         boardDto.boardType = boardQueryDto.getBoardType();
         return boardDto;
     }
