@@ -105,6 +105,7 @@ public class ConsumerService {
         Pageable pageable = PageRequest.of(page, size);
         return consumerRepository.findAll(pageable)
             .map(consumer -> new ConsumerListResponseDto(
+                consumer.getId(),
                 consumer.getPhoneNumber(),
                 consumer.getName(),
                 consumer.getUuid()
