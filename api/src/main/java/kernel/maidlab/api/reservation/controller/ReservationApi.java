@@ -1,4 +1,5 @@
 package kernel.maidlab.api.reservation.controller;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -29,7 +30,6 @@ import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import lombok.Generated;
 
-
 @Tag(name = "Reservation", description = "예약(Reservation) 관련 API")
 @Generated
 public interface ReservationApi {
@@ -51,7 +51,8 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "403", description = "Do not have permission (NP)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
 	})
-	ResponseEntity<ResponseDto<ReservationDetailResponseDto>> reservationDetail(@PathVariable Long reservationId, HttpServletRequest request);
+	ResponseEntity<ResponseDto<ReservationDetailResponseDto>> reservationDetail(@PathVariable Long reservationId,
+		HttpServletRequest request);
 
 	@Operation(summary = "예약 생성", description = "예약 정보를 등록합니다.", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses(value = {
@@ -61,12 +62,7 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "403", description = "Do not have permission (NP)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
 	})
-	ResponseEntity<ResponseDto<String>> create(
-		@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "예약 요청 DTO", required = true, content = @Content(
-			schema = @Schema(implementation = ReservationRequestDto.class),
-			examples = @ExampleObject(name = "reservationRequest", value = "{\"userId\": 1, \"serviceType\": \"HOUSEKEEPING\", \"reservationDate\": \"2025-06-10\", \"price\": 50000}")))
-		@RequestBody ReservationRequestDto dto,
-		HttpServletRequest request);
+	ResponseEntity<ResponseDto<String>> create(@RequestBody ReservationRequestDto dto,HttpServletRequest request);
 
 	@Operation(summary = "결제 금액 확인", description = "총 결제 금액 검증 API.", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses(value = {
@@ -87,7 +83,8 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "403", description = "Do not have permission (NP)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
 	})
-	ResponseEntity<ResponseDto<String>> managerResponseToReservation(@PathVariable Long reservationId, @RequestBody ReservationIsApprovedRequestDto dto, HttpServletRequest request);
+	ResponseEntity<ResponseDto<String>> managerResponseToReservation(@PathVariable Long reservationId,
+		@RequestBody ReservationIsApprovedRequestDto dto, HttpServletRequest request);
 
 	@Operation(summary = "Check-In", description = "현장 체크인 API", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses(value = {
@@ -98,7 +95,8 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "403", description = "Do not have permission (NP)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
 	})
-	ResponseEntity<ResponseDto<String>> checkin(@PathVariable Long reservationId, @RequestBody CheckInOutRequestDto dto, HttpServletRequest request);
+	ResponseEntity<ResponseDto<String>> checkin(@PathVariable Long reservationId, @RequestBody CheckInOutRequestDto dto,
+		HttpServletRequest request);
 
 	@Operation(summary = "Check-Out", description = "현장 체크아웃 API", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses(value = {
@@ -109,7 +107,8 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "403", description = "Do not have permission (NP)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
 	})
-	ResponseEntity<ResponseDto<String>> checkout(@PathVariable Long reservationId, @RequestBody CheckInOutRequestDto dto, HttpServletRequest request);
+	ResponseEntity<ResponseDto<String>> checkout(@PathVariable Long reservationId,
+		@RequestBody CheckInOutRequestDto dto, HttpServletRequest request);
 
 	@Operation(summary = "예약 취소", description = "예약 취소 요청 API", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses(value = {
@@ -129,7 +128,8 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "403", description = "Do not have permission (NP)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
 	})
-	ResponseEntity<ResponseDto<String>> review(@PathVariable Long reservationId, @RequestBody ReviewRegisterRequestDto dto, HttpServletRequest request);
+	ResponseEntity<ResponseDto<String>> review(@PathVariable Long reservationId,
+		@RequestBody ReviewRegisterRequestDto dto, HttpServletRequest request);
 
 	@Operation(summary = "주간 정산 조회", description = "매니저 주간 정산 정보 조회 API", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses(value = {
@@ -138,5 +138,6 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "403", description = "Do not have permission (NP)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
 	})
-	ResponseEntity<ResponseDto<WeeklySettlementResponseDto>> getWeeklySettlements(HttpServletRequest request, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate);
+	ResponseEntity<ResponseDto<WeeklySettlementResponseDto>> getWeeklySettlements(HttpServletRequest request,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate);
 }
