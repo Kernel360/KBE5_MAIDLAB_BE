@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface ManagerRegionRepository extends JpaRepository<ManagerRegion, String> {
-	List<ManagerRegion> findByManagerId(Manager manager);
+	List<ManagerRegion> findByManagerId(Long managerId);
 
 	@Query("SELECT r.regionName FROM ManagerRegion mr JOIN mr.regionId r WHERE mr.manager.id = :managerId")
 	List<String> findRegionNamesByManagerId(@Param("managerId") Long managerId);
