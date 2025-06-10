@@ -42,7 +42,7 @@ public class EventServiceImpl implements EventService {
 				event.getId(),
 				event.getTitle(),
 				event.getMainImageUrl(),
-				event.getCreateAt()
+				event.getCreatedAt()
 			))
 			.collect(Collectors.toList());
 
@@ -64,7 +64,7 @@ public class EventServiceImpl implements EventService {
 			event.getTitle(),
 			event.getImageUrl(),
 			event.getContent(),
-			event.getCreateAt()
+			event.getCreatedAt()
 		);
 
 		return ResponseDto.success(responseDto);
