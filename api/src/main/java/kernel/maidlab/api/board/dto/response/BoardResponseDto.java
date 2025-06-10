@@ -1,6 +1,7 @@
 package kernel.maidlab.api.board.dto.response;
 
 import kernel.maidlab.api.board.dto.BoardQueryDto;
+import kernel.maidlab.api.board.entity.Board;
 import kernel.maidlab.api.board.eum.BoardType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,16 @@ public class BoardResponseDto {
         boardDto.content = boardQueryDto.getContent();
         boardDto.isAnswered = boardQueryDto.isAnswered();
         boardDto.boardType = boardQueryDto.getBoardType();
+        return boardDto;
+    }
+
+    public static BoardResponseDto fromBoard(Board board){
+
+        BoardResponseDto boardDto = new BoardResponseDto();
+        boardDto.title = board.getTitle();
+        boardDto.content = board.getContent();
+        boardDto.isAnswered = board.getIsAnswered();
+        boardDto.boardType = board.getBoardType();
         return boardDto;
     }
 }

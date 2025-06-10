@@ -244,20 +244,20 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public List<BoardResponseDto> getAllRefundBoardList(HttpServletRequest request, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
-		List<BoardQueryDto> boardQueryDto = boardRepository.findAllByManagerIdNull(pageable);
+		List<Board> board= boardRepository.findAllByManagerIdNull(pageable);
 
-		return boardQueryDto.stream()
-			.map(BoardResponseDto::from)
+		return board.stream()
+			.map(BoardResponseDto::fromBoard)
 			.toList();
 	}
 
 	@Override
 	public List<BoardResponseDto> getAllConsultationBoardList(HttpServletRequest request, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
-		List<BoardQueryDto> boardQueryDto = boardRepository.findAllByConsumerIdNull(pageable);
+		List<Board> boards = boardRepository.findAllByConsumerIdNull(pageable);
 
-		return boardQueryDto.stream()
-			.map(BoardResponseDto::from)
+		return boards.stream()
+			.map(BoardResponseDto::fromBoard)
 			.toList();
 	}
 

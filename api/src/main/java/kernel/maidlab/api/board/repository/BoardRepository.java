@@ -32,7 +32,7 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
     // 단건 조회
     Optional<Board> findByIdAndIsDeletedFalse(Long id);
 
-	List<BoardQueryDto> findAllByManagerIdNull(Pageable pageable);
+	List<Board> findAllByManagerIdNull(Pageable pageable);
 
-	List<BoardQueryDto> findAllByConsumerIdNull(Pageable pageable);
+	List<Board> findAllByConsumerIdNull(Pageable pageable);
 }
