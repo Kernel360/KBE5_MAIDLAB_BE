@@ -40,12 +40,12 @@ public class Event extends Base {
 	private String content;
 
 	@CreationTimestamp
-	@Column(name = "create_at", nullable = false)
-	private LocalDateTime createAt;
+	@Column(name = "created_at", nullable = false)
+	private LocalDateTime createdAt;
 
 	@UpdateTimestamp
-	@Column(name = "update_at", nullable = false)
-	private LocalDateTime updateAt;
+	@Column(name = "updated_at", nullable = false)
+	private LocalDateTime updatedAt;
 
 	private Event(Admin admin, String title,String mainImageUrl, String imageUrl, String content) {
 		this.admin = admin;
