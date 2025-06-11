@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.admin.board.service.AdminBoardService;
 import kernel.maidlab.api.board.dto.request.AnswerRequestDto;
 import kernel.maidlab.api.board.dto.response.BoardDetailResponseDto;
 import kernel.maidlab.api.board.dto.response.BoardResponseDto;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminBoardControllerImpl implements AdminBoardApi {
 
+	private final AdminBoardService adminboardService;
 	private final BoardService boardService;
 
 	@GetMapping("/refund")
@@ -47,7 +49,7 @@ public class AdminBoardControllerImpl implements AdminBoardApi {
 	@Override
 	public ResponseEntity<ResponseDto<BoardDetailResponseDto>> detail(HttpServletRequest request,
 		@RequestParam Long boardId) throws AccessDeniedException {
-		BoardDetailResponseDto dto = boardService.getConsumerBoard(request, boardId);
+		BoardDetailResponseDto dto = adminboardService.adminGetConsumerBoard(request, boardId);
 		return ResponseDto.success(dto);
 	}
 
