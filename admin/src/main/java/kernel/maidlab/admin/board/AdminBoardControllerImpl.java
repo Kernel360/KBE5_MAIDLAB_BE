@@ -48,7 +48,7 @@ public class AdminBoardControllerImpl implements AdminBoardApi {
 	@GetMapping("/{boardId}")
 	@Override
 	public ResponseEntity<ResponseDto<BoardDetailResponseDto>> detail(HttpServletRequest request,
-		@RequestParam Long boardId) throws AccessDeniedException {
+		@PathVariable Long boardId) throws AccessDeniedException {
 		BoardDetailResponseDto dto = adminboardService.adminGetConsumerBoard(request, boardId);
 		return ResponseDto.success(dto);
 	}
