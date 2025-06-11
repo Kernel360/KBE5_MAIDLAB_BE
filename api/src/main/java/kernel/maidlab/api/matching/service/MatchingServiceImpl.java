@@ -13,6 +13,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.entity.Manager;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.matching.dto.response.RequestMatchingListResponseDto;
+import kernel.maidlab.api.reservation.entity.Reservation;
+import kernel.maidlab.api.reservation.repository.ReservationRepository;
 import kernel.maidlab.api.util.AuthUtil;
 import kernel.maidlab.api.exception.BaseException;
 import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
@@ -25,13 +28,14 @@ import kernel.maidlab.common.enums.Status;
 
 @Service
 public class MatchingServiceImpl implements MatchingService {
-
+	private final ReservationRepository reservationRepository;
 	private final ManagerRepository managerRepository;
 	private final MatchingRepository matchingRepository;
 	private final AuthUtil authUtil;
 
-	public MatchingServiceImpl(ManagerRepository managerRepository, MatchingRepository matchingRepository,
-		AuthUtil authUtil) {
+	public MatchingServiceImpl(ReservationRepository reservationRepository, ManagerRepository managerRepository,
+		MatchingRepository matchingRepository, AuthUtil authUtil) {
+		this.reservationRepository = reservationRepository;
 		this.managerRepository = managerRepository;
 		this.matchingRepository = matchingRepository;
 		this.authUtil = authUtil;
@@ -81,19 +85,24 @@ public class MatchingServiceImpl implements MatchingService {
 				.build())
 			.toList();
 	}
-  
+
 	@Override
-	public List<MatchingResponseDto> myMatching(HttpServletRequest request, int page, int size) {
+	public List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size) {
 		Manager me = authUtil.getManager(request);
-		Page<Matching> matchings;
 		Pageable pageable = PageRequest.of(page, size);
-		matchings = matchingRepository.findByManagerId(me.getId(), pageable);
+
+		Page<Matching> matchings = matchingRepository.findByManagerId(me.getId(), pageable);
+
 		return matchings.stream()
-			.map(matching -> MatchingResponseDto.builder()
-				.reservationId(matching.getReservationId())
-				.managerId(matching.getManagerId())
-				.matchingStatus(matching.getMatchingStatus())
-				.build())
+			.filter(
+				matching -> matching.getMatchingStatus() != null && matching.getMatchingStatus().equals(Status.PENDING))
+			.map(matching -> {
+				Long reservationId = matching.getReservationId();
+				Reservation reservation = reservationRepository.findById(reservationId)
+					.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
+
+				return new RequestMatchingListResponseDto(reservation);
+			})
 			.toList();
 	}
 
@@ -107,7 +116,8 @@ public class MatchingServiceImpl implements MatchingService {
 				.reservationId(matching.getReservationId())
 				.managerId(matching.getManagerId())
 				.matchingStatus(matching.getMatchingStatus())
-				.build()).toList();
+				.build())
+			.toList();
 	}
 
 	private String extractGuFromAddress(String address) {

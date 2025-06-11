@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.util.AuthUtil;
+import kernel.maidlab.api.matching.dto.response.RequestMatchingListResponseDto;
 import kernel.maidlab.api.exception.BaseException;
 import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
 import kernel.maidlab.api.matching.dto.request.MatchingRequestDto;
 import kernel.maidlab.api.matching.dto.response.MatchingResponseDto;
-import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
@@ -29,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 public class MatchingController implements MatchingApi {
 
-
 	// private final AuthUtil authUtil;
 	private final MatchingService matchingService;
 	// private final MatchingRepository matchingRepository;
@@ -38,11 +36,11 @@ public class MatchingController implements MatchingApi {
 
 	@GetMapping
 	@Override
-	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> getMatching(HttpServletRequest request, @RequestParam int page, @RequestParam int size) {
-		List<MatchingResponseDto> response = matchingService.myMatching(request, page, size);
+	public ResponseEntity<ResponseDto<List<RequestMatchingListResponseDto>>> getMatching(HttpServletRequest request,
+		@RequestParam int page, @RequestParam int size) {
+		List<RequestMatchingListResponseDto> response = matchingService.myMatching(request, page, size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
-
 
 	@PostMapping("/matchmanager")
 	@Override
