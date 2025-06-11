@@ -185,8 +185,8 @@ public class AuthServiceImpl implements AuthService {
 			String origin = request.getHeader("Origin");
 			if (origin == null) {
 				origin = request.getHeader("Referer");
-				if (origin != null) {
-					origin = origin.replaceAll("(https?://[^/]+).*", "$1");
+				if (origin != null && origin.endsWith("/")) {
+					origin = origin.substring(0, origin.length() - 1);
 				}
 			}
 
