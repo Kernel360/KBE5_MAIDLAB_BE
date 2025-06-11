@@ -194,23 +194,35 @@ public class AuthServiceImpl implements AuthService {
 			String dynamicRedirectUri = origin != null ?
 				origin + "/google-callback" : googleRedirectUri;
 
-			log.info("구글 토큰 교환: origin={}, redirectUri={}", origin, dynamicRedirectUri);
+			log.info("구글 토큰 교환 시도:");
+			log.info("  - origin: {}", origin);
+			log.info("  - redirectUri: {}", dynamicRedirectUri);
+			log.info("  - clientId: {}", googleClientId != null ? googleClientId.substring(0, 10) + "..." : "null");
+			log.info("  - code: {}", authorizationCode != null ? authorizationCode.substring(0, 10) + "..." : "null");
 
 			GoogleTokenDto tokenDto = googleOAuthService.getGoogleToken(
 				authorizationCode,
 				googleClientId,
 				googleClientSecret,
-				dynamicRedirectUri  // 동적으로 생성된 URI 사용
+				dynamicRedirectUri
 			);
 
+			log.info("구글 토큰 교환 결과:");
+			log.info("  - tokenDto: {}", tokenDto != null ? "Present" : "null");
+			log.info("  - accessToken: {}", tokenDto != null && tokenDto.getAccessToken() != null ? "Present" : "null");
+
 			if (tokenDto == null || tokenDto.getAccessToken() == null) {
+				log.error("구글 토큰 교환 실패: tokenDto가 null이거나 accessToken이 없음");
 				throw new BaseException(ResponseType.LOGIN_FAILED);
 			}
 
+			log.info("구글 토큰 교환 성공");
 			return tokenDto.getAccessToken();
 		} catch (BaseException e) {
+			log.error("구글 토큰 교환 BaseException: {}", e.getMessage());
 			throw e;
 		} catch (Exception e) {
+			log.error("구글 토큰 교환 Exception: {}", e.getMessage(), e);
 			throw new BaseException(ResponseType.LOGIN_FAILED);
 		}
 	}
