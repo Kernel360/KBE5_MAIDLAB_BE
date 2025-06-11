@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,7 +52,7 @@ public interface AdminBoardApi {
 		@ApiResponse(responseCode = "400", description = "Validation failed (VF)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<String>> answer(AnswerRequestDto requestDto, HttpServletRequest request, Long boardId);
+	ResponseEntity<ResponseDto<String>> answer(@RequestBody AnswerRequestDto requestDto, HttpServletRequest request, Long boardId);
 
 	@PatchMapping("/answer/{answerId}")
 	@Operation(summary = "답변 게시물 수정", description = "답변 게시판의 게시물을 수정합니다.")
@@ -59,6 +60,6 @@ public interface AdminBoardApi {
 		@ApiResponse(responseCode = "400", description = "Validation failed (VF)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<String>> answer(AnswerRequestDto requestDto, @PathVariable Long answerId);
+	ResponseEntity<ResponseDto<String>> answer(@RequestBody AnswerRequestDto requestDto, @PathVariable Long answerId);
 
 }

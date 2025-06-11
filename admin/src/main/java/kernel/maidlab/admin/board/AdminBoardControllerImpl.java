@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,7 +56,7 @@ public class AdminBoardControllerImpl implements AdminBoardApi {
 
 	@PostMapping("/answer")
 	@Override
-	public ResponseEntity<ResponseDto<String>> answer(AnswerRequestDto requestDto, HttpServletRequest request,
+	public ResponseEntity<ResponseDto<String>> answer(@RequestBody AnswerRequestDto requestDto, HttpServletRequest request,
 		Long boardId) {
 		boardService.createAnswer(requestDto, request, boardId);
 		return ResponseDto.success("답변 생성 완료");
@@ -63,7 +64,7 @@ public class AdminBoardControllerImpl implements AdminBoardApi {
 
 	@PatchMapping("/answer/{answerId}")
 	@Override
-	public ResponseEntity<ResponseDto<String>> answer(AnswerRequestDto requestDto, @PathVariable Long answerId) {
+	public ResponseEntity<ResponseDto<String>> answer(@RequestBody AnswerRequestDto requestDto, @PathVariable Long answerId) {
 		boardService.modifyAnswer(requestDto, answerId);
 		return ResponseDto.success("답변 수정 완료");
 	}
