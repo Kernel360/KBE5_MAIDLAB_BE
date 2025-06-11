@@ -8,6 +8,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import lombok.extern.slf4j.Slf4j;
@@ -36,13 +37,39 @@ public class GoogleOAuthService {
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
+		log.info("Google OAuth API 호출:");
+		log.info("  - URL: {}", url);
+		log.info("  - client_id: {}", clientId != null ? clientId.substring(0, 10) + "..." : "null");
+		log.info("  - redirect_uri: {}", redirectUri);
+		log.info("  - code: {}", code != null ? code.substring(0, 10) + "..." : "null");
+		log.info("  - grant_type: authorization_code");
+
 		try {
 			ResponseEntity<GoogleTokenDto> response = restTemplate.postForEntity(
 				url, request, GoogleTokenDto.class);
 
-			return response.getBody();
+			log.info("Google OAuth API 성공:");
+			log.info("  - status: {}", response.getStatusCode());
+			log.info("  - body: {}", response.getBody() != null ? "Present" : "null");
+
+			GoogleTokenDto tokenDto = response.getBody();
+			if (tokenDto != null) {
+				log.info("  - access_token: {}", tokenDto.getAccessToken() != null ? "Present" : "null");
+				log.info("  - token_type: {}", tokenDto.getTokenType());
+			}
+
+			return tokenDto;
+
+		} catch (HttpClientErrorException e) {
+			// 4xx 에러 (400, 401, 403 등)
+			log.error("Google OAuth API 클라이언트 에러:");
+			log.error("  - status: {}", e.getStatusCode());
+			log.error("  - response: {}", e.getResponseBodyAsString());
+			throw new BaseException(ResponseType.LOGIN_FAILED);
 
 		} catch (Exception e) {
+			// 기타 에러 (네트워크, 파싱 등)
+			log.error("Google OAuth API 예외: {}", e.getMessage(), e);
 			throw new BaseException(ResponseType.LOGIN_FAILED);
 		}
 	}
