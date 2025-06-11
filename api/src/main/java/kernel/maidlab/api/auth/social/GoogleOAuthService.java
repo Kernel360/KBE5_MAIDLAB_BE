@@ -64,7 +64,9 @@ public class GoogleOAuthService {
 			// 4xx 에러 (400, 401, 403 등)
 			log.error("Google OAuth API 클라이언트 에러:");
 			log.error("  - status: {}", e.getStatusCode());
-			log.error("  - response: {}", e.getResponseBodyAsString());
+			log.error("  - status code value: {}", e.getStatusCode().value()); // 추가
+			log.error("  - response: '{}'", e.getResponseBodyAsString()); // 따옴표 추가로 빈 값 구분
+			log.error("  - response length: {}", e.getResponseBodyAsString().length()); // 추가
 			throw new BaseException(ResponseType.LOGIN_FAILED);
 
 		} catch (Exception e) {
