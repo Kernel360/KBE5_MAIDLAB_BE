@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BoardResponseDto {
 
+    private Long boardId;
     private String title;
     private String content;
     private boolean isAnswered;
@@ -22,6 +23,7 @@ public class BoardResponseDto {
     public static BoardResponseDto from(BoardQueryDto boardQueryDto){
 
         BoardResponseDto boardDto = new BoardResponseDto();
+        boardDto.boardId = boardQueryDto.getBoardId();
         boardDto.title = boardQueryDto.getTitle();
         boardDto.content = boardQueryDto.getContent();
         boardDto.isAnswered = boardQueryDto.isAnswered();

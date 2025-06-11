@@ -9,15 +9,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardQueryDto {
 
-    private Long consumerId;
+    private Long boardId;
     private String title;
     private String content;
     private BoardType boardType;
     private boolean answered;
 
     @QueryProjection
-    public BoardQueryDto(Long consumerId, String title, String content, BoardType boardType, boolean answered) {
-        this.consumerId = consumerId;
+    public BoardQueryDto(Long boardId, String title, String content, BoardType boardType, boolean answered) {
+        this.boardId = boardId;
         this.title = title;
         this.content = content;
         this.boardType = boardType;
