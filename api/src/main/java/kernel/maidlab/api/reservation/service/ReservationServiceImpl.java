@@ -84,19 +84,20 @@ public class ReservationServiceImpl implements ReservationService {
 		Manager manager = managerRepository.findById(reservation.getManagerId())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		// 매니저 선호도 테이블 관리
-		managerPreferenceRepository.save(new ManagerPreference(consumer, manager, dto.isLikes()));
-
-		// 매니저 평균 평점(average_rate) 관리
-		Long totalReviewedCnt = manager.getTotalReviewedCnt();
-		Float averageRate = manager.getAverageRate();
-		if (totalReviewedCnt == 0) {
-			manager.updateAverageRate(dto.getRating());
-		} else {
-			Float newAverageRate = (totalReviewedCnt * averageRate + dto.getRating()) / (totalReviewedCnt + 1);
-			manager.updateAverageRate(newAverageRate);
+		if (userType == UserType.CONSUMER) {
+			// 매니저 선호도 테이블 관리
+			managerPreferenceRepository.save(new ManagerPreference(consumer, manager, dto.isLikes()));
+			// 매니저 평균 평점(average_rate) 관리
+			Long totalReviewedCnt = manager.getTotalReviewedCnt();
+			Float averageRate = manager.getAverageRate();
+			if (totalReviewedCnt == 0) {
+				manager.updateAverageRate(dto.getRating());
+			} else {
+				Float newAverageRate = (totalReviewedCnt * averageRate + dto.getRating()) / (totalReviewedCnt + 1);
+				manager.updateAverageRate(newAverageRate);
+			}
+			managerRepository.save(manager);
 		}
-		managerRepository.save(manager);
 
 		// 리뷰 등록
 		Review review = Review.of(dto, reservation, isConsumerToManager);
