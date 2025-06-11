@@ -43,7 +43,7 @@ public interface AdminBoardApi {
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<BoardDetailResponseDto>> detail(HttpServletRequest request,
-		@RequestParam Long boardId) throws AccessDeniedException;
+		@PathVariable Long boardId) throws AccessDeniedException;
 
 	@PostMapping("/answer")
 	@Operation(summary = "답변 게시물 생성", description = "답변 게시판의 게시물을 생성합니다.")
