@@ -45,6 +45,13 @@ public class JwtFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest)request;
 		HttpServletResponse httpResponse = (HttpServletResponse)response;
 		String uri = httpRequest.getRequestURI();
+		String method = httpRequest.getMethod();
+
+		// OPTIONS 요청은 필터를 통과시킴
+		if (method.equals("OPTIONS")) {
+			chain.doFilter(request, response);
+			return;
+		}
 
 		// admin 경로는 이 필터에서 처리하지 않음
 		if (uri.startsWith("/api/admin/")) {
