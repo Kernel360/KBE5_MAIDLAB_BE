@@ -1,5 +1,6 @@
 package kernel.maidlab.admin.board;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.board.dto.request.AnswerRequestDto;
+import kernel.maidlab.api.board.dto.response.BoardDetailResponseDto;
 import kernel.maidlab.api.board.dto.response.BoardResponseDto;
 import kernel.maidlab.api.board.service.BoardService;
 import kernel.maidlab.common.dto.ResponseDto;
@@ -23,13 +25,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminBoardControllerImpl implements AdminBoardApi {
 
-
 	private final BoardService boardService;
 
 	@GetMapping("/refund")
 	@Override
 	public ResponseEntity<ResponseDto<List<BoardResponseDto>>> refund(HttpServletRequest request,
-																	  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 		List<BoardResponseDto> dto = boardService.getAllRefundBoardList(request, page, size);
 		return ResponseDto.success(dto);
 	}
@@ -37,8 +38,16 @@ public class AdminBoardControllerImpl implements AdminBoardApi {
 	@GetMapping("/consultation")
 	@Override
 	public ResponseEntity<ResponseDto<List<BoardResponseDto>>> consultation(HttpServletRequest request,
-																			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 		List<BoardResponseDto> dto = boardService.getAllConsultationBoardList(request, page, size);
+		return ResponseDto.success(dto);
+	}
+
+	@GetMapping("/{boardId}")
+	@Override
+	public ResponseEntity<ResponseDto<BoardDetailResponseDto>> detail(HttpServletRequest request,
+		@RequestParam Long boardId) throws AccessDeniedException {
+		BoardDetailResponseDto dto = boardService.getConsumerBoard(request, boardId);
 		return ResponseDto.success(dto);
 	}
 

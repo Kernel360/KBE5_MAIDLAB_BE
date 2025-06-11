@@ -12,32 +12,33 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BoardResponseDto {
 
-    private Long boardId;
-    private String title;
-    private String content;
-    private boolean isAnswered;
-    private BoardType boardType;
-    //createAt - Base엔티티 수정시 추가 예정
+	private Long boardId;
+	private String title;
+	private String content;
+	private boolean isAnswered;
+	private BoardType boardType;
+	//createAt - Base엔티티 수정시 추가 예정
 
-    // 정적 팩토리 메서드
-    public static BoardResponseDto from(BoardQueryDto boardQueryDto){
+	// 정적 팩토리 메서드
+	public static BoardResponseDto from(BoardQueryDto boardQueryDto) {
 
-        BoardResponseDto boardDto = new BoardResponseDto();
-        boardDto.boardId = boardQueryDto.getBoardId();
-        boardDto.title = boardQueryDto.getTitle();
-        boardDto.content = boardQueryDto.getContent();
-        boardDto.isAnswered = boardQueryDto.isAnswered();
-        boardDto.boardType = boardQueryDto.getBoardType();
-        return boardDto;
-    }
+		BoardResponseDto boardDto = new BoardResponseDto();
+		boardDto.boardId = boardQueryDto.getBoardId();
+		boardDto.title = boardQueryDto.getTitle();
+		boardDto.content = boardQueryDto.getContent();
+		boardDto.isAnswered = boardQueryDto.isAnswered();
+		boardDto.boardType = boardQueryDto.getBoardType();
+		return boardDto;
+	}
 
-    public static BoardResponseDto fromBoard(Board board){
+	public static BoardResponseDto fromBoard(Board board) {
 
-        BoardResponseDto boardDto = new BoardResponseDto();
-        boardDto.title = board.getTitle();
-        boardDto.content = board.getContent();
-        boardDto.isAnswered = board.getIsAnswered();
-        boardDto.boardType = board.getBoardType();
-        return boardDto;
-    }
+		BoardResponseDto boardDto = new BoardResponseDto();
+		boardDto.boardId = board.getId();
+		boardDto.title = board.getTitle();
+		boardDto.content = board.getContent();
+		boardDto.isAnswered = board.getIsAnswered();
+		boardDto.boardType = board.getBoardType();
+		return boardDto;
+	}
 }
