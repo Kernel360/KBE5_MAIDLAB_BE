@@ -194,6 +194,10 @@ public class AuthServiceImpl implements AuthService {
 			String dynamicRedirectUri = origin != null ?
 				origin + "/google-callback" : googleRedirectUri;
 
+			log.info("환경변수 확인:");
+			log.info("  - googleRedirectUri (환경변수): {}", googleRedirectUri);
+			log.info("  - dynamicRedirectUri (계산된 값): {}", dynamicRedirectUri);
+
 			log.info("구글 토큰 교환 시도:");
 			log.info("  - origin: {}", origin);
 			log.info("  - redirectUri: {}", dynamicRedirectUri);
