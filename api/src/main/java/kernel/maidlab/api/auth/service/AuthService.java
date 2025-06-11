@@ -13,7 +13,7 @@ public interface AuthService {
 
 	ResponseEntity<ResponseDto<LoginResponseDto>> login(LoginRequestDto loginRequestDto, HttpServletResponse res);
 
-	ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLogin(SocialLoginRequestDto socialLoginRequestDto,
+	ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLogin(SocialLoginRequestDto socialLoginRequestDto, HttpServletRequest request,
 		HttpServletResponse res);
 
 	ResponseEntity<ResponseDto<Void>> signUp(SignUpRequestDto signUpRequestDto);
