@@ -42,7 +42,7 @@ public interface AuthApi {
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLogin(
 		@RequestBody(description = "소셜 로그인 요청 DTO", required = true, content = @Content(schema = @Schema(implementation = SocialLoginRequestDto.class), examples = @ExampleObject(value = "{\"userType\":\"USER\",\"socialType\":\"KAKAO\",\"code\":\"authcode123\"}"))) SocialLoginRequestDto req,
-		HttpServletResponse res);
+		HttpServletRequest request, HttpServletResponse res);
 
 	@Operation(summary = "소셜 회원가입", description = "소셜 로그인 후 필수정보인 생년월일과 성별을 받아 회원가입을 완료합니다.")
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "소셜 회원가입 성공 (SU)"),

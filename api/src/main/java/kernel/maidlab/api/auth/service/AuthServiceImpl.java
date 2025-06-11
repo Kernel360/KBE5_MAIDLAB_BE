@@ -160,13 +160,16 @@ public class AuthServiceImpl implements AuthService {
 
 	// 소셜 로그인
 	@Override
-	public ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLogin(SocialLoginRequestDto req,
+	public ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLogin(
+		SocialLoginRequestDto req,
+		HttpServletRequest request,  // 추가
 		HttpServletResponse res) {
+
 		if (req.getCode() == null || req.getCode().trim().isEmpty()) {
 			throw new BaseException(ResponseType.VALIDATION_FAILED);
 		}
 
-		String accessToken = getGoogleAccessToken(req.getCode());
+		String accessToken = getGoogleAccessToken(req.getCode(), request);  // request 전달
 		GoogleResourceDto googleUser = getGoogleUserResource(accessToken);
 
 		if (req.getUserType() == UserType.CONSUMER) {
@@ -176,13 +179,28 @@ public class AuthServiceImpl implements AuthService {
 		}
 	}
 
-	private String getGoogleAccessToken(String authorizationCode) {
+	private String getGoogleAccessToken(String authorizationCode, HttpServletRequest request) {
 		try {
+			// 요청 헤더에서 origin 추출
+			String origin = request.getHeader("Origin");
+			if (origin == null) {
+				origin = request.getHeader("Referer");
+				if (origin != null) {
+					origin = origin.replaceAll("(https?://[^/]+).*", "$1");
+				}
+			}
+
+			// 동적 redirect URI 생성
+			String dynamicRedirectUri = origin != null ?
+				origin + "/google-callback" : googleRedirectUri;
+
+			log.info("구글 토큰 교환: origin={}, redirectUri={}", origin, dynamicRedirectUri);
+
 			GoogleTokenDto tokenDto = googleOAuthService.getGoogleToken(
 				authorizationCode,
 				googleClientId,
 				googleClientSecret,
-				googleRedirectUri
+				dynamicRedirectUri  // 동적으로 생성된 URI 사용
 			);
 
 			if (tokenDto == null || tokenDto.getAccessToken() == null) {

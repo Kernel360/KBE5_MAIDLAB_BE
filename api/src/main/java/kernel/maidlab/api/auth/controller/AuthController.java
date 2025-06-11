@@ -40,9 +40,9 @@ public class AuthController implements AuthApi {
 
 	@PostMapping("/social-login")
 	public ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLogin(
-		@Validated @RequestBody SocialLoginRequestDto req, HttpServletResponse res) {
+		@Validated @RequestBody SocialLoginRequestDto req, HttpServletRequest request, HttpServletResponse res) {
 
-		return authService.socialLogin(req, res);
+		return authService.socialLogin(req, request, res);
 	}
 
 	@PostMapping("/social-sign-up")
