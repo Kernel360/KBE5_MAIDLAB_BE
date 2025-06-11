@@ -204,7 +204,7 @@ public class ReservationServiceImpl implements ReservationService {
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		Long managerId = authUtil.getManager(request).getId();
-		if (!reservation.getStatus().equals(Status.APPROVED)) {
+		if (!reservation.getStatus().equals(Status.PENDING)) {
 			throw new ReservationException(ResponseType.VALIDATION_FAILED);
 		}
 		boolean isApproved = dto.getStatus(); // approved : true, rejected : false
