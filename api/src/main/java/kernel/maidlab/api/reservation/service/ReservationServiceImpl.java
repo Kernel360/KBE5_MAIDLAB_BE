@@ -23,6 +23,8 @@ import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.matching.dto.response.MatchingResponseDto;
+import kernel.maidlab.api.matching.entity.Matching;
 import kernel.maidlab.api.reservation.dto.response.AdminSettlementResponseDto;
 import kernel.maidlab.api.reservation.dto.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.api.reservation.dto.response.SettlementResponseDto;
@@ -200,7 +202,16 @@ public class ReservationServiceImpl implements ReservationService {
 		Long managerId = manager.getId();
 
 		Reservation reservation = Reservation.of(dto, consumerId, managerId, detailType);
-		reservationRepository.save(reservation);
+		Reservation matchingReservation = reservationRepository.save(reservation);
+
+		// 예약 완료 시 manager 매칭
+		Matching match = Matching.of( MatchingResponseDto.builder()
+			.reservationId(matchingReservation.getId())
+			.managerId(matchingReservation.getManagerId())
+			.matchingStatus(Status.PENDING)
+			.build() );
+		matchingRepository.save(match);
+
 	}
 
 	@Transactional

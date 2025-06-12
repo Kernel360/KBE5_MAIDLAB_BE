@@ -53,7 +53,7 @@ public class ReservationController implements ReservationApi {
 	public ResponseEntity<ResponseDto<String>> create(@RequestBody ReservationRequestDto dto,
 		HttpServletRequest request) {
 		reservationService.createReservation(dto, request);
-		String response = "예약 등록이 완료되었습니다.";
+		String response = "success";
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 
