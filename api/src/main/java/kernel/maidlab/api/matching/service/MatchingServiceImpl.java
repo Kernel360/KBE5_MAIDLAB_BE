@@ -71,6 +71,7 @@ public class MatchingServiceImpl implements MatchingService {
 	public void changeManager(Long reservationId, Long managerId) {
 		Matching matching = matchingRepository.findByReservationId(reservationId);
 		matching.setManagerId(managerId);
+		matching.setMatchingStatus(Status.PENDING);
 	}
 
 	@Override
