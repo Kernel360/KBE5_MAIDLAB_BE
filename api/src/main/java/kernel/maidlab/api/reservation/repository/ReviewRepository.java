@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import kernel.maidlab.api.reservation.entity.Reservation;
 import kernel.maidlab.api.reservation.entity.Review;
 
 @Repository
@@ -28,4 +29,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         ORDER BY r.review_date DESC
         """, nativeQuery = true)
 	List<Object[]> findManagerReviewDetails(@Param("managerId") Long managerId);
+	Boolean existsReviewsByReservationId(Long reservationId);
 }
