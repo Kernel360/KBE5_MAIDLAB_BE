@@ -86,7 +86,10 @@ public class ReservationServiceImpl implements ReservationService {
 
 		if (userType == UserType.CONSUMER) {
 			// 매니저 선호도 테이블 관리
-			managerPreferenceRepository.save(new ManagerPreference(consumer, manager, dto.isLikes()));
+			if (dto.getLikes() != null) {
+				managerPreferenceRepository.save(new ManagerPreference(consumer, manager, dto.getLikes()));
+			}
+
 			// 매니저 평균 평점(average_rate) 관리
 			Long totalReviewedCnt = manager.getTotalReviewedCnt();
 			Float averageRate = manager.getAverageRate();
@@ -120,6 +123,8 @@ public class ReservationServiceImpl implements ReservationService {
 		return reservations.stream()
 			.map(reservation -> ReservationResponseDto.builder()
 				.reservationId(reservation.getId())
+				.isExistReview(reviewRepository.existsReviewsByReservationId(reservation.getId()))
+				.status(reservation.getStatus())
 				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
 				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
 				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
@@ -147,6 +152,7 @@ public class ReservationServiceImpl implements ReservationService {
 			.collect(toList());
 
 		return ReservationDetailResponseDto.builder()
+			.status(reservation.getStatus())
 			.serviceType(reservation.getServiceDetailType().getServiceType().toString())
 			.serviceDetailType(reservation.getServiceDetailType().getServiceDetailType())
 			.address(reservation.getAddress())
