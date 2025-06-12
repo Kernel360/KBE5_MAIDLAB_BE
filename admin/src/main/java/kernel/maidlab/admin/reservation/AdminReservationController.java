@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.reservation.dto.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.api.reservation.dto.response.SettlementResponseDto;
 import kernel.maidlab.api.reservation.service.ReservationService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
@@ -65,6 +67,27 @@ public class AdminReservationController implements AdminReservationApi {
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 
+	@GetMapping("settlement/{settlementId}")
+	@Override
+	public ResponseEntity<ResponseDto<SettlementResponseDto>> getSettlementDetail(HttpServletRequest request,
+		@PathVariable Long settlementId){
+		SettlementResponseDto response = reservationService.getSettlementDetail(settlementId, request);
+		return ResponseDto.success(ResponseType.SUCCESS, response);
+	}
 
+	@PatchMapping("settlement/{settlementId}/approve")
+	@Override
+	public ResponseEntity<ResponseDto<String>> settlementApprove(HttpServletRequest request,
+		@PathVariable Long settlementId){
+		reservationService.settlementApprove(settlementId);
+		return ResponseDto.success("success");
+	}
 
+	@PatchMapping("settlement/{settlementId}/reject")
+	@Override
+	public ResponseEntity<ResponseDto<String>> settlementReject(HttpServletRequest request,
+		@PathVariable Long settlementId){
+		reservationService.settlementReject(settlementId);
+		return ResponseDto.success("success");
+	}
 }
