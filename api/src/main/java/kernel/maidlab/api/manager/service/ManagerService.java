@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.manager.dto.ManagerListResponseDto;
 import kernel.maidlab.api.manager.dto.ManagerResponseDto;
+import kernel.maidlab.common.enums.Status;
 
 public interface ManagerService {
 
@@ -35,4 +36,6 @@ public interface ManagerService {
 	ResponseEntity<ResponseDto<Void>> updateProfile(ProfileUpdateRequestDto req, HttpServletRequest httpReq);
 
 	ResponseEntity<ResponseDto<ReviewListResponseDto>> getMyReviews(HttpServletRequest req);
+
+	Page<ManagerListResponseDto> getManagerByPageWithStatus(int page, int size, Status status);
 }

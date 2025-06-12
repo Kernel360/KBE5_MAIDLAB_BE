@@ -91,8 +91,8 @@ public class Manager extends Base implements UserBase {
 		name = "manager_region",
 		joinColumns = @JoinColumn(name = "manager_id")
 	)
-	@Column(name = "region", nullable = false)
-	@Enumerated(EnumType.STRING)
+	@Column(name = "region_id", nullable = false)
+	@Enumerated(EnumType.ORDINAL)
 	private List<Region> regions = new ArrayList<>();
 
 	private Manager(String phoneNumber, String password, String name, Gender gender, LocalDate birth) {
