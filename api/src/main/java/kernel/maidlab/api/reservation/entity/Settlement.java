@@ -70,4 +70,12 @@ public class Settlement extends Base {
 	public static Settlement of(Reservation reservation) {
 		return new Settlement(reservation);
 	}
+
+	public void approve() {
+		this.status = Status.APPROVED;
+	}
+
+	public void reject() {
+		this.status = Status.REJECTED;
+	}
 }

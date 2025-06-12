@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -406,6 +407,33 @@ public class ReservationServiceImpl implements ReservationService {
 		return new AdminWeeklySettlementResponseDto(totalAmount, dtoPage);
 	}
 
+	@Override
+	public SettlementResponseDto getSettlementDetail(Long settlementId, HttpServletRequest request) {
+		Optional<Settlement> settlement= settlementRepository.findById(settlementId);
+
+		return new SettlementResponseDto(
+			settlement.get().getId(),
+			settlement.get().getServiceType(),
+			serviceDetailTypeRepository.findById(settlement.get().getServiceDetailTypeId()).get().getServiceDetailType(),
+			settlement.get().getStatus(),
+			settlement.get().getPlatformFee(),
+			settlement.get().getAmount()
+		);
+	}
+
+	@Transactional
+	@Override
+	public void settlementApprove(Long settlementId) {
+		Optional<Settlement> settlement = settlementRepository.findById(settlementId);
+		settlement.get().approve();
+	}
+
+	@Transactional
+	@Override
+	public void settlementReject(Long settlementId) {
+		Optional<Settlement> settlement = settlementRepository.findById(settlementId);
+		settlement.get().reject();
+	}
 }
 
 
