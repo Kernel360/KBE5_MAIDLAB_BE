@@ -12,7 +12,6 @@ import kernel.maidlab.api.consumer.dto.response.ConsumerListResponseDto;
 import kernel.maidlab.api.consumer.dto.response.LikedManagerResponseDto;
 import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
-import kernel.maidlab.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,19 +32,34 @@ public class ConsumerService {
     private final ManagerPreferenceRepository managerPreferenceRepository;
     private final ManagerRepository managerRepository;
 
-    public Consumer getConsumer(String uuid) {
+    public Consumer getConsumerByUuid(String uuid) {
         return consumerRepository.findByUuid(uuid)
-                .orElseThrow((()-> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 
+    public ConsumerProfileResponseDto getConsumerProfile(String uuid) {
+        Consumer consumer = getConsumerByUuid(uuid);
 
+        return ConsumerProfileResponseDto.builder()
+            .profileImage(consumer.getProfileImage())
+            .phoneNumber(consumer.getPhoneNumber())
+            .name(consumer.getName())
+            .birth(consumer.getBirth())
+            .gender(consumer.getGender())
+            .address(consumer.getAddress())
+            .detailAddress(consumer.getDetailAddress())
+            .build();
+    }
 
-    public void updateConsumerProfile(Consumer consumer, ConsumerProfileRequestDto consumerProfileRequestDto){
-        String profileImage = consumerProfileRequestDto.getProfileImage();
-        String address = consumerProfileRequestDto.getAddress();
-        String detailAddress = consumerProfileRequestDto.getDetailAddress();
+    public void updateConsumerProfile(String uuid, ConsumerProfileRequestDto req) {
+        Consumer consumer = getConsumerByUuid(uuid);
+
+        String profileImage = req.getProfileImage();
+        String address = req.getAddress();
+        String detailAddress = req.getDetailAddress();
 
         consumer.updateProfile(profileImage, address, detailAddress);
+        consumerRepository.save(consumer);
     }
 
     // 찜한 매니저 조회
@@ -92,16 +106,19 @@ public class ConsumerService {
     }
 
     public long deleteLikedManager(String consumerUuid, String managerUuid) {
+        Consumer consumer = getConsumerByUuid(consumerUuid);
+        Manager manager = managerRepository.findByUuid(managerUuid)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저입니다."));
 
-        Consumer consumer = getConsumer(consumerUuid);
-        Manager manager = managerRepository.findByUuid(managerUuid).
-                orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저 입니다."));
+        long deletedCount = managerPreferenceRepository.deleteByConsumerIdAndManagerIdAndPreferenceIsTrue(
+            consumer.getId(), manager.getId());
 
-        return managerPreferenceRepository.deleteByConsumerIdAndManagerIdAndPreferenceIsTrue(consumer.getId(), manager.getId());
+
+        return deletedCount;
     }
 
-    //관리자용 전체조회로직
-	public Page<ConsumerListResponseDto> getConsumerBypage(int page, int size) {
+    // 관리자용 전체조회로직
+    public Page<ConsumerListResponseDto> getConsumerBypage(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return consumerRepository.findAll(pageable)
             .map(consumer -> new ConsumerListResponseDto(
@@ -112,11 +129,11 @@ public class ConsumerService {
             ));
     }
 
-    public ConsumerProfileResponseDto getConsumer(long id) {
+    public ConsumerProfileResponseDto getConsumerProfileById(long id) {
         Consumer consumer = consumerRepository.findById(id)
-            .orElseThrow((()-> new IllegalArgumentException("사용자를 찾을 수 없습니다.")));
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        ConsumerProfileResponseDto consumerProfileResponseDto = ConsumerProfileResponseDto.builder()
+        return ConsumerProfileResponseDto.builder()
             .profileImage(consumer.getProfileImage())
             .phoneNumber(consumer.getPhoneNumber())
             .name(consumer.getName())
@@ -125,7 +142,5 @@ public class ConsumerService {
             .address(consumer.getAddress())
             .detailAddress(consumer.getDetailAddress())
             .build();
-
-        return consumerProfileResponseDto;
     }
 }

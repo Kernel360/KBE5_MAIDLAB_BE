@@ -157,6 +157,11 @@ public class Manager extends Base implements UserBase {
 		}
 	}
 
+	public boolean hasCompleteProfile() {
+		return this.profileImage != null && !this.profileImage.trim().isEmpty() && this.regions != null
+			&& !this.regions.isEmpty();
+	}
+
 	@Override
 	public Long getId() {
 		return this.id;
