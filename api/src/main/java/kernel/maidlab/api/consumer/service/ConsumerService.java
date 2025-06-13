@@ -96,7 +96,7 @@ public class ConsumerService {
     // 찜/블랙리스트 매니저 등록
     public void saveLikedOrBlackListedManager(String consumerUuid, String managerUuid, boolean preference){
 
-        Consumer consumer = getConsumer(consumerUuid);
+        Consumer consumer = getConsumerByUuid(consumerUuid);
         Manager manager = managerRepository.findByUuid(managerUuid).
                 orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저 입니다."));
 
