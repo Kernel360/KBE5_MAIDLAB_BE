@@ -121,12 +121,14 @@ public class AuthServiceImpl implements AuthService {
 		JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(consumer.getUuid(), UserType.CONSUMER);
 		long expirationTime = jwtProperties.getExpiration().getAccess();
 
-		// 리프레시 토큰을 쿠키에 설정
 		cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
+
+		boolean profileCompleted = consumer.hasCompleteProfile();
 
 		LoginResponseDto responseDto = new LoginResponseDto(
 			tokenPair.getAccessToken(),
-			expirationTime
+			expirationTime,
+			profileCompleted
 		);
 
 		return ResponseDto.success(responseDto);
@@ -147,12 +149,14 @@ public class AuthServiceImpl implements AuthService {
 		JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(manager.getUuid(), UserType.MANAGER);
 		long expirationTime = jwtProperties.getExpiration().getAccess();
 
-		// 리프레시 토큰을 쿠키에 설정
 		cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
+
+		boolean profileCompleted = manager.hasCompleteProfile();
 
 		LoginResponseDto responseDto = new LoginResponseDto(
 			tokenPair.getAccessToken(),
-			expirationTime
+			expirationTime,
+			profileCompleted
 		);
 
 		return ResponseDto.success(responseDto);
@@ -162,7 +166,7 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLogin(
 		SocialLoginRequestDto req,
-		HttpServletRequest request,  // 추가
+		HttpServletRequest request,
 		HttpServletResponse res) {
 
 		if (req.getCode() == null || req.getCode().trim().isEmpty()) {
@@ -190,19 +194,8 @@ public class AuthServiceImpl implements AuthService {
 				}
 			}
 
-			// 동적 redirect URI 생성
 			String dynamicRedirectUri = origin != null ?
 				origin + "/google-callback" : googleRedirectUri;
-
-			log.info("환경변수 확인:");
-			log.info("  - googleRedirectUri (환경변수): {}", googleRedirectUri);
-			log.info("  - dynamicRedirectUri (계산된 값): {}", dynamicRedirectUri);
-
-			log.info("구글 토큰 교환 시도:");
-			log.info("  - origin: {}", origin);
-			log.info("  - redirectUri: {}", dynamicRedirectUri);
-			log.info("  - clientId: {}", googleClientId != null ? googleClientId.substring(0, 10) + "..." : "null");
-			log.info("  - code: {}", authorizationCode != null ? authorizationCode.substring(0, 10) + "..." : "null");
 
 			GoogleTokenDto tokenDto = googleOAuthService.getGoogleToken(
 				authorizationCode,
@@ -211,22 +204,14 @@ public class AuthServiceImpl implements AuthService {
 				dynamicRedirectUri
 			);
 
-			log.info("구글 토큰 교환 결과:");
-			log.info("  - tokenDto: {}", tokenDto != null ? "Present" : "null");
-			log.info("  - accessToken: {}", tokenDto != null && tokenDto.getAccessToken() != null ? "Present" : "null");
-
 			if (tokenDto == null || tokenDto.getAccessToken() == null) {
-				log.error("구글 토큰 교환 실패: tokenDto가 null이거나 accessToken이 없음");
 				throw new BaseException(ResponseType.LOGIN_FAILED);
 			}
 
-			log.info("구글 토큰 교환 성공");
 			return tokenDto.getAccessToken();
 		} catch (BaseException e) {
-			log.error("구글 토큰 교환 BaseException: {}", e.getMessage());
 			throw e;
 		} catch (Exception e) {
-			log.error("구글 토큰 교환 Exception: {}", e.getMessage(), e);
 			throw new BaseException(ResponseType.LOGIN_FAILED);
 		}
 	}
@@ -257,13 +242,30 @@ public class AuthServiceImpl implements AuthService {
 			SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
 				true,
 				tempToken,
-				expirationTime
+				expirationTime,
+				false
 			);
 
 			return ResponseDto.success(responseDto);
 		} else {
 			if (consumer.getIsDeleted()) {
 				throw new BaseException(ResponseType.ACCOUNT_DELETED);
+			}
+
+			if (!consumer.hasCompleteProfile()) {
+				JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(consumer.getUuid(), UserType.CONSUMER);
+				long expirationTime = jwtProperties.getExpiration().getAccess();
+
+				cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
+
+				SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
+					false,
+					tokenPair.getAccessToken(),
+					expirationTime,
+					false
+				);
+
+				return ResponseDto.success(responseDto);
 			}
 
 			JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(consumer.getUuid(), UserType.CONSUMER);
@@ -274,7 +276,8 @@ public class AuthServiceImpl implements AuthService {
 			SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
 				false,
 				tokenPair.getAccessToken(),
-				expirationTime
+				expirationTime,
+				true
 			);
 
 			return ResponseDto.success(responseDto);
@@ -293,13 +296,30 @@ public class AuthServiceImpl implements AuthService {
 			SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
 				true,
 				tempToken,
-				expirationTime
+				expirationTime,
+				false
 			);
 
 			return ResponseDto.success(responseDto);
 		} else {
 			if (manager.getIsDeleted()) {
 				throw new BaseException(ResponseType.ACCOUNT_DELETED);
+			}
+
+			if (!manager.hasCompleteProfile()) {
+				JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(manager.getUuid(), UserType.MANAGER);
+				long expirationTime = jwtProperties.getExpiration().getAccess();
+
+				cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
+
+				SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
+					false,
+					tokenPair.getAccessToken(),
+					expirationTime,
+					false
+				);
+
+				return ResponseDto.success(responseDto);
 			}
 
 			JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(manager.getUuid(), UserType.MANAGER);
@@ -310,7 +330,8 @@ public class AuthServiceImpl implements AuthService {
 			SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
 				false,
 				tokenPair.getAccessToken(),
-				expirationTime
+				expirationTime,
+				true
 			);
 
 			return ResponseDto.success(responseDto);
