@@ -1,6 +1,7 @@
 package kernel.maidlab.api.consumer.controller;
 
 import kernel.maidlab.api.auth.entity.Consumer;
+import kernel.maidlab.api.consumer.dto.ConsumerMyPageDto;
 import kernel.maidlab.api.consumer.dto.request.ConsumerProfileRequestDto;
 import kernel.maidlab.api.consumer.dto.response.ConsumerProfileResponseDto;
 import kernel.maidlab.api.consumer.service.ConsumerService;
@@ -8,6 +9,7 @@ import kernel.maidlab.api.auth.jwt.JwtFilter;
 import kernel.maidlab.common.dto.ResponseDto;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.enums.ResponseType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +24,21 @@ import org.springframework.web.bind.annotation.*;
 public class ConsumerController {
 
 	private final ConsumerService consumerService;
+
+	@GetMapping("/mypage")
+	public ResponseEntity<ResponseDto<ConsumerMyPageDto>> getMyPage(HttpServletRequest req) {
+
+		String uuid = (String) req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
+
+		Consumer findedConsumer = consumerService.getConsumerByUuid(uuid);
+		ConsumerMyPageDto myPageDto = ConsumerMyPageDto.builder()
+				.name(findedConsumer.getName())
+				.point(findedConsumer.getPoint())
+				.profileImage(findedConsumer.getProfileImage())
+				.build();
+
+		return ResponseDto.success(ResponseType.SUCCESS, myPageDto);
+	}
 
 	@GetMapping("/profile")
 	public ResponseEntity<ResponseDto<ConsumerProfileResponseDto>> getProfile(HttpServletRequest req) {

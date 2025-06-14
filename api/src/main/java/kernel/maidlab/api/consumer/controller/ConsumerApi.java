@@ -44,7 +44,7 @@ public interface ConsumerApi {
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "마이페이지 조회 성공 (SU)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<ConsumerMyPageDto>> getMypage(HttpServletRequest request);
+	ResponseEntity<ResponseDto<ConsumerMyPageDto>> getMyPage(HttpServletRequest request);
 
 	@Operation(summary = "찜한 매니저 조회", description = "소비자가 찜한 매니저 리스트를 조회합니다.")
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
