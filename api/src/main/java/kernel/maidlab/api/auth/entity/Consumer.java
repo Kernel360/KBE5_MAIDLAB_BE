@@ -125,4 +125,8 @@ public class Consumer extends Base implements UserBase {
 			this.uuid = UUID.randomUUID().toString();
 		}
 	}
+
+	public boolean hasCompleteProfile() {
+		return this.address != null && !this.address.trim().isEmpty();
+	}
 }

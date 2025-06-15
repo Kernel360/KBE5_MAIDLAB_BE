@@ -18,6 +18,11 @@ spring:
     username: ${DB_LOCAL_USERNAME}
     password: ${DB_LOCAL_PASSWORD}
 
+app:
+  cookie:
+    domain: ""
+    secure: false
+    same-site: "Lax"
 
 aws:
   region: ap-northeast-2 #asia/seoul

@@ -317,4 +317,15 @@ public class ManagerServiceImpl implements ManagerService {
 		return ResponseDto.success(responseDto);
 	}
 
+	@Override
+	public Page<ManagerListResponseDto> getManagerByPageWithStatus(int page, int size, Status status) {
+		Pageable pageable = PageRequest.of(page, size);
+		return managerRepository.findAllByIsVerified(status, pageable)
+			.map(manager -> new ManagerListResponseDto(
+				manager.getName(),
+				manager.getUuid(),
+				manager.getId()
+			));
+	}
+
 }

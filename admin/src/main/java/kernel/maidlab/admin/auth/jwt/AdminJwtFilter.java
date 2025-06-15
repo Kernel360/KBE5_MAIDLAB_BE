@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Component
 public class AdminJwtFilter implements Filter {
 
 	private static final Logger log = LoggerFactory.getLogger(AdminJwtFilter.class);
@@ -41,19 +40,27 @@ public class AdminJwtFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
-		IOException,
-		ServletException {
+		IOException, ServletException {
 
 		HttpServletRequest httpRequest = (HttpServletRequest)request;
 		HttpServletResponse httpResponse = (HttpServletResponse)response;
 		String uri = httpRequest.getRequestURI();
+		String method = httpRequest.getMethod();
 
-		// 필터 우회
-		boolean isAdminModule = uri.startsWith("/api/admin/");
+		if (uri.startsWith("/api/consumer") ||
+			uri.startsWith("/api/manager") ||
+			uri.startsWith("/api/auth") ||
+			uri.startsWith("/api/board")) {
+			chain.doFilter(request, response);
+			return;
+		}
+
+		boolean isAdminPath = uri.startsWith("/api/admin/");
+
 		boolean isEventCUD = uri.startsWith("/api/event") &&
-			!httpRequest.getMethod().equals("GET");
+			("POST".equals(method) || "PUT".equals(method) || "DELETE".equals(method));
 
-		if (!isAdminModule && !isEventCUD) {
+		if (!isAdminPath && !isEventCUD) {
 			chain.doFilter(request, response);
 			return;
 		}
@@ -61,7 +68,6 @@ public class AdminJwtFilter implements Filter {
 		if (ADMIN_AUTH_WHITELIST.contains(uri)) {
 			chain.doFilter(request, response);
 			return;
-
 		}
 
 		log.debug("관리자 JWT 인증 필터 시작 - URL: {}", uri);

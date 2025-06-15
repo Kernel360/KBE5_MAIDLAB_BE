@@ -18,6 +18,12 @@ spring:
     username: ${DB_PROD_USERNAME}
     password: ${DB_PROD_PASSWORD}
 
+app:
+  cookie:
+    domain: ""
+    secure: true
+    same-site: "None"
+
 aws:
   region: ap-northeast-2 #asia/seoul
   s3:

@@ -39,7 +39,7 @@ public class EventController implements EventApi {
 	}
 
 	@Override
-	@PostMapping("/event")
+	@PostMapping("/admin/event")
 	public ResponseEntity<ResponseDto<Void>> createEvent(@Valid @RequestBody EventRequestDto eventRequestDto,
 		HttpServletRequest req) {
 		return eventService.createEvent(eventRequestDto, req);

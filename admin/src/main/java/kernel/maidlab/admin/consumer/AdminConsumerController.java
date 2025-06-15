@@ -32,7 +32,7 @@ public class AdminConsumerController implements AdminConsumerApi {
 	@GetMapping("/{consumerId}")
 	@Override
 	public ResponseEntity<ConsumerProfileResponseDto> getConsumer(@PathVariable("consumerId") int consumerId) {
-		ConsumerProfileResponseDto response = consumerService.getConsumer(consumerId);
+		ConsumerProfileResponseDto response = consumerService.getConsumerProfileById((long) consumerId);
 		return ResponseEntity.ok(response);
 	}
 
