@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum Region {
+	NOTHING("0"),
 	GANGNAM("1"),
 	GANGDONG("2"),
 	GANGBUK("3"),
