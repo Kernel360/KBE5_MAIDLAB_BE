@@ -7,7 +7,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -351,14 +353,20 @@ public class ReservationServiceImpl implements ReservationService {
 				.build())
 			.toList();
 	}
+	private static final Map<String, BigDecimal> ADDITIONAL_PRICE_MAP = Map.of(
+		"cooking", BigDecimal.valueOf(10_000),
+		"ironing", BigDecimal.valueOf(10_000)
+		// 나중에 "laundry", "cleaning" 등 추가 가능
+	);
 
 	private BigDecimal calculateTotalPrice(ReservationRequestDto dto, BigDecimal basePrice) {
+		String serviceAdd = dto.getServiceAdd(); // 기본값이 ""라고 가정
 
-		BigDecimal additional = BigDecimal.ZERO;
-
-		if ("COOK".equals(dto.getServiceAdd())) {
-			additional = additional.add(BigDecimal.valueOf(10_000));
-		}
+		BigDecimal additional = Arrays.stream(serviceAdd.split(","))
+			.map(String::trim) // 공백 제거
+			.filter(ADDITIONAL_PRICE_MAP::containsKey) // 유효한 서비스만
+			.map(ADDITIONAL_PRICE_MAP::get) // 금액으로 변환
+			.reduce(BigDecimal.ZERO, BigDecimal::add); // 누적 합산
 
 		return basePrice.add(additional);
 	}
