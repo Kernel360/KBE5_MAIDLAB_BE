@@ -93,4 +93,14 @@ public class ConsumerController {
 
 		return ResponseDto.success();
 	}
+
+	@DeleteMapping("/preference/{managerUuid}")
+	public ResponseEntity<ResponseDto<String>> deleteManagerPreference(
+			@PathVariable String managerUuid,
+			HttpServletRequest req) {
+
+		consumerService.deleteLikedAOrBlackListManager(managerUuid, req);
+
+		return ResponseDto.success("삭제 완료");
+	}
 }
