@@ -114,8 +114,9 @@ public class ConsumerService {
         Manager manager = managerRepository.findByUuid(managerUuid)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저입니다."));
 
-        return managerPreferenceRepository.deleteByConsumerIdAndManagerIdAndPreferenceIsTrue(
-                consumer.getId(), manager.getId());
+        return managerPreferenceRepository.deleteByConsumerIdAndManagerId(
+                consumer.getId(),
+                manager.getId());
     }
 
     // 관리자용 전체조회로직
