@@ -232,7 +232,7 @@ public class BoardServiceImpl implements BoardService {
 		// 새 이미지 추가 (ID가 null인 것들)
 		for (ImageDto dto : newImageDataList) {
 			if (dto.getId() == null) {
-				Image newImage = new Image(board, dto.getName(), dto.getImagePath());
+				Image newImage = new Image(board, dto.getImagePath(), dto.getName());
 				board.getImages().add(newImage); // 연관관계 추가
 			}
 		}
