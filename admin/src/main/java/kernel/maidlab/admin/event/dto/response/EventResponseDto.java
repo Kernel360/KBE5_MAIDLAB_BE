@@ -11,6 +11,7 @@ public class EventResponseDto {
 
 	private Long eventId;
 	private String title;
+	private String mainImageUrl;
 	private String imageUrl;
 	private String content;
 	private LocalDateTime createdAt;
