@@ -46,14 +46,14 @@ public class EventController implements EventApi {
 	}
 
 	@Override
-	@PatchMapping("/event/{eventId}")
+	@PatchMapping("/admin/event/{eventId}")
 	public ResponseEntity<ResponseDto<Void>> updateEvent(@PathVariable Long eventId,
 		@Valid @RequestBody EventRequestDto eventRequestDto, HttpServletRequest req) {
 		return eventService.updateEvent(eventId, eventRequestDto, req);
 	}
 
 	@Override
-	@DeleteMapping("/event/{eventId}")
+	@DeleteMapping("/admin/event/{eventId}")
 	public ResponseEntity<ResponseDto<Void>> deleteEvent(@PathVariable Long eventId, HttpServletRequest req) {
 		return eventService.deleteEvent(eventId, req);
 	}

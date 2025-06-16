@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Component
 public class AdminJwtFilter implements Filter {
 
 	private static final Logger log = LoggerFactory.getLogger(AdminJwtFilter.class);
@@ -57,7 +58,7 @@ public class AdminJwtFilter implements Filter {
 
 		boolean isAdminPath = uri.startsWith("/api/admin/");
 
-		boolean isEventCUD = uri.startsWith("/api/event") &&
+		boolean isEventCUD = (uri.startsWith("/api/admin/event") || uri.startsWith("/api/event")) &&
 			("POST".equals(method) || "PUT".equals(method) || "DELETE".equals(method));
 
 		if (!isAdminPath && !isEventCUD) {
@@ -65,7 +66,7 @@ public class AdminJwtFilter implements Filter {
 			return;
 		}
 
-		if (ADMIN_AUTH_WHITELIST.contains(uri)) {
+		if (ADMIN_AUTH_WHITELIST.contains(uri) || method.equals("OPTIONS")) {
 			chain.doFilter(request, response);
 			return;
 		}
