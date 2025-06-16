@@ -13,12 +13,12 @@ import kernel.maidlab.api.auth.jwt.JwtFilter;
 public class AdminFilterConfig {
 	@Bean
 	@ConditionalOnClass(AdminJwtFilter.class)
-	public FilterRegistrationBean<Filter> AdminJwtFilterRegistration(AdminJwtFilter jwtFilter) {
+	public FilterRegistrationBean<Filter> AdminJwtFilterRegistration(AdminJwtFilter adminjwtFilter) {
 		FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>();
-		registration.setFilter(jwtFilter);
+		registration.setFilter(adminjwtFilter);
 		registration.addUrlPatterns("/api/admin/*"); // 인증이 필요한 경로만 필터링
-		registration.setName("AdminJwtFilter");
-		registration.setOrder(1);
+		registration.setName("adminJwtFilter");
+		registration.setOrder(2);
 
 		return registration;
 	}

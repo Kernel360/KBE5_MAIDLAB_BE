@@ -57,7 +57,7 @@ public class AdminJwtFilter implements Filter {
 		}
 
 		boolean isAdminPath = uri.startsWith("/api/admin/");
-		System.out.println("checkpath : " + isAdminPath);
+
 		boolean isEventCUD = (uri.startsWith("/api/admin/event") || uri.startsWith("/api/event")) &&
 			("POST".equals(method) || "PUT".equals(method) || "DELETE".equals(method));
 
