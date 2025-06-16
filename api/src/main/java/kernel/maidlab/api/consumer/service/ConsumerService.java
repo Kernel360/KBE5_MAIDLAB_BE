@@ -1,8 +1,10 @@
 package kernel.maidlab.api.consumer.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.entity.Consumer;
 import kernel.maidlab.api.auth.entity.Manager;
+import kernel.maidlab.api.auth.jwt.JwtFilter;
 import kernel.maidlab.api.consumer.dto.response.ConsumerProfileResponseDto;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
@@ -105,16 +107,15 @@ public class ConsumerService {
 
     }
 
-    public long deleteLikedManager(String consumerUuid, String managerUuid) {
-        Consumer consumer = getConsumerByUuid(consumerUuid);
+    public long deleteLikedAOrBlackListManager(String managerUuid, HttpServletRequest req) {
+
+        Consumer consumer = (Consumer) req.getAttribute(JwtFilter.CURRENT_USER_KEY);
+
         Manager manager = managerRepository.findByUuid(managerUuid)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저입니다."));
 
-        long deletedCount = managerPreferenceRepository.deleteByConsumerIdAndManagerIdAndPreferenceIsTrue(
-            consumer.getId(), manager.getId());
-
-
-        return deletedCount;
+        return managerPreferenceRepository.deleteByConsumerIdAndManagerIdAndPreferenceIsTrue(
+                consumer.getId(), manager.getId());
     }
 
     // 관리자용 전체조회로직
