@@ -6,7 +6,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import kernel.maidlab.common.entity.Base.Base;
+import kernel.maidlab.common.entity.base.Base;
 import kernel.maidlab.common.enums.ServiceType;
 import lombok.AccessLevel;
 import lombok.Getter;

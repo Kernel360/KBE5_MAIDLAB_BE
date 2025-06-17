@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.api.auth.jwt.JwtFilter;
-import kernel.maidlab.common.entity.Base.UserBase;
+import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.dto.board.BoardQueryDto;
 import kernel.maidlab.common.dto.board.ImageDto;
 import kernel.maidlab.common.dto.board.request.AnswerRequestDto;

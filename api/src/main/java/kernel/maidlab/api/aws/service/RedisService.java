@@ -1,4 +1,4 @@
-package kernel.maidlab.api.matching.service;
+package kernel.maidlab.api.aws.service;
 
 import java.util.List;
 

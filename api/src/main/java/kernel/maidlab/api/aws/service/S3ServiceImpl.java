@@ -1,4 +1,4 @@
-package kernel.maidlab.common.service.impl;
+package kernel.maidlab.api.aws.service;
 
 import java.time.Duration;
 import java.util.List;
@@ -7,8 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import kernel.maidlab.common.dto.PresignedFileResponseDto;
-import kernel.maidlab.common.service.S3Service;
+import kernel.maidlab.common.dto.aws.PresignedFileResponseDto;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;

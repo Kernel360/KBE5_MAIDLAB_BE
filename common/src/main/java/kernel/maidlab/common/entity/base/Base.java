@@ -1,4 +1,4 @@
-package kernel.maidlab.common.entity.Base;
+package kernel.maidlab.common.entity.base;
 
 import com.querydsl.core.annotations.QuerySupertype;
 import jakarta.persistence.GeneratedValue;

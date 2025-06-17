@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
-import kernel.maidlab.common.entity.Base.Base;
+import kernel.maidlab.common.entity.base.Base;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

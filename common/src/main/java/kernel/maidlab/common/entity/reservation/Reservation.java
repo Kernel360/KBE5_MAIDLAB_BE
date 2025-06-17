@@ -13,7 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
-import kernel.maidlab.common.entity.Base.Base;
+import kernel.maidlab.common.entity.base.Base;
 import kernel.maidlab.common.enums.Status;
 import lombok.AccessLevel;
 import lombok.Getter;

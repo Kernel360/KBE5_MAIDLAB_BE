@@ -1,8 +1,8 @@
-package kernel.maidlab.common.service;
+package kernel.maidlab.api.aws.service;
 
 import java.util.List;
 
-import kernel.maidlab.common.dto.PresignedFileResponseDto;
+import kernel.maidlab.common.dto.aws.PresignedFileResponseDto;
 
 public interface S3Service {
 

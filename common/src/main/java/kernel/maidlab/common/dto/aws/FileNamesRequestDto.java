@@ -1,4 +1,4 @@
-package kernel.maidlab.common.dto;
+package kernel.maidlab.common.dto.aws;
 
 import java.util.List;
 

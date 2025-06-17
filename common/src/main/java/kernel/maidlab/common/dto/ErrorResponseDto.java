@@ -1,4 +1,4 @@
-package kernel.maidlab.common.exception.dto;
+package kernel.maidlab.common.dto;
 
 import kernel.maidlab.common.enums.ResponseType;
 import lombok.Getter;

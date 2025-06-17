@@ -1,8 +1,8 @@
 package kernel.maidlab.common.entity.consumer;
 
 import jakarta.persistence.*;
-import kernel.maidlab.common.entity.Base.Base;
-import kernel.maidlab.common.entity.Base.UserBase;
+import kernel.maidlab.common.entity.base.Base;
+import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.SocialType;
 import lombok.AccessLevel;

@@ -6,7 +6,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
-import kernel.maidlab.common.entity.Base.Base;
+import kernel.maidlab.common.entity.base.Base;
 import kernel.maidlab.common.enums.Status;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

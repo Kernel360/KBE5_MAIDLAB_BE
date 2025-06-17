@@ -1,4 +1,4 @@
-package kernel.maidlab.api.matching.config;
+package kernel.maidlab.api.aws.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,6 +1,6 @@
 package kernel.maidlab.common.exception;
 
-import kernel.maidlab.common.exception.dto.ErrorResponseDto;
+import kernel.maidlab.common.dto.ErrorResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

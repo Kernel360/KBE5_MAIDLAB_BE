@@ -1,4 +1,4 @@
-package kernel.maidlab.common.controller;
+package kernel.maidlab.api.aws.controller;
 
 import java.util.List;
 
@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import kernel.maidlab.common.dto.FileNamesRequestDto;
-import kernel.maidlab.common.dto.PresignedFileResponseDto;
+import kernel.maidlab.common.dto.aws.FileNamesRequestDto;
+import kernel.maidlab.common.dto.aws.PresignedFileResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.service.S3Service;
+import kernel.maidlab.api.aws.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
