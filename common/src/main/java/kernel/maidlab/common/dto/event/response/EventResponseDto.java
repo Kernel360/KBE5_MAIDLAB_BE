@@ -1,27 +1,19 @@
-package kernel.maidlab.admin.event.dto.object;
+package kernel.maidlab.common.dto.event.response;
 
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class EventListItem {
+public class EventResponseDto {
 
-	@NotBlank
 	private Long eventId;
-
-	@NotBlank
 	private String title;
-
-	@NotBlank
 	private String mainImageUrl;
-
-	@NotBlank
+	private String imageUrl;
+	private String content;
 	private LocalDateTime createdAt;
 
 }

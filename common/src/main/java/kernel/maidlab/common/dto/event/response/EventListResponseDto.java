@@ -1,8 +1,8 @@
-package kernel.maidlab.admin.event.dto.response;
+package kernel.maidlab.common.dto.event.response;
 
 import java.util.List;
 
-import kernel.maidlab.admin.event.dto.object.EventListItem;
+import kernel.maidlab.common.dto.event.object.EventListItem;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

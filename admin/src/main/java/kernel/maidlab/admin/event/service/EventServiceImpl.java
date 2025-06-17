@@ -11,11 +11,11 @@ import jakarta.transaction.Transactional;
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.jwt.AdminJwtFilter;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.admin.event.dto.object.EventListItem;
-import kernel.maidlab.admin.event.dto.request.EventRequestDto;
-import kernel.maidlab.admin.event.dto.response.EventListResponseDto;
-import kernel.maidlab.admin.event.dto.response.EventResponseDto;
-import kernel.maidlab.admin.event.entity.Event;
+import kernel.maidlab.common.dto.event.object.EventListItem;
+import kernel.maidlab.common.dto.event.request.EventRequestDto;
+import kernel.maidlab.common.dto.event.response.EventListResponseDto;
+import kernel.maidlab.common.dto.event.response.EventResponseDto;
+import kernel.maidlab.common.entity.event.Event;
 import kernel.maidlab.admin.event.repository.EventRepository;
 import kernel.maidlab.common.exception.BaseException;
 import kernel.maidlab.common.dto.ResponseDto;
@@ -82,7 +82,7 @@ public class EventServiceImpl implements EventService {
 			});
 
 		Event event = Event.createEvent(
-			admin,
+			admin.getId(),
 			eventRequestDto.getTitle(),
 			eventRequestDto.getMainImageUrl(),
 			eventRequestDto.getImageUrl(),

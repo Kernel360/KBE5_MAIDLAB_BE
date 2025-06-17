@@ -1,4 +1,4 @@
-package kernel.maidlab.admin.event.entity;
+package kernel.maidlab.common.entity.event;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class Event extends Base {
 
 	@Column(name = "admin_id")
-	private Long adminId;
+	private Long admin;
 
 	@Column(name = "title")
 	private String title;
@@ -42,8 +42,8 @@ public class Event extends Base {
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
-	private Event(Long adminId, String title,String mainImageUrl, String imageUrl, String content) {
-		this.adminId = adminId;
+	private Event(Long admin, String title,String mainImageUrl, String imageUrl, String content) {
+		this.admin = admin;
 		this.title = title;
 		this.mainImageUrl = mainImageUrl;
 		this.imageUrl = imageUrl;

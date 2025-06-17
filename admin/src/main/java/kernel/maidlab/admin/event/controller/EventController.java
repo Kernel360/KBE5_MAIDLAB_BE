@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import kernel.maidlab.admin.event.dto.request.EventRequestDto;
-import kernel.maidlab.admin.event.dto.response.EventListResponseDto;
-import kernel.maidlab.admin.event.dto.response.EventResponseDto;
+import kernel.maidlab.common.dto.event.request.EventRequestDto;
+import kernel.maidlab.common.dto.event.response.EventListResponseDto;
+import kernel.maidlab.common.dto.event.response.EventResponseDto;
 import kernel.maidlab.admin.event.service.EventService;
 import kernel.maidlab.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
