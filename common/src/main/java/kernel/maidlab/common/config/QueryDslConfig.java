@@ -1,4 +1,4 @@
-package kernel.maidlab.api.config;
+package kernel.maidlab.common.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
