@@ -1,4 +1,4 @@
-package kernel.maidlab.admin.board;
+package kernel.maidlab.admin.board.controller;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
