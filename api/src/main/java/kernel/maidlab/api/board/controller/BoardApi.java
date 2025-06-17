@@ -10,10 +10,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.board.dto.request.BoardRequestDto;
-import kernel.maidlab.api.board.dto.request.BoardUpdateRequestDto;
-import kernel.maidlab.api.board.dto.response.BoardDetailResponseDto;
-import kernel.maidlab.api.board.dto.response.BoardResponseDto;
+import kernel.maidlab.common.dto.board.request.BoardRequestDto;
+import kernel.maidlab.common.dto.board.request.BoardUpdateRequestDto;
+import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
+import kernel.maidlab.common.dto.board.response.BoardResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 
 import org.springframework.http.ResponseEntity;

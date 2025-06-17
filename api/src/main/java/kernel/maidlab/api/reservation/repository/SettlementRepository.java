@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import kernel.maidlab.api.reservation.entity.Settlement;
+import kernel.maidlab.common.entity.reservation.Settlement;
 
 public interface SettlementRepository extends JpaRepository<Settlement, Long> {
 	List<Settlement> findByManagerIdAndCreatedAtBetween(Long managerId, LocalDateTime start, LocalDateTime end);

@@ -11,9 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
-import kernel.maidlab.api.matching.dto.request.MatchingRequestDto;
-import kernel.maidlab.api.matching.dto.response.RequestMatchingListResponseDto;
+import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
+import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
+import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 
 @Tag(name = "Matching", description = "매칭 관련 API")

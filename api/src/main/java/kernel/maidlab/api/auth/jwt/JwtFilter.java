@@ -1,6 +1,7 @@
 package kernel.maidlab.api.auth.jwt;
 
-import kernel.maidlab.api.util.ServletResponseUtil;
+import kernel.maidlab.common.util.ServletResponseUtil;
+import kernel.maidlab.common.dto.auth.JwtDto;
 import kernel.maidlab.common.enums.UserType;
 
 import jakarta.servlet.*;

@@ -18,7 +18,8 @@ bin/
 !**/src/test/**/bin/
 
 ##Querydsl
-api/src/main/generated
+common/src/main/generated
+
 
 ### IntelliJ IDEA ###
 .idea

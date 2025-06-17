@@ -5,9 +5,14 @@ import org.springframework.http.ResponseEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import kernel.maidlab.api.auth.dto.request.*;
-import kernel.maidlab.api.auth.dto.response.*;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.auth.request.ChangePwRequestDto;
+import kernel.maidlab.common.dto.auth.request.LoginRequestDto;
+import kernel.maidlab.common.dto.auth.request.SignUpRequestDto;
+import kernel.maidlab.common.dto.auth.request.SocialLoginRequestDto;
+import kernel.maidlab.common.dto.auth.request.SocialSignUpRequestDto;
+import kernel.maidlab.common.dto.auth.response.LoginResponseDto;
+import kernel.maidlab.common.dto.auth.response.SocialLoginResponseDto;
 
 public interface AuthService {
 

@@ -10,14 +10,18 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.servlet.http.HttpServletRequest;
 
 // import jakarta.transaction.Transactional;
-import kernel.maidlab.api.auth.entity.Manager;
-import kernel.maidlab.api.auth.jwt.JwtDto;
+import kernel.maidlab.common.entity.manager.Manager;
+import kernel.maidlab.common.dto.auth.JwtDto;
 import kernel.maidlab.api.auth.jwt.JwtProvider;
-import kernel.maidlab.api.exception.BaseException;
-import kernel.maidlab.api.manager.dto.request.*;
-import kernel.maidlab.api.manager.dto.response.*;
-import kernel.maidlab.api.manager.dto.object.*;
-import kernel.maidlab.api.manager.entity.*;
+import kernel.maidlab.common.entity.manager.ManagerDocument;
+import kernel.maidlab.common.entity.manager.ManagerRegion;
+import kernel.maidlab.common.entity.manager.ManagerSchedule;
+import kernel.maidlab.common.entity.manager.ManagerServiceType;
+import kernel.maidlab.common.entity.manager.Region;
+import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.common.dto.manager.request.*;
+import kernel.maidlab.common.dto.manager.response.*;
+import kernel.maidlab.common.dto.manager.object.*;
 import kernel.maidlab.api.manager.repository.*;
 import kernel.maidlab.api.reservation.repository.ReviewRepository;
 import kernel.maidlab.common.dto.ResponseDto;
@@ -28,9 +32,9 @@ import kernel.maidlab.common.enums.UserType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import kernel.maidlab.api.manager.dto.ManagerResponseDto;
+import kernel.maidlab.common.dto.manager.ManagerResponseDto;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
-import kernel.maidlab.api.manager.dto.ManagerListResponseDto;
+import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 
 import java.math.BigDecimal;
 import java.util.List;

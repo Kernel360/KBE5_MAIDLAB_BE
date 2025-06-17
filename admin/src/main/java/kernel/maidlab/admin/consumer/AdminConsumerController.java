@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import kernel.maidlab.api.consumer.dto.response.ConsumerListResponseDto;
-import kernel.maidlab.api.consumer.dto.response.ConsumerProfileResponseDto;
+import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
+import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
 import kernel.maidlab.api.consumer.service.ConsumerService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;

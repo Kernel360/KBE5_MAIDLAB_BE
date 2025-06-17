@@ -2,9 +2,9 @@ package kernel.maidlab.api.board.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import kernel.maidlab.api.board.dto.BoardQueryDto;
-import kernel.maidlab.api.board.dto.QBoardQueryDto;
-import kernel.maidlab.api.board.entity.QBoard;
+import kernel.maidlab.common.dto.board.BoardQueryDto;
+import kernel.maidlab.common.dto.board.QBoardQueryDto;
+import kernel.maidlab.common.entity.board.QBoard;
 import kernel.maidlab.common.enums.UserType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

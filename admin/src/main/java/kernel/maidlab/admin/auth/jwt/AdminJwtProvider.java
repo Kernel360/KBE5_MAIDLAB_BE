@@ -1,5 +1,6 @@
 package kernel.maidlab.admin.auth.jwt;
 
+import kernel.maidlab.common.dto.auth.AdminJwtDto;
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
 import kernel.maidlab.api.auth.jwt.JwtProperties;

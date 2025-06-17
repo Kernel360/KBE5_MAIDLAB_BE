@@ -1,11 +1,11 @@
 package kernel.maidlab.api.board.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.board.dto.request.AnswerRequestDto;
-import kernel.maidlab.api.board.dto.request.BoardRequestDto;
-import kernel.maidlab.api.board.dto.request.BoardUpdateRequestDto;
-import kernel.maidlab.api.board.dto.response.BoardDetailResponseDto;
-import kernel.maidlab.api.board.dto.response.BoardResponseDto;
+import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
+import kernel.maidlab.common.dto.board.request.BoardRequestDto;
+import kernel.maidlab.common.dto.board.request.BoardUpdateRequestDto;
+import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
+import kernel.maidlab.common.dto.board.response.BoardResponseDto;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;

@@ -7,16 +7,11 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.board.dto.request.AnswerRequestDto;
-import kernel.maidlab.api.board.dto.request.BoardRequestDto;
-import kernel.maidlab.api.board.dto.request.BoardUpdateRequestDto;
-import kernel.maidlab.api.board.dto.response.BoardDetailResponseDto;
-import kernel.maidlab.api.board.dto.response.BoardResponseDto;
-import kernel.maidlab.api.board.entity.Board;
-import kernel.maidlab.api.board.entity.Image;
+import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
+import kernel.maidlab.common.entity.board.Board;
+import kernel.maidlab.common.entity.board.Image;
 import kernel.maidlab.api.board.repository.BoardRepository;
 import kernel.maidlab.api.board.repository.ImageRepository;
-import kernel.maidlab.api.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 
 @Service

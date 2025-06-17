@@ -5,15 +5,15 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import kernel.maidlab.api.reservation.dto.request.CheckInOutRequestDto;
-import kernel.maidlab.api.reservation.dto.request.ReservationIsApprovedRequestDto;
-import kernel.maidlab.api.reservation.dto.request.ReservationRequestDto;
-import kernel.maidlab.api.reservation.dto.request.ReviewRegisterRequestDto;
-import kernel.maidlab.api.reservation.dto.response.AdminWeeklySettlementResponseDto;
-import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
-import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
-import kernel.maidlab.api.reservation.dto.response.SettlementResponseDto;
-import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
+import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
+import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
+import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
+import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
+import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
+import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
+import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
+import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
+import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
 
 public interface ReservationService {
 	void createReservation(ReservationRequestDto dto, HttpServletRequest request);

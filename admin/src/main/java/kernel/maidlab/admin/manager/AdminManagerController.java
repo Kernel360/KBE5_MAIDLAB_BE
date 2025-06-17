@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import kernel.maidlab.api.manager.dto.ManagerListResponseDto;
-import kernel.maidlab.api.manager.dto.ManagerResponseDto;
+import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
+import kernel.maidlab.common.dto.manager.ManagerResponseDto;
 import kernel.maidlab.api.manager.service.ManagerService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;

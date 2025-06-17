@@ -10,8 +10,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kernel.maidlab.api.consumer.dto.response.ConsumerListResponseDto;
-import kernel.maidlab.api.consumer.dto.response.ConsumerProfileResponseDto;
+import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
+import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 
 @Tag(name = "Consumer", description = "Consumer API")

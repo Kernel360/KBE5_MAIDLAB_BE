@@ -4,15 +4,15 @@ import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import kernel.maidlab.api.manager.dto.request.*;
-import kernel.maidlab.api.manager.dto.response.*;
+import kernel.maidlab.common.dto.manager.request.*;
+import kernel.maidlab.common.dto.manager.response.*;
 import kernel.maidlab.common.dto.ResponseDto;
 
 import org.springframework.data.domain.Page;
 
 import jakarta.transaction.Transactional;
-import kernel.maidlab.api.manager.dto.ManagerListResponseDto;
-import kernel.maidlab.api.manager.dto.ManagerResponseDto;
+import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
+import kernel.maidlab.common.dto.manager.ManagerResponseDto;
 import kernel.maidlab.common.enums.Status;
 
 public interface ManagerService {

@@ -1,12 +1,12 @@
 package kernel.maidlab.api.util;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.auth.entity.Consumer;
-import kernel.maidlab.api.auth.entity.Manager;
+import kernel.maidlab.common.entity.consumer.Consumer;
+import kernel.maidlab.common.entity.manager.Manager;
 
-import kernel.maidlab.api.auth.jwt.JwtDto;
+import kernel.maidlab.common.dto.auth.JwtDto;
 import kernel.maidlab.api.auth.jwt.JwtProvider;
-import kernel.maidlab.api.exception.custom.AuthException;
+import kernel.maidlab.common.exception.custom.AuthException;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.UserType;
 

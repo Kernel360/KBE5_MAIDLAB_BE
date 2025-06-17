@@ -1,0 +1,15 @@
+package kernel.maidlab.common.exception;
+
+import kernel.maidlab.common.enums.ResponseType;
+import lombok.Getter;
+
+@Getter
+public class BaseException extends RuntimeException {
+	private final ResponseType responseType;
+
+	public BaseException(ResponseType responseType) {
+		super(responseType.getMessage());
+		this.responseType = responseType;
+	}
+
+}

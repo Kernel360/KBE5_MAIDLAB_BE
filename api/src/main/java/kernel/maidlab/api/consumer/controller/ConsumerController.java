@@ -1,9 +1,9 @@
 package kernel.maidlab.api.consumer.controller;
 
-import kernel.maidlab.api.auth.entity.Consumer;
-import kernel.maidlab.api.consumer.dto.ConsumerMyPageDto;
-import kernel.maidlab.api.consumer.dto.request.ConsumerProfileRequestDto;
-import kernel.maidlab.api.consumer.dto.response.ConsumerProfileResponseDto;
+import kernel.maidlab.common.entity.consumer.Consumer;
+import kernel.maidlab.common.dto.consumer.ConsumerMyPageDto;
+import kernel.maidlab.common.dto.consumer.request.ConsumerProfileRequestDto;
+import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
 import kernel.maidlab.api.consumer.service.ConsumerService;
 import kernel.maidlab.api.auth.jwt.JwtFilter;
 import kernel.maidlab.common.dto.ResponseDto;
