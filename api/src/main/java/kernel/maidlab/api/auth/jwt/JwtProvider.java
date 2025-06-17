@@ -1,7 +1,8 @@
 package kernel.maidlab.api.auth.jwt;
 
-import kernel.maidlab.api.auth.entity.Consumer;
-import kernel.maidlab.api.auth.entity.Manager;
+import kernel.maidlab.common.dto.auth.JwtDto;
+import kernel.maidlab.common.entity.consumer.Consumer;
+import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.common.enums.UserType;

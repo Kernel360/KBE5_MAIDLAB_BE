@@ -56,6 +56,9 @@ dependencies {
 
     //redis setting
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //aws
+    implementation group: 'software.amazon.awssdk', name: 's3', version: '2.31.48'
+    implementation group: 'software.amazon.awssdk', name: 'auth', version: '2.31.48'
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -67,15 +70,3 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
-
-//querydsl 추가 2
-def generated = 'src/main/generated'    //QClass 파일 생성 위치
-sourceSets {
-        main.java.srcDirs += [generated]   //java source set에 querydsl QClass 위치 추가
-    }
-tasks.withType(JavaCompile){                   //QClass 파일 생성 위치를 지정
-        options.getGeneratedSourceOutputDirectory().set(file(generated))
-    }
-clean{
-        delete file(generated)                     //gradle clean 시 generated 디렉토리 삭제
-    }

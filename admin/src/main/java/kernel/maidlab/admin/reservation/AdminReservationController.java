@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.reservation.dto.response.AdminWeeklySettlementResponseDto;
-import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
-import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
-import kernel.maidlab.api.reservation.dto.response.SettlementResponseDto;
+import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
+import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
+import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
+import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.api.reservation.service.ReservationService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;

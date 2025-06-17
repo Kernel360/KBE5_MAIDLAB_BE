@@ -1,6 +1,6 @@
 package kernel.maidlab.api.manager.repository;
 
-import kernel.maidlab.api.manager.entity.ManagerSchedule;
+import kernel.maidlab.common.entity.manager.ManagerSchedule;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

@@ -1,6 +1,6 @@
 package kernel.maidlab.api.auth.social;
 
-import kernel.maidlab.api.exception.BaseException;
+import kernel.maidlab.common.exception.BaseException;
 import kernel.maidlab.common.enums.ResponseType;
 
 import org.springframework.beans.factory.annotation.Autowired;

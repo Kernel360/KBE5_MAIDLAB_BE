@@ -1,7 +1,8 @@
 package kernel.maidlab.admin.auth.jwt;
 
 import kernel.maidlab.admin.auth.entity.Admin;
-import kernel.maidlab.api.util.ServletResponseUtil;
+import kernel.maidlab.common.dto.auth.AdminJwtDto;
+import kernel.maidlab.common.util.ServletResponseUtil;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;

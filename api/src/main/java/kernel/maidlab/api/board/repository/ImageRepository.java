@@ -1,7 +1,7 @@
 package kernel.maidlab.api.board.repository;
 
-import kernel.maidlab.api.board.entity.Board;
-import kernel.maidlab.api.board.entity.Image;
+import kernel.maidlab.common.entity.board.Board;
+import kernel.maidlab.common.entity.board.Image;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 

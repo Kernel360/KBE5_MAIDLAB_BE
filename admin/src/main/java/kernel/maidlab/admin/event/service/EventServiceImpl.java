@@ -17,7 +17,7 @@ import kernel.maidlab.admin.event.dto.response.EventListResponseDto;
 import kernel.maidlab.admin.event.dto.response.EventResponseDto;
 import kernel.maidlab.admin.event.entity.Event;
 import kernel.maidlab.admin.event.repository.EventRepository;
-import kernel.maidlab.api.exception.BaseException;
+import kernel.maidlab.common.exception.BaseException;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package kernel.maidlab.api.manager.controller;
 
-import kernel.maidlab.api.manager.dto.request.*;
-import kernel.maidlab.api.manager.dto.response.*;
+import kernel.maidlab.common.dto.manager.request.*;
+import kernel.maidlab.common.dto.manager.response.*;
 import kernel.maidlab.api.manager.service.ManagerService;
 import kernel.maidlab.common.dto.ResponseDto;
 

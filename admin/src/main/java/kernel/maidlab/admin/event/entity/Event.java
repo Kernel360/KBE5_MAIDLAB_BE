@@ -7,12 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import kernel.maidlab.admin.auth.entity.Admin;
-import kernel.maidlab.common.entity.Base;
+import kernel.maidlab.common.entity.base.Base;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,9 +19,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Event extends Base {
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "admin_id", nullable = false)
-	private Admin admin;
+	@Column(name = "admin_id")
+	private Long adminId;
 
 	@Column(name = "title")
 	private String title;
@@ -47,16 +42,16 @@ public class Event extends Base {
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
-	private Event(Admin admin, String title,String mainImageUrl, String imageUrl, String content) {
-		this.admin = admin;
+	private Event(Long adminId, String title,String mainImageUrl, String imageUrl, String content) {
+		this.adminId = adminId;
 		this.title = title;
 		this.mainImageUrl = mainImageUrl;
 		this.imageUrl = imageUrl;
 		this.content = content;
 	}
 
-	public static Event createEvent(Admin admin, String title, String mainImageUrl, String imageUrl, String content) {
-		return new Event(admin, title, mainImageUrl, imageUrl, content);
+	public static Event createEvent(Long adminId, String title, String mainImageUrl, String imageUrl, String content) {
+		return new Event(adminId, title, mainImageUrl, imageUrl, content);
 	}
 
 	public void updateEvent(String title,String mainImageUrl, String imageUrl, String content) {

@@ -13,12 +13,12 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
-import kernel.maidlab.api.auth.entity.QManager;
-import kernel.maidlab.api.manager.entity.QManagerRegion;
-import kernel.maidlab.api.manager.entity.QRegion;
-import kernel.maidlab.api.manager.entity.QManagerSchedule;
-import kernel.maidlab.api.reservation.entity.QReservation;
-import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
+import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
+import kernel.maidlab.common.entity.manager.QManager;
+import kernel.maidlab.common.entity.manager.QManagerRegion;
+import kernel.maidlab.common.entity.manager.QManagerSchedule;
+import kernel.maidlab.common.entity.manager.QRegion;
+import kernel.maidlab.common.entity.reservation.QReservation;
 import kernel.maidlab.common.enums.Status;
 
 @Repository

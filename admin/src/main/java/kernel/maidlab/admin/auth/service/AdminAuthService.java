@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kernel.maidlab.admin.auth.dto.request.AdminLoginRequestDto;
-import kernel.maidlab.api.auth.dto.response.LoginResponseDto;
+import kernel.maidlab.common.dto.auth.request.AdminLoginRequestDto;
+import kernel.maidlab.common.dto.auth.response.LoginResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 
 public interface AdminAuthService {

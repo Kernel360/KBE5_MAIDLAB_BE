@@ -1,7 +1,6 @@
 package kernel.maidlab.api.board.repository;
 
-import kernel.maidlab.api.board.dto.BoardQueryDto;
-import kernel.maidlab.api.board.entity.Board;
+import kernel.maidlab.common.entity.board.Board;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

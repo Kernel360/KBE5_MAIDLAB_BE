@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.matching.dto.response.RequestMatchingListResponseDto;
-import kernel.maidlab.api.exception.BaseException;
-import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
-import kernel.maidlab.api.matching.dto.request.MatchingRequestDto;
-import kernel.maidlab.api.matching.dto.response.MatchingResponseDto;
+import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
+import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
+import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
+import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;

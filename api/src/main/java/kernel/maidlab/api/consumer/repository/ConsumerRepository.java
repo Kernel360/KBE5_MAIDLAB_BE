@@ -1,6 +1,6 @@
 package kernel.maidlab.api.consumer.repository;
 
-import kernel.maidlab.api.auth.entity.Consumer;
+import kernel.maidlab.common.entity.consumer.Consumer;
 
 import java.util.Optional;
 

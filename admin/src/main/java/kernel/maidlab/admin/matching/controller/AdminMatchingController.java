@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
-import kernel.maidlab.api.matching.dto.response.MatchingResponseDto;
+import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
