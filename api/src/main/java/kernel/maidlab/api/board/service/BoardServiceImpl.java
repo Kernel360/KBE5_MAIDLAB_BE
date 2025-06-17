@@ -42,52 +42,49 @@ public class BoardServiceImpl implements BoardService {
 
 	private final BoardRepository boardRepository;
 	private final ImageRepository imageRepository;
-	private final AuthUtil authUtil;
-    private final AnswerRepository answerRepository;
 
 	// 게시판 글 생성
 	public void createConsumerBoard(
-			HttpServletRequest request,
-			BoardRequestDto boardRequestDto)
-	{
-		UserBase user = (UserBase) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		HttpServletRequest request,
+		BoardRequestDto boardRequestDto) {
+		UserBase user = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 
 		Board board = Board.createConsumerBoard(user, boardRequestDto);
 		boardRepository.save(board);
 
 		boardRequestDto.getImages()
-				.forEach((imageDto) -> imageRepository.save(
-						new Image(
-								board,
-								imageDto.getImagePath(),
-								imageDto.getName())));
+			.forEach((imageDto) -> imageRepository.save(
+				new Image(
+					board,
+					imageDto.getImagePath(),
+					imageDto.getName())));
 	}
 
 	// 게시글 전체 조회
 	@Transactional(readOnly = true)
 	public List<BoardResponseDto> getConsumerBoardList(HttpServletRequest request) {
 
-		UserBase user = (UserBase) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		UserType userType = (UserType) request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+		UserBase user = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
 
 		List<BoardQueryDto> boardQueryDtoList = getBoardQueryDtoList(user, userType);
 
 		return boardQueryDtoList.stream()
-				.map(BoardResponseDto::from)
-				.toList();
+			.map(BoardResponseDto::from)
+			.toList();
 	}
 
 	// 수요자 글 상세 조회
 	@Transactional(readOnly = true)
 	public BoardDetailResponseDto getConsumerBoard(
-			HttpServletRequest request,
-			Long boardId
+		HttpServletRequest request,
+		Long boardId
 	) throws AccessDeniedException {
 
-		UserBase user = (UserBase) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		UserBase user = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 
 		Board board = boardRepository.findByIdAndIsDeletedFalse(boardId)
-				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시물 입니다."));
+			.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시물 입니다."));
 
 		// 토큰으로 찾은 수요자id와 PathVariable로 넘어온 게시판id로 찾은 consumerId와 비교
 		if (!board.isAccessibleBy(user)) {
@@ -97,7 +94,7 @@ public class BoardServiceImpl implements BoardService {
 		// 답변여부가 true면 답변까지 조회
 		if (board.getIsAnswered()) {
 			board = boardRepository.findBoardWithAnswerIfAnswered(boardId)
-					.orElseThrow(() -> new EntityNotFoundException("답변이 존재하지 않습니다."));
+				.orElseThrow(() -> new EntityNotFoundException("답변이 존재하지 않습니다."));
 		}
 
 		List<Image> images = imageRepository.findAllByBoardId(boardId);
@@ -108,12 +105,12 @@ public class BoardServiceImpl implements BoardService {
 
 	// 수정
 	public void modifyBoard(
-			HttpServletRequest request,
-			Long boardId,
-			BoardUpdateRequestDto boardUpdateRequestDto) {
+		HttpServletRequest request,
+		Long boardId,
+		BoardUpdateRequestDto boardUpdateRequestDto) {
 
 		Board board = boardRepository.findByIdAndIsDeletedFalse(boardId)
-				.orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+			.orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
 
 		// 사용자 검증
 		UserBase user = getUser(request);
@@ -132,12 +129,12 @@ public class BoardServiceImpl implements BoardService {
 
 	// 게시글 삭제
 	public void deleteBoard(
-			HttpServletRequest request,
-			Long boardId
-	){
+		HttpServletRequest request,
+		Long boardId
+	) {
 		Board board = boardRepository
-				.findByIdAndIsDeletedFalse(boardId)
-				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시판 입니다."));
+			.findByIdAndIsDeletedFalse(boardId)
+			.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시판 입니다."));
 
 		board.updateIsDelete(true);
 	}
@@ -155,16 +152,15 @@ public class BoardServiceImpl implements BoardService {
 		return false;
 	}
 
-
 	// user타입에 따른 board 조회
-	public List<BoardQueryDto> getBoardQueryDtoList (UserBase user, UserType userType) {
+	public List<BoardQueryDto> getBoardQueryDtoList(UserBase user, UserType userType) {
 
 		if (userType == UserType.CONSUMER) {
-			Consumer consumer = (Consumer) user;
+			Consumer consumer = (Consumer)user;
 			return boardRepository.findAllByUserIdIsDeletedFalse(consumer.getId(), userType);
 
 		} else if (userType == UserType.MANAGER) {
-			Manager manager = (Manager) user;
+			Manager manager = (Manager)user;
 			return boardRepository.findAllByUserIdIsDeletedFalse(manager.getId(), userType);
 
 		}
@@ -174,12 +170,12 @@ public class BoardServiceImpl implements BoardService {
 	// 유저 찾기
 	public UserBase getUser(HttpServletRequest request) {
 
-		UserType userType = (UserType) request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
 		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 
-		return switch (userType.getName()){
-			case "회원" -> (Consumer) user;
-			case "매니저" -> (Manager) user;
+		return switch (userType.getName()) {
+			case "회원" -> (Consumer)user;
+			case "매니저" -> (Manager)user;
 			default -> throw new IllegalArgumentException("유효하지 않은 사용자 유형 입니다.");
 		};
 	}
@@ -189,7 +185,7 @@ public class BoardServiceImpl implements BoardService {
 	public void updateImages(List<Image> currentImages, List<ImageDto> newImageDataList, Board board) {
 
 		// 사용자가 images null을 보낸 경우 기존 이미지만 삭제후 리턴
-		if(newImageDataList == null){
+		if (newImageDataList == null) {
 			imageRepository.deleteAllByBoard(board);
 			board.getImages().clear();
 			return;
@@ -197,15 +193,15 @@ public class BoardServiceImpl implements BoardService {
 
 		// 현재 이미지 ID 목록
 		Set<Long> currentImageIds = currentImages.stream()
-				.map(Image::getId)
-				.collect(Collectors.toSet());
+			.map(Image::getId)
+			.collect(Collectors.toSet());
 
 		// 사용자가 보낸 ID들 중 유효하지 않은 ID 체크
 		List<Long> invalidIds = newImageDataList.stream()
-				.map(ImageDto::getId)
-				.filter(Objects::nonNull)
-				.filter(id -> !currentImageIds.contains(id))
-				.toList();
+			.map(ImageDto::getId)
+			.filter(Objects::nonNull)
+			.filter(id -> !currentImageIds.contains(id))
+			.toList();
 
 		if (!invalidIds.isEmpty()) {
 			throw new IllegalArgumentException("잘못된 이미지 ID가 포함되어 있습니다: " + invalidIds);
@@ -213,20 +209,20 @@ public class BoardServiceImpl implements BoardService {
 
 		// 삭제할 이미지: 현재 DB에 있으나 요청에서 누락된 것
 		Set<Long> newImageIds = newImageDataList.stream()
-				.map(ImageDto::getId)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toSet());
+			.map(ImageDto::getId)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet());
 
 		List<Image> imagesToRemove = currentImages.stream()
-				.filter(img -> !newImageIds.contains(img.getId()))
-				.toList();
+			.filter(img -> !newImageIds.contains(img.getId()))
+			.toList();
 
 		// 기존 이미지 업데이트
 		for (Image currentImage : currentImages) {
 			newImageDataList.stream()
-					.filter(dto -> dto.getId() != null && dto.getId().equals(currentImage.getId()))
-					.findFirst()
-					.ifPresent(currentImage::updateImage);
+				.filter(dto -> dto.getId() != null && dto.getId().equals(currentImage.getId()))
+				.findFirst()
+				.ifPresent(currentImage::updateImage);
 		}
 
 		// 새 이미지 추가 (ID가 null인 것들)
@@ -237,47 +233,6 @@ public class BoardServiceImpl implements BoardService {
 			}
 		}
 		imageRepository.deleteAll(imagesToRemove);
-	}
-
-
-
-	@Override
-	public List<BoardResponseDto> getAllRefundBoardList(HttpServletRequest request, int page, int size) {
-		Pageable pageable = PageRequest.of(page, size);
-		List<Board> board= boardRepository.findAllByManagerIdNull(pageable);
-
-		return board.stream()
-			.map(BoardResponseDto::fromBoard)
-			.toList();
-	}
-
-	@Override
-	public List<BoardResponseDto> getAllConsultationBoardList(HttpServletRequest request, int page, int size) {
-		Pageable pageable = PageRequest.of(page, size);
-		List<Board> boards = boardRepository.findAllByConsumerIdNull(pageable);
-
-		return boards.stream()
-			.map(BoardResponseDto::fromBoard)
-			.toList();
-	}
-
-	@Override
-	public void createAnswer(AnswerRequestDto requestDto, HttpServletRequest request, Long boardId) {
-
-		Optional<Board> board = boardRepository.findById(boardId);
-        board.get().makeAnswer();
-		Answer answer = Answer.createAnswer(requestDto, board.get());
-		answerRepository.save(answer);
-
-	}
-
-	@Transactional
-	@Override
-	public void modifyAnswer(AnswerRequestDto requestDto, Long answerId) {
-
-		Optional<Answer> answer = answerRepository.findById(answerId);
-		answer.get().setContent(requestDto);
-
 	}
 
 }
