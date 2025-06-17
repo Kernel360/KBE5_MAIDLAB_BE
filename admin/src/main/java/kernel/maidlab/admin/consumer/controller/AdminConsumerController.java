@@ -1,4 +1,4 @@
-package kernel.maidlab.admin.consumer;
+package kernel.maidlab.admin.consumer.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package kernel.maidlab.admin.reservation;
+package kernel.maidlab.admin.reservation.controller;
 
 import java.time.LocalDate;
 import java.util.List;
