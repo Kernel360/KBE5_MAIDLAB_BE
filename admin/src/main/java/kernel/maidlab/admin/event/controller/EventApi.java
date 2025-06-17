@@ -10,9 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.admin.event.dto.request.EventRequestDto;
-import kernel.maidlab.admin.event.dto.response.EventListResponseDto;
-import kernel.maidlab.admin.event.dto.response.EventResponseDto;
+import kernel.maidlab.common.dto.event.request.EventRequestDto;
+import kernel.maidlab.common.dto.event.response.EventListResponseDto;
+import kernel.maidlab.common.dto.event.response.EventResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import lombok.Generated;
 

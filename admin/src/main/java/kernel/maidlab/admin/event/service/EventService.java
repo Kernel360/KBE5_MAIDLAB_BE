@@ -3,9 +3,9 @@ package kernel.maidlab.admin.event.service;
 import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.admin.event.dto.request.EventRequestDto;
-import kernel.maidlab.admin.event.dto.response.EventListResponseDto;
-import kernel.maidlab.admin.event.dto.response.EventResponseDto;
+import kernel.maidlab.common.dto.event.request.EventRequestDto;
+import kernel.maidlab.common.dto.event.response.EventListResponseDto;
+import kernel.maidlab.common.dto.event.response.EventResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 
 public interface EventService {

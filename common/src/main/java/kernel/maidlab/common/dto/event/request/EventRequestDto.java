@@ -1,4 +1,4 @@
-package kernel.maidlab.admin.event.dto.request;
+package kernel.maidlab.common.dto.event.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
