@@ -12,15 +12,8 @@ import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Long>, BoardRepositoryCustom {
 
-    // 나중에 쿼리dsl로 바꿀 예정
-    // todo: 나중에 쿼리dsl로 바꿀 예정
-    @Query("SELECT b " +
-            "FROM Board b " +
-            "LEFT JOIN FETCH b.answer " +
-            "WHERE b.id = :boardId " +
-            "AND b.isAnswered = true " +
-            "AND b .isDeleted = false")
-    Optional<Board> findBoardWithAnswerIfAnswered(@Param("boardId") Long boardId);
+
+
 
     /**
      * isDeleted = false만 조회하도록
