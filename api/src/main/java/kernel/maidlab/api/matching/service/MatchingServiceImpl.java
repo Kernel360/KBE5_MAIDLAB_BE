@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
@@ -31,14 +33,13 @@ public class MatchingServiceImpl implements MatchingService {
 	private final ReservationRepository reservationRepository;
 	private final ManagerRepository managerRepository;
 	private final MatchingRepository matchingRepository;
-	private final AuthUtil authUtil;
+
 
 	public MatchingServiceImpl(ReservationRepository reservationRepository, ManagerRepository managerRepository,
 		MatchingRepository matchingRepository, AuthUtil authUtil) {
 		this.reservationRepository = reservationRepository;
 		this.managerRepository = managerRepository;
 		this.matchingRepository = matchingRepository;
-		this.authUtil = authUtil;
 	}
 
 	@Override
@@ -89,10 +90,13 @@ public class MatchingServiceImpl implements MatchingService {
 
 	@Override
 	public List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size) {
-		Manager me = authUtil.getManager(request);
+
+		UserBase me = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		Manager manager = (Manager)me;
+
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<Matching> matchings = matchingRepository.findByManagerId(me.getId(), pageable);
+		Page<Matching> matchings = matchingRepository.findByManagerId(manager.getId(), pageable);
 
 		return matchings.stream()
 			.filter(
