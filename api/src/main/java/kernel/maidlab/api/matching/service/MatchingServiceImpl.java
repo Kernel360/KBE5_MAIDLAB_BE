@@ -46,7 +46,6 @@ public class MatchingServiceImpl implements MatchingService {
 		LocalDateTime StartTime = LocalDateTime.parse(dto.getStartTime());
 		LocalDateTime EndTime = LocalDateTime.parse(dto.getEndTime());
 		String gu = extractGuFromAddress(dto.getAddress());
-
 		return managerRepository.findAvailableManagers(gu, StartTime, EndTime);
 	}
 

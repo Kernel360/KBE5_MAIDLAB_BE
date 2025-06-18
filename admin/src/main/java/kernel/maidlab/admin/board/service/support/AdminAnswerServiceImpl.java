@@ -1,16 +1,16 @@
-package kernel.maidlab.admin.board.service;
+package kernel.maidlab.admin.board.service.support;
 
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import kernel.maidlab.admin.board.repository.AdminAnswerRepository;
+import kernel.maidlab.admin.board.repository.support.AdminAnswerRepository;
 import kernel.maidlab.common.entity.board.Answer;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AdminAnswerServiceImpl implements AdminAnswerService{
+public class AdminAnswerServiceImpl implements AdminAnswerService {
 
 	private final AdminAnswerRepository adminAnswerRepository;
 

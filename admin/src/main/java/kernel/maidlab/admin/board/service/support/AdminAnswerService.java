@@ -1,4 +1,4 @@
-package kernel.maidlab.admin.board.service;
+package kernel.maidlab.admin.board.service.support;
 
 import java.util.Optional;
 
