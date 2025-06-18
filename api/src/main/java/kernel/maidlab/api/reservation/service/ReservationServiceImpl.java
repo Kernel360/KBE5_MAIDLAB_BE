@@ -459,6 +459,11 @@ public class ReservationServiceImpl implements ReservationService {
 		Optional<Settlement> settlement = settlementRepository.findById(settlementId);
 		settlement.get().reject();
 	}
+
+	@Override
+	public Reservation findById(Long reservationId) {
+		return reservationRepository.findById(reservationId).orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
+	}
 }
 
 

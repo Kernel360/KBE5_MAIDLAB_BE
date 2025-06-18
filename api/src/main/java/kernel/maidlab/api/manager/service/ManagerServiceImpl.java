@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.servlet.http.HttpServletRequest;
 
 // import jakarta.transaction.Transactional;
+import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.dto.auth.JwtDto;
 import kernel.maidlab.api.auth.jwt.JwtProvider;
@@ -37,6 +38,7 @@ import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -330,6 +332,12 @@ public class ManagerServiceImpl implements ManagerService {
 				manager.getUuid(),
 				manager.getId()
 			));
+	}
+
+	@Override
+	public List<AvailableManagerResponseDto> findAvailableManagers(String gu, LocalDateTime StartTime,
+		LocalDateTime EndTime) {
+		return managerRepository.findAvailableManagers(gu, StartTime, EndTime);
 	}
 
 }
