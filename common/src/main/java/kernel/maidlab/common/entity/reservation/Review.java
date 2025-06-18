@@ -11,6 +11,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
 import kernel.maidlab.common.entity.base.Base;
+import kernel.maidlab.common.entity.base.TimeBase;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "review")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review extends Base {
+public class Review extends TimeBase {
 	@Column(name = "reservation_id", nullable = false)
 	private Long reservationId;
 	@Column(name = "manager_id", nullable = false)

@@ -2,6 +2,7 @@ package kernel.maidlab.common.entity.consumer;
 
 import jakarta.persistence.*;
 import kernel.maidlab.common.entity.base.Base;
+import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.SocialType;
@@ -23,7 +24,7 @@ import java.util.UUID;
 	@Index(name = "idx_consumer_phone_number", columnList = "phone_number", unique = true)})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Consumer extends Base implements UserBase {
+public class Consumer extends TimeBase implements UserBase {
 
 	@Column(name = "uuid", nullable = false, unique = true)
 	private String uuid;
@@ -62,14 +63,6 @@ public class Consumer extends Base implements UserBase {
 
 	@Column(name = "refresh_token", columnDefinition = "TEXT")
 	private String refreshToken;
-
-	@CreationTimestamp
-	@Column(name = "created_at", nullable = false)
-	private LocalDateTime createdAt;
-
-	@UpdateTimestamp
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt;
 
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted;
