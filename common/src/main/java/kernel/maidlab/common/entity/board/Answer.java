@@ -6,13 +6,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
 import kernel.maidlab.common.entity.base.Base;
+import kernel.maidlab.common.entity.base.TimeBase;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Answer extends Base {
+public class Answer extends TimeBase {
 
     @OneToOne
     @JoinColumn(name = "board_id")

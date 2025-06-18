@@ -1,6 +1,7 @@
 package kernel.maidlab.common.entity.board;
 
 import jakarta.persistence.*;
+import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.entity.base.UserBase;
@@ -17,7 +18,7 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor
-public class Board extends Base {
+public class Board extends TimeBase {
 
     @ManyToOne
     @JoinColumn(name = "consumer_id")

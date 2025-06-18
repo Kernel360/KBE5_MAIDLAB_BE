@@ -2,6 +2,7 @@ package kernel.maidlab.admin.auth.entity;
 
 import java.time.LocalDateTime;
 
+import kernel.maidlab.common.entity.base.TimeBase;
 import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "admin")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Admin extends Base {
+public class Admin extends TimeBase {
 
 	@Column(name = "admin_key", unique = true)
 	private String adminKey;

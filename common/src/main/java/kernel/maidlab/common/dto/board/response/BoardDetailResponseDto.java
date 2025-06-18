@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -19,7 +20,7 @@ public class BoardDetailResponseDto {
     private String content;
     private boolean isAnswered;
     private BoardType boardType;
-//    private LocalDateTime createAt
+    private LocalDateTime updatedAt;
     private List<ImageDto> images;
     private AnswerResponseDto answer;
 
@@ -31,6 +32,7 @@ public class BoardDetailResponseDto {
                 board.getContent(),
                 board.getIsAnswered(),
                 board.getBoardType(),
+                board.getUpdatedAt(),
                 images.stream()
                         .map(ImageDto::from)
                         .toList(),
