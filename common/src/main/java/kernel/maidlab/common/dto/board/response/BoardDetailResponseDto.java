@@ -24,7 +24,6 @@ public class BoardDetailResponseDto {
     private List<ImageDto> images;
     private AnswerResponseDto answer;
 
-
     public static BoardDetailResponseDto from (Board board, List<Image> images){
 
         return new BoardDetailResponseDto(
