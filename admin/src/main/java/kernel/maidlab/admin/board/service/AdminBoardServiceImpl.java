@@ -10,8 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.admin.board.repository.AdminBoardRepository;
+import kernel.maidlab.admin.board.service.support.AdminAnswerService;
+import kernel.maidlab.admin.board.service.support.AdminImageServiceImpl;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
 import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
@@ -19,23 +21,21 @@ import kernel.maidlab.common.dto.board.response.BoardResponseDto;
 import kernel.maidlab.common.entity.board.Answer;
 import kernel.maidlab.common.entity.board.Board;
 import kernel.maidlab.common.entity.board.Image;
-import kernel.maidlab.api.board.repository.BoardRepository;
-import kernel.maidlab.api.board.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class AdminBoardServiceImpl implements AdminBoardService {
 
-	private final BoardRepository boardRepository;
-	private final ImageRepository imageRepository;
+	private final AdminBoardRepository adminBoardRepository;
+	private final AdminImageServiceImpl adminImageService;
 	private final AdminAnswerService adminAnswerService;
 
 	@Override
 	public ResponseEntity<ResponseDto<List<BoardResponseDto>>> getAllRefundBoardList(HttpServletRequest request,
 		int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
-		List<Board> board = boardRepository.findAllByManagerIdNull(pageable);
+		List<Board> board = adminBoardRepository.findAllByManagerIdNull(pageable);
 
 		return ResponseDto.success(board.stream()
 			.map(BoardResponseDto::fromBoard)
@@ -48,17 +48,14 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 		Long boardId
 	) throws AccessDeniedException {
 
-		System.out.println(boardId);
-		Board board = boardRepository.findByIdAndIsDeletedFalse(boardId)
-			.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시물 입니다."));
+		Board board = adminBoardRepository.findByIdAndIsDeletedFalse(boardId);
 
 		// 답변여부가 true면 답변까지 조회
 		if (board.getIsAnswered()) {
-			board = boardRepository.findBoardWithAnswerIfAnswered(boardId)
-				.orElseThrow(() -> new EntityNotFoundException("답변이 존재하지 않습니다."));
+			board = adminBoardRepository.findBoardWithAnswerIfAnswered(boardId);
 		}
 
-		List<Image> images = imageRepository.findAllByBoardId(boardId);
+		List<Image> images = adminImageService.findAllByBoardId(boardId);
 
 		return ResponseDto.success(BoardDetailResponseDto.from(board, images));
 	}
@@ -67,7 +64,7 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 	public ResponseEntity<ResponseDto<List<BoardResponseDto>>> getAllConsultationBoardList(HttpServletRequest request,
 		int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
-		List<Board> boards = boardRepository.findAllByConsumerIdNull(pageable);
+		List<Board> boards = adminBoardRepository.findAllByConsumerIdNull(pageable);
 
 		return ResponseDto.success(boards.stream()
 			.map(BoardResponseDto::fromBoard)
@@ -77,7 +74,7 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 	@Override
 	public ResponseEntity<ResponseDto<Void>> createAnswer(AnswerRequestDto requestDto, HttpServletRequest request,
 		Long boardId) {
-		Optional<Board> board = boardRepository.findById(boardId);
+		Optional<Board> board = adminBoardRepository.findById(boardId);
 		board.get().makeAnswer();
 		Answer answer = Answer.createAnswer(requestDto, board.get());
 		adminAnswerService.save(answer);
