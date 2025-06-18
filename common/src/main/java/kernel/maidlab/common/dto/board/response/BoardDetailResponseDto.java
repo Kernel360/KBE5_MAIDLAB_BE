@@ -20,7 +20,7 @@ public class BoardDetailResponseDto {
     private String content;
     private boolean isAnswered;
     private BoardType boardType;
-    private LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
     private List<ImageDto> images;
     private AnswerResponseDto answer;
 
@@ -32,7 +32,7 @@ public class BoardDetailResponseDto {
                 board.getContent(),
                 board.getIsAnswered(),
                 board.getBoardType(),
-                board.getUpdatedAt(),
+                board.getCreatedAt(),
                 images.stream()
                         .map(ImageDto::from)
                         .toList(),

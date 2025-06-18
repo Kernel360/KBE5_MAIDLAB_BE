@@ -76,14 +76,6 @@ public class Manager extends TimeBase implements UserBase {
 	@Column(name = "is_verified", nullable = false)
 	private Status isVerified;
 
-	@CreationTimestamp
-	@Column(name = "created_at", nullable = false)
-	private LocalDateTime createdAt;
-
-	@UpdateTimestamp
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt;
-
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted;
 

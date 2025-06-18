@@ -28,7 +28,8 @@ public class BoardController {
     @PostMapping
     public ResponseEntity<ResponseDto<String>> createBoard(
             HttpServletRequest request,
-            @RequestBody BoardRequestDto boardRequestDto){
+            @RequestBody BoardRequestDto boardRequestDto
+    ){
         boardService.createConsumerBoard(request, boardRequestDto);
         return ResponseDto.success("게시글이 성공적으로 등록완료 되었습니다.");
     }
