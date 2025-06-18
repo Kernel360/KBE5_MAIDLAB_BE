@@ -115,29 +115,15 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public List<ReservationResponseDto> allReservations(HttpServletRequest request) {
 		UserType userType = authUtil.getUserType(request);
-		List<Reservation> reservations;
 
 		if (userType == UserType.CONSUMER) {
 			Long consumerId = authUtil.getConsumer(request).getId();
-			reservations = reservationRepository.findByConsumerId(consumerId);
+			return reservationRepository.findAllWithReviewByConsumerId(consumerId);
 		} else {
 			Long managerId = authUtil.getManager(request).getId();
-			reservations = reservationRepository.findByManagerId(managerId);
-		}
+			return reservationRepository.findAllWithReviewByManagerId(managerId);
 
-		return reservations.stream()
-			.map(reservation -> ReservationResponseDto.builder()
-				.reservationId(reservation.getId())
-				.isExistReview(reviewRepository.existsReviewsByReservationId(reservation.getId()))
-				.status(reservation.getStatus())
-				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
-				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
-				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
-				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
-				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
-				.totalPrice(reservation.getTotalPrice())
-				.build())
-			.toList();
+		}
 	}
 
 	@Override
