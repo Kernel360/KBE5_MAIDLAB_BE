@@ -1,4 +1,4 @@
-package kernel.maidlab.admin.manager;
+package kernel.maidlab.admin.manager.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
