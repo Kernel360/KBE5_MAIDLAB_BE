@@ -14,6 +14,7 @@ import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseD
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
+import kernel.maidlab.common.entity.reservation.Reservation;
 
 public interface ReservationService {
 	void createReservation(ReservationRequestDto dto, HttpServletRequest request);
@@ -49,4 +50,6 @@ public interface ReservationService {
 
 	@Transactional
 	void settlementReject(Long settlementId);
+
+	Reservation findById(Long reservationId);
 }

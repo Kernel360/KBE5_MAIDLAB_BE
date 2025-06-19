@@ -1,5 +1,8 @@
 package kernel.maidlab.api.manager.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.Page;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.ManagerResponseDto;
+import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.enums.Status;
 
 public interface ManagerService {
@@ -38,4 +42,6 @@ public interface ManagerService {
 	ResponseEntity<ResponseDto<ReviewListResponseDto>> getMyReviews(HttpServletRequest req);
 
 	Page<ManagerListResponseDto> getManagerByPageWithStatus(int page, int size, Status status);
+
+	List<AvailableManagerResponseDto> findAvailableManagers(String gu, LocalDateTime StartTime, LocalDateTime EndTime);
 }

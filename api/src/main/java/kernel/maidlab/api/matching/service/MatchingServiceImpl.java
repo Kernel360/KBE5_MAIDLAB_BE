@@ -11,12 +11,13 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.api.manager.service.ManagerService;
+import kernel.maidlab.api.reservation.service.ReservationService;
+import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
 import kernel.maidlab.common.entity.reservation.Reservation;
-import kernel.maidlab.api.reservation.repository.ReservationRepository;
-import kernel.maidlab.api.util.AuthUtil;
 import kernel.maidlab.common.exception.BaseException;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
@@ -28,17 +29,15 @@ import kernel.maidlab.common.enums.Status;
 
 @Service
 public class MatchingServiceImpl implements MatchingService {
-	private final ReservationRepository reservationRepository;
-	private final ManagerRepository managerRepository;
 	private final MatchingRepository matchingRepository;
-	private final AuthUtil authUtil;
+	private final ManagerService managerService;
+	private final ReservationService reservationService;
 
-	public MatchingServiceImpl(ReservationRepository reservationRepository, ManagerRepository managerRepository,
-		MatchingRepository matchingRepository, AuthUtil authUtil) {
-		this.reservationRepository = reservationRepository;
-		this.managerRepository = managerRepository;
+	public MatchingServiceImpl(MatchingRepository matchingRepository, ManagerService managerService,
+		ReservationService reservationService) {
 		this.matchingRepository = matchingRepository;
-		this.authUtil = authUtil;
+		this.managerService = managerService;
+		this.reservationService = reservationService;
 	}
 
 	@Override
@@ -47,7 +46,7 @@ public class MatchingServiceImpl implements MatchingService {
 		LocalDateTime EndTime = LocalDateTime.parse(dto.getEndTime());
 		String gu = extractGuFromAddress(dto.getAddress());
 
-		return managerRepository.findAvailableManagers(gu, StartTime, EndTime);
+		return managerService.findAvailableManagers(gu, StartTime, EndTime);
 	}
 
 	@Override
@@ -89,19 +88,20 @@ public class MatchingServiceImpl implements MatchingService {
 
 	@Override
 	public List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size) {
-		Manager me = authUtil.getManager(request);
+
+		UserBase me = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		Manager manager = (Manager)me;
+
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<Matching> matchings = matchingRepository.findByManagerId(me.getId(), pageable);
+		Page<Matching> matchings = matchingRepository.findByManagerId(manager.getId(), pageable);
 
 		return matchings.stream()
 			.filter(
 				matching -> matching.getMatchingStatus() != null && matching.getMatchingStatus().equals(Status.PENDING))
 			.map(matching -> {
 				Long reservationId = matching.getReservationId();
-				Reservation reservation = reservationRepository.findById(reservationId)
-					.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
-
+				Reservation reservation = reservationService.findById(reservationId);
 				return new RequestMatchingListResponseDto(reservation);
 			})
 			.toList();
