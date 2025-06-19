@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.jwt.JwtFilter;
 import kernel.maidlab.api.manager.service.ManagerService;
+import kernel.maidlab.api.reservation.repository.ReservationRepository;
 import kernel.maidlab.api.reservation.service.ReservationService;
 import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.entity.manager.Manager;
@@ -31,13 +32,13 @@ import kernel.maidlab.common.enums.Status;
 public class MatchingServiceImpl implements MatchingService {
 	private final MatchingRepository matchingRepository;
 	private final ManagerService managerService;
-	private final ReservationService reservationService;
+	private final ReservationRepository reservationRepository;
 
 	public MatchingServiceImpl(MatchingRepository matchingRepository, ManagerService managerService,
-		ReservationService reservationService) {
+		ReservationRepository reservationRepository) {
 		this.matchingRepository = matchingRepository;
 		this.managerService = managerService;
-		this.reservationService = reservationService;
+		this.reservationRepository = reservationRepository;
 	}
 
 	@Override
@@ -45,7 +46,6 @@ public class MatchingServiceImpl implements MatchingService {
 		LocalDateTime StartTime = LocalDateTime.parse(dto.getStartTime());
 		LocalDateTime EndTime = LocalDateTime.parse(dto.getEndTime());
 		String gu = extractGuFromAddress(dto.getAddress());
-
 		return managerService.findAvailableManagers(gu, StartTime, EndTime);
 	}
 
@@ -65,10 +65,6 @@ public class MatchingServiceImpl implements MatchingService {
 		matching.setMatchingStatus(status);
 	}
 
-
-
-
-
 	@Override
 	public List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size) {
 
@@ -84,13 +80,12 @@ public class MatchingServiceImpl implements MatchingService {
 				matching -> matching.getMatchingStatus() != null && matching.getMatchingStatus().equals(Status.PENDING))
 			.map(matching -> {
 				Long reservationId = matching.getReservationId();
-				Reservation reservation = reservationService.findById(reservationId);
+				Reservation reservation = reservationRepository.findById(reservationId)
+					.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
 				return new RequestMatchingListResponseDto(reservation);
 			})
 			.toList();
 	}
-
-
 
 	private String extractGuFromAddress(String address) {
 		// "구" 단위 추출 (예: "서울시 강남구 역삼동" -> "강남구")
