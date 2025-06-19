@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.board.repository.AdminBoardRepository;
 import kernel.maidlab.admin.board.service.support.AdminAnswerService;
@@ -74,18 +75,22 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 	@Override
 	public ResponseEntity<ResponseDto<Void>> createAnswer(AnswerRequestDto requestDto, HttpServletRequest request,
 		Long boardId) {
-		Optional<Board> board = adminBoardRepository.findById(boardId);
-		board.get().makeAnswer();
-		Answer answer = Answer.createAnswer(requestDto, board.get());
+		Board board = adminBoardRepository.findById(boardId)
+			.orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다. ID: " + boardId));
+		board.makeAnswer();
+		Answer answer = Answer.createAnswer(requestDto, board);
 		adminAnswerService.save(answer);
 		return ResponseDto.success();
 	}
 
 	@Transactional
 	@Override
-	public ResponseEntity<ResponseDto<Void>> modifyAnswer(AnswerRequestDto requestDto, Long answerId) {
-		Optional<Answer> answer = adminAnswerService.findById(answerId);
-		answer.get().setContent(requestDto);
+	public ResponseEntity<ResponseDto<Void>> modifyAnswer(AnswerRequestDto requestDto, Long boardId) {
+		Board board = adminBoardRepository.findById(boardId)
+			.orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다. boardId: " + boardId));
+		Answer answer = adminAnswerService.findById(board.getAnswer().getId())
+			.orElseThrow(() -> new EntityNotFoundException("답변을 찾을 수 없습니다. boardId: " + boardId));
+		answer.setContent(requestDto);
 		return ResponseDto.success();
 	}
 }
