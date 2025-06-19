@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.entity.consumer.ManagerPreference;
@@ -128,44 +130,15 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
-		Reservation reservation = reservationRepository.findById(reservationId)
-			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		Manager manager = managerRepository.findById(reservation.getManagerId())
-			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+		UserType userType = (UserType) request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+		UserBase user = (UserBase) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		Long userId = getUserId(request, userType);
 
-		String mangerUuid = manager.getUuid();
-		Long managerId = manager.getId();
-		List<ManagerRegion> managerRegions = managerRegionRepository.findByManagerId(manager.getId());
-		List<String> regionNames = managerRegions.stream()
-			.map(mr -> regionRepository.findById(mr.getRegionId().getId())
-				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR))
-				.getRegionName())
-			.collect(toList());
-
-		return ReservationDetailResponseDto.builder()
-			.status(reservation.getStatus())
-			.serviceType(reservation.getServiceDetailType().getServiceType().toString())
-			.serviceDetailType(reservation.getServiceDetailType().getServiceDetailType())
-			.address(reservation.getAddress())
-			.addressDetail(reservation.getAddressDetail())
-			.managerUuId(mangerUuid)
-			.managerName(manager.getName())
-			.managerProfileImageUrl(manager.getProfileImage())
-			.managerAverageRate(manager.getAverageRate())
-			.managerRegion(regionNames)
-			.managerPhoneNumber(manager.getPhoneNumber())
-			.housingType(reservation.getHousingType())
-			.roomSize(reservation.getRoomSize())
-			.housingInformation(reservation.getHousingInformation())
-			.reservationDate(reservation.getReservationDate())
-			.startTime(reservation.getStartTime())
-			.endTime(reservation.getEndTime())
-			.serviceAdd(reservation.getServiceAdd())
-			.pet(reservation.getPet())
-			.specialRequest(reservation.getSpecialRequest())
-			.totalPrice(reservation.getTotalPrice())
-			.build();
+		return reservationRepository.findDetailReservationByIdAndUser(reservationId, userId, userType);
 	}
+
+
+
 
 	@Transactional
 	@Override
@@ -444,6 +417,18 @@ public class ReservationServiceImpl implements ReservationService {
 	public void settlementReject(Long settlementId) {
 		Optional<Settlement> settlement = settlementRepository.findById(settlementId);
 		settlement.get().reject();
+	}
+
+
+	public Long getUserId(HttpServletRequest request, UserType userType) {
+		UserBase user = (UserBase) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		if (userType == UserType.CONSUMER) {
+			return ((Consumer) user).getId();
+		} else if (userType == UserType.MANAGER) {
+			return ((Manager) user).getId();
+		} else {
+			throw new ReservationException(ResponseType.THIS_USER_DOES_NOT_EXIST);
+		}
 	}
 }
 
