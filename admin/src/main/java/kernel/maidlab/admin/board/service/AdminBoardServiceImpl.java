@@ -54,7 +54,6 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 		// 답변여부가 true면 답변까지 조회
 		if (board.getIsAnswered()) {
 			board = adminBoardRepository.findBoardWithAnswerIfAnswered(boardId);
-			System.out.println(board.getAnswer().getId());
 		}
 
 		List<Image> images = adminImageService.findAllByBoardId(boardId);
