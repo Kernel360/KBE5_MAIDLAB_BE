@@ -28,5 +28,5 @@ public interface AdminConsumerApi {
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ConsumerProfileResponseDto> getConsumer(@PathVariable("consumerId") int consumerId);
+	ResponseEntity<ResponseDto<ConsumerProfileResponseDto>> getConsumer(@PathVariable("consumerId") Long consumerId);
 }
