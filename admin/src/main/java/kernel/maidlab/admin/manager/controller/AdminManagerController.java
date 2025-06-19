@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import kernel.maidlab.admin.manager.service.AdminManagerService;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.ManagerResponseDto;
-import kernel.maidlab.api.manager.service.ManagerService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
@@ -22,13 +22,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminManagerController implements AdminManagerApi {
 
-	private final ManagerService managerService;
+	private final AdminManagerService adminManagerService;
 
 	@GetMapping
 	@Override
 	public ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(
 		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-		Page<ManagerListResponseDto> response = managerService.getManagerBypage(page, size);
+		Page<ManagerListResponseDto> response = adminManagerService.getManagerBypage(page, size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 
 	}
@@ -38,7 +38,7 @@ public class AdminManagerController implements AdminManagerApi {
 	public ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(
 		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
 		@RequestParam Status status) {
-		Page<ManagerListResponseDto> response = managerService.getManagerByPageWithStatus(page, size, status);
+		Page<ManagerListResponseDto> response = adminManagerService.getManagerByPageWithStatus(page, size, status);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 
 	}
@@ -46,21 +46,21 @@ public class AdminManagerController implements AdminManagerApi {
 	@GetMapping("/{managerId}")
 	@Override
 	public ResponseEntity<ResponseDto<ManagerResponseDto>> getManager(@PathVariable("managerId") Long managerId) {
-		ManagerResponseDto response = managerService.getManager(managerId);
+		ManagerResponseDto response = adminManagerService.getManager(managerId);
 		return ResponseDto.success(response);
 	}
 
 	@PatchMapping("/{managerId}/approve")
 	@Override
 	public ResponseEntity<ResponseDto<String>> approveManager(@PathVariable("managerId") Long managerId) {
-		managerService.approveManager(managerId);
+		adminManagerService.approveManager(managerId);
 		return ResponseDto.success("매니저 승인 완료");
 	}
 
 	@PatchMapping("/{managerId}/reject")
 	@Override
 	public ResponseEntity<ResponseDto<String>> rejectManager(@PathVariable("managerId") Long managerId) {
-		managerService.rejectManager(managerId);
+		adminManagerService.rejectManager(managerId);
 		return ResponseDto.success("매니저 거절 완료");
 	}
 
