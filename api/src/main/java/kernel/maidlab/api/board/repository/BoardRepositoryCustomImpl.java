@@ -33,7 +33,8 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
                         board.title,
                         board.content,
                         board.boardType,
-                        board.isAnswered
+                        board.isAnswered,
+                        board.createdAt
                 ))
                 .from(board)
                 .where(condition.and(notDeleted))
