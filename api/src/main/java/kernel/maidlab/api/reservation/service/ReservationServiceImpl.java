@@ -130,11 +130,16 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
-		UserType userType = (UserType) request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-		UserBase user = (UserBase) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		Long userId = getUserId(request, userType);
+		UserType userType = authUtil.getUserType(request);
 
-		return reservationRepository.findDetailReservationByIdAndUser(reservationId, userId, userType);
+		if (userType == UserType.CONSUMER) {
+			Long consumerId = authUtil.getConsumer(request).getId();
+			return reservationRepository.findDetailReservationByIdAndUser(reservationId, consumerId, userType);
+		} else {
+			Long managerId = authUtil.getManager(request).getId();
+			return reservationRepository.findDetailReservationByIdAndUser(reservationId, managerId, userType);
+		}
+
 	}
 
 
