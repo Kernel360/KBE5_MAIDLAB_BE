@@ -27,21 +27,9 @@ public interface ManagerService {
 
 	ResponseEntity<ResponseDto<ProfileResponseDto>> getProfile(HttpServletRequest req);
 
-	Page<ManagerListResponseDto> getManagerBypage(int page, int size);
-
-	ManagerResponseDto getManager(Long id);
-
-	void approveManager(Long managerId);
-
-	@Transactional
-	void rejectManager(Long managerId);
-	// Long GetIdByUuid(String uuid);
-
 	ResponseEntity<ResponseDto<Void>> updateProfile(ProfileUpdateRequestDto req, HttpServletRequest httpReq);
 
 	ResponseEntity<ResponseDto<ReviewListResponseDto>> getMyReviews(HttpServletRequest req);
-
-	Page<ManagerListResponseDto> getManagerByPageWithStatus(int page, int size, Status status);
 
 	List<AvailableManagerResponseDto> findAvailableManagers(String gu, LocalDateTime StartTime, LocalDateTime EndTime);
 }

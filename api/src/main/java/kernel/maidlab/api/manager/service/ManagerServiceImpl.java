@@ -284,17 +284,6 @@ public class ManagerServiceImpl implements ManagerService {
 	}
 
 	@Override
-	public Page<ManagerListResponseDto> getManagerByPageWithStatus(int page, int size, Status status) {
-		Pageable pageable = PageRequest.of(page, size);
-		return managerRepository.findAllByIsVerified(status, pageable)
-			.map(manager -> new ManagerListResponseDto(
-				manager.getName(),
-				manager.getUuid(),
-				manager.getId()
-			));
-	}
-
-	@Override
 	public List<AvailableManagerResponseDto> findAvailableManagers(String gu, LocalDateTime StartTime,
 		LocalDateTime EndTime) {
 		return managerRepository.findAvailableManagers(gu, StartTime, EndTime);

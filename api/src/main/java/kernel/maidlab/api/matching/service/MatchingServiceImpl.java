@@ -65,26 +65,9 @@ public class MatchingServiceImpl implements MatchingService {
 		matching.setMatchingStatus(status);
 	}
 
-	@Transactional
-	@Override
-	public void changeManager(Long reservationId, Long managerId) {
-		Matching matching = matchingRepository.findByReservationId(reservationId);
-		matching.setManagerId(managerId);
-		matching.setMatchingStatus(Status.PENDING);
-	}
 
-	@Override
-	public List<MatchingResponseDto> allMatching(HttpServletRequest request, int page, int size) {
-		Pageable pageable = PageRequest.of(page, size);
-		Page<Matching> matchings = matchingRepository.findAll(pageable);
-		return matchings.stream()
-			.map(matching -> MatchingResponseDto.builder()
-				.reservationId(matching.getReservationId())
-				.managerId(matching.getManagerId())
-				.matchingStatus(matching.getMatchingStatus())
-				.build())
-			.toList();
-	}
+
+
 
 	@Override
 	public List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size) {
@@ -107,19 +90,7 @@ public class MatchingServiceImpl implements MatchingService {
 			.toList();
 	}
 
-	@Override
-	public List<MatchingResponseDto> statusMatching(Status status, int page, int size) {
-		Page<Matching> matchings;
-		Pageable pageable = PageRequest.of(page, size);
-		matchings = matchingRepository.findAllByMatchingStatus(status, pageable);
-		return matchings.stream()
-			.map(matching -> MatchingResponseDto.builder()
-				.reservationId(matching.getReservationId())
-				.managerId(matching.getManagerId())
-				.matchingStatus(matching.getMatchingStatus())
-				.build())
-			.toList();
-	}
+
 
 	private String extractGuFromAddress(String address) {
 		// "구" 단위 추출 (예: "서울시 강남구 역삼동" -> "강남구")
