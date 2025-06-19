@@ -12,25 +12,18 @@ import java.util.List;
 
 public interface BoardService {
 
-    // 수요자 게시판 글 생성
-    void createConsumerBoard(HttpServletRequest request,
-                             BoardRequestDto boardRequestDto);
+	// 수요자 게시판 글 생성
+	void createConsumerBoard(HttpServletRequest request,
+		BoardRequestDto boardRequestDto);
 
-    // 수요자 게시글 전체 조회
-    List<BoardResponseDto>  getConsumerBoardList(HttpServletRequest request);
+	// 수요자 게시글 전체 조회
+	List<BoardResponseDto> getConsumerBoardList(HttpServletRequest request);
 
-    // 수요자 게시글 상세 조회
-    BoardDetailResponseDto getConsumerBoard(HttpServletRequest request, Long id) throws AccessDeniedException;
+	// 수요자 게시글 상세 조회
+	BoardDetailResponseDto getConsumerBoard(HttpServletRequest request, Long id) throws AccessDeniedException;
 
-    List<BoardResponseDto> getAllRefundBoardList(HttpServletRequest request, int page, int size);
+	void modifyBoard(HttpServletRequest request, Long id, BoardUpdateRequestDto boardUpdateRequestDto);
 
-    List<BoardResponseDto> getAllConsultationBoardList(HttpServletRequest request, int page, int size);
+	void deleteBoard(HttpServletRequest request, Long boardId);
 
-    void modifyBoard(HttpServletRequest request, Long id, BoardUpdateRequestDto boardUpdateRequestDto);
-
-    void deleteBoard(HttpServletRequest request, Long boardId);
-
-    void createAnswer(AnswerRequestDto requestDto, HttpServletRequest request, Long boardId);
-
-    void modifyAnswer(AnswerRequestDto requestDto, Long answerId);
 }
