@@ -52,7 +52,7 @@ public interface AdminBoardApi {
 		@ApiResponse(responseCode = "400", description = "Validation failed (VF)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<Void>> answer(@RequestBody AnswerRequestDto requestDto, HttpServletRequest request, Long boardId);
+	ResponseEntity<ResponseDto<Void>> answer(@RequestBody AnswerRequestDto requestDto, HttpServletRequest request, @PathVariable Long boardId);
 
 	@PatchMapping("/answer/{answerId}")
 	@Operation(summary = "답변 게시물 수정", description = "답변 게시판의 게시물을 수정합니다.")

@@ -52,10 +52,10 @@ public class AdminBoardControllerImpl implements AdminBoardApi {
 		return adminBoardService.adminGetConsumerBoard(request, boardId);
 	}
 
-	@PostMapping("/answer")
+	@PostMapping("/answer/{boardId}")
 	@Override
 	public ResponseEntity<ResponseDto<Void>> answer(@RequestBody AnswerRequestDto requestDto, HttpServletRequest request,
-		Long boardId) {
+		@PathVariable Long boardId) {
 		return adminBoardService.createAnswer(requestDto, request, boardId);
 	}
 
