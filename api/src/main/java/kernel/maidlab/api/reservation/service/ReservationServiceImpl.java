@@ -1,7 +1,5 @@
 package kernel.maidlab.api.reservation.service;
 
-import static java.util.stream.Collectors.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,12 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,8 +23,6 @@ import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.common.entity.matching.Matching;
-import kernel.maidlab.common.dto.reservation.response.AdminSettlementResponseDto;
-import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
 import kernel.maidlab.common.entity.reservation.Settlement;
@@ -39,9 +30,6 @@ import kernel.maidlab.api.reservation.repository.ReviewRepository;
 import kernel.maidlab.api.reservation.repository.SettlementRepository;
 import kernel.maidlab.api.util.AuthUtil;
 import kernel.maidlab.common.exception.custom.ReservationException;
-import kernel.maidlab.common.entity.manager.ManagerRegion;
-import kernel.maidlab.api.manager.repository.ManagerRegionRepository;
-import kernel.maidlab.api.manager.repository.RegionRepository;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
@@ -72,8 +60,6 @@ public class ReservationServiceImpl implements ReservationService {
 	private final AuthUtil authUtil;
 	private final MatchingService matchingService;
 	private final ManagerPreferenceRepository managerPreferenceRepository;
-	private final ManagerRegionRepository managerRegionRepository;
-	private final RegionRepository regionRepository;
 	private final ConsumerRepository consumerRepository;
 	private final ReviewRepository reviewRepository;
 	private final SettlementRepository settlementRepository;
@@ -131,20 +117,16 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
 
-		UserBase user = (UserBase) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		UserType userType = (UserType) request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+		UserBase user = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
 		Long userId = switch (userType) {
-			case CONSUMER -> ((Consumer) user).getId();
-			case MANAGER -> ((Manager) user).getId();
+			case CONSUMER -> ((Consumer)user).getId();
+			case MANAGER -> ((Manager)user).getId();
 			default -> throw new ReservationException(ResponseType.THIS_USER_DOES_NOT_EXIST);
 		};
 
 		return reservationRepository.findDetailReservationByIdAndUser(reservationId, userId, userType);
 	}
-
-
-
-
 
 	@Transactional
 	@Override
@@ -280,8 +262,7 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 	}
 
-	private static final Map<String, BigDecimal> ADDITIONAL_PRICE_MAP = Map.of(
-		"cooking", BigDecimal.valueOf(10_000),
+	private static final Map<String, BigDecimal> ADDITIONAL_PRICE_MAP = Map.of("cooking", BigDecimal.valueOf(10_000),
 		"ironing", BigDecimal.valueOf(10_000)
 		// 나중에 "laundry", "cleaning" 등 추가 가능
 	);
@@ -289,8 +270,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private BigDecimal calculateTotalPrice(ReservationRequestDto dto, BigDecimal basePrice) {
 		String serviceAdd = dto.getServiceAdd(); // 기본값이 ""라고 가정
 
-		BigDecimal additional = Arrays.stream(serviceAdd.split(","))
-			.map(String::trim) // 공백 제거
+		BigDecimal additional = Arrays.stream(serviceAdd.split(",")).map(String::trim) // 공백 제거
 			.filter(ADDITIONAL_PRICE_MAP::containsKey) // 유효한 서비스만
 			.map(ADDITIONAL_PRICE_MAP::get) // 금액으로 변환
 			.reduce(BigDecimal.ZERO, BigDecimal::add); // 누적 합산

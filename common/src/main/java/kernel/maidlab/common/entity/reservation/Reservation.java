@@ -10,10 +10,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
-import kernel.maidlab.common.entity.base.Base;
 import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.enums.Status;
 import lombok.AccessLevel;
@@ -72,27 +70,12 @@ public class Reservation extends TimeBase {
 	@Column(name = "canceled_at")
 	private LocalDateTime canceledAt;
 
-	@Column(name = "created_at", nullable = false)
-	private LocalDateTime createdAt;
-
-	@Column(name = "modified_at", nullable = false)
-	private LocalDateTime modifiedAt;
 
 	@Column(name = "checkin_time")
 	private LocalDateTime checkinTime;
 
 	@Column(name = "checkout_time")
 	private LocalDateTime checkoutTime;
-
-	@PrePersist
-	public void prePersist() {
-		if (createdAt == null) {
-			this.createdAt = LocalDateTime.now();
-		}
-		if (modifiedAt == null) {
-			this.modifiedAt = LocalDateTime.now();
-		}
-	}
 
 	public void checkin(LocalDateTime checkinTime) {
 		this.checkinTime = checkinTime;
