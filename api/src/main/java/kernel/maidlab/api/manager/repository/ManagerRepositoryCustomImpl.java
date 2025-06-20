@@ -37,7 +37,7 @@ public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 		return QueryFactory.select(
 				Projections.constructor(AvailableManagerResponseDto.class, manager.uuid, manager.name, manager.averageRate,
-					manager.introduceText))
+					manager.introduceText, manager.profileImage))
 			.from(manager)
 			.join(managerRegion)
 			.on(managerRegion.manager.id.eq(manager.id))

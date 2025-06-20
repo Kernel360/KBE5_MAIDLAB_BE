@@ -14,4 +14,5 @@ public class AvailableManagerResponseDto {
 	private String name;
 	private Float averageRate;
 	private String introduceText;
+	private String profileImage;
 }
