@@ -173,11 +173,11 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation matchingReservation = reservationRepository.save(reservation);
 
 		// 예약 완료 시 manager 매칭
-		Matching match = Matching.of( MatchingResponseDto.builder()
+		Matching match = Matching.of(MatchingResponseDto.builder()
 			.reservationId(matchingReservation.getId())
 			.managerId(matchingReservation.getManagerId())
 			.matchingStatus(Status.PENDING)
-			.build() );
+			.build());
 		matchingRepository.save(match);
 
 	}
@@ -280,44 +280,6 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 	}
 
-	@Override
-	public List<ReservationResponseDto> dailyReservations(LocalDate date, int page, int size) {
-		Page<Reservation> reservations;
-		LocalDateTime start = date.atStartOfDay();
-		LocalDateTime end = date.plusDays(1).atStartOfDay();
-		Pageable pageable = PageRequest.of(page, size);
-		reservations = reservationRepository.findAllByReservationDateBetween(start, end, pageable);
-
-		return reservations.stream()
-			.map(reservation -> ReservationResponseDto.builder()
-				.reservationId(reservation.getId())
-				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
-				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
-				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
-				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
-				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
-				.totalPrice(reservation.getTotalPrice())
-				.build())
-			.toList();
-	}
-
-	@Override
-	public List<ReservationResponseDto> adminReservations(HttpServletRequest request, int page, int size) {
-		Page<Reservation> reservations;
-		Pageable pageable = PageRequest.of(page, size);
-		reservations = reservationRepository.findAll(pageable);
-		return reservations.stream()
-			.map(reservation -> ReservationResponseDto.builder()
-				.reservationId(reservation.getId())
-				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
-				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
-				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
-				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
-				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
-				.totalPrice(reservation.getTotalPrice())
-				.build())
-			.toList();
-	}
 	private static final Map<String, BigDecimal> ADDITIONAL_PRICE_MAP = Map.of(
 		"cooking", BigDecimal.valueOf(10_000),
 		"ironing", BigDecimal.valueOf(10_000)
@@ -361,81 +323,11 @@ public class ReservationServiceImpl implements ReservationService {
 		return new WeeklySettlementResponseDto(totalAmount, responseList);
 	}
 
-	@Override
-	public AdminWeeklySettlementResponseDto getAdminWeeklySettlements(LocalDate startDate, int page, int size) {
-		LocalDateTime start = startDate.atStartOfDay();
-		LocalDateTime end = start.plusDays(7).with(LocalTime.MIN);
-
-		// 페이지 정렬 : pending 먼저, 최신순
-		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc("status"), Sort.Order.desc("createdAt")));
-
-		// 페이징된 settlement 조회
-		Page<Settlement> settlementPage = settlementRepository.findByCreatedAtBetween(start, end, pageable);
-
-		List<Settlement> allSettlementsInWeek = settlementRepository.findAllByCreatedAtBetween(start, end);
-		BigDecimal totalAmount = allSettlementsInWeek.stream()
-			.map(Settlement::getAmount)
-			.reduce(BigDecimal.ZERO, BigDecimal::add);
-
-		Page<AdminSettlementResponseDto> dtoPage = settlementPage.map(settlement -> {
-			ServiceDetailType detailType = serviceDetailTypeRepository.findById(settlement.getServiceDetailTypeId())
-				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-			Manager manager = managerRepository.findById(settlement.getManagerId())
-				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-
-			return new AdminSettlementResponseDto(
-				settlement.getId(),
-				manager.getName(),
-				settlement.getServiceType(),
-				detailType.getServiceDetailType(),
-				settlement.getStatus(),
-				settlement.getAmount(),
-				settlement.getCreatedAt()
-			);
-		});
-
-		return new AdminWeeklySettlementResponseDto(totalAmount, dtoPage);
-	}
-
-	@Override
-	public SettlementResponseDto getSettlementDetail(Long settlementId, HttpServletRequest request) {
-		Optional<Settlement> settlement= settlementRepository.findById(settlementId);
-
-		return new SettlementResponseDto(
-			settlement.get().getId(),
-			settlement.get().getServiceType(),
-			serviceDetailTypeRepository.findById(settlement.get().getServiceDetailTypeId()).get().getServiceDetailType(),
-			settlement.get().getStatus(),
-			settlement.get().getPlatformFee(),
-			settlement.get().getAmount()
-		);
-	}
-
-	@Transactional
-	@Override
-	public void settlementApprove(Long settlementId) {
-		Optional<Settlement> settlement = settlementRepository.findById(settlementId);
-		settlement.get().approve();
-	}
-
-	@Transactional
-	@Override
-	public void settlementReject(Long settlementId) {
-		Optional<Settlement> settlement = settlementRepository.findById(settlementId);
-		settlement.get().reject();
-	}
-
-
-	public Long getUserId(HttpServletRequest request, UserType userType) {
-		UserBase user = (UserBase) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		if (userType == UserType.CONSUMER) {
-			return ((Consumer) user).getId();
-		} else if (userType == UserType.MANAGER) {
-			return ((Manager) user).getId();
-		} else {
-			throw new ReservationException(ResponseType.THIS_USER_DOES_NOT_EXIST);
-		}
-	}
+	// @Override
+	// public Reservation findById(Long reservationId) {
+	// 	return reservationRepository.findById(reservationId)
+	// 		.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
+	// }
 }
 
 

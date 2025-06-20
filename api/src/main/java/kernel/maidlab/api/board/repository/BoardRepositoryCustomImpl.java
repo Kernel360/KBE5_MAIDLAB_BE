@@ -1,15 +1,20 @@
 package kernel.maidlab.api.board.repository;
 
+import static kernel.maidlab.common.entity.board.QAnswer.*;
+import static kernel.maidlab.common.entity.board.QBoard.*;
+
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kernel.maidlab.common.dto.board.BoardQueryDto;
 import kernel.maidlab.common.dto.board.QBoardQueryDto;
+import kernel.maidlab.common.entity.board.Board;
 import kernel.maidlab.common.entity.board.QBoard;
 import kernel.maidlab.common.enums.UserType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -33,10 +38,25 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
                         board.title,
                         board.content,
                         board.boardType,
-                        board.isAnswered
+                        board.isAnswered,
+                        board.createdAt
                 ))
                 .from(board)
                 .where(condition.and(notDeleted))
                 .fetch();
+    }
+
+    @Override
+    public Optional<Board> findBoardWithAnswerIfAnswered(Long boardId) {
+        return Optional.ofNullable(jpaQueryFactory
+            .selectFrom(board)
+            .leftJoin(board.answer, answer).fetchJoin()
+            .where(
+                board.id.eq(boardId),
+                board.isDeleted.isFalse(),
+                board.isAnswered.isTrue()
+            )
+            .fetchOne()
+        );
     }
 }

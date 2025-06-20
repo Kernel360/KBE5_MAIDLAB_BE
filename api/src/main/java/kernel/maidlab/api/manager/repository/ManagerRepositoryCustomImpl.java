@@ -12,45 +12,29 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import jakarta.persistence.EntityManager;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
-import kernel.maidlab.common.entity.manager.QManager;
-import kernel.maidlab.common.entity.manager.QManagerRegion;
-import kernel.maidlab.common.entity.manager.QManagerSchedule;
-import kernel.maidlab.common.entity.manager.QRegion;
-import kernel.maidlab.common.entity.reservation.QReservation;
+import static kernel.maidlab.common.entity.manager.QManager.manager;
+import static kernel.maidlab.common.entity.manager.QManagerRegion.managerRegion;
+import static kernel.maidlab.common.entity.manager.QManagerSchedule.managerSchedule;
+import static kernel.maidlab.common.entity.manager.QRegion.region;
+import static kernel.maidlab.common.entity.reservation.QReservation.reservation;
 import kernel.maidlab.common.enums.Status;
+import lombok.RequiredArgsConstructor;
 
 @Repository
+@RequiredArgsConstructor
 public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 
 	private final JPAQueryFactory QueryFactory;
-	// private final ManagerService managerService;
-
-	public ManagerRepositoryCustomImpl(EntityManager em) {
-		this.QueryFactory = new JPAQueryFactory(em);
-		// this.managerService = managerService;
-	}
 
 	@Override
 	public List<AvailableManagerResponseDto> findAvailableManagers(String gu, LocalDateTime start, LocalDateTime end) {
-		QManager manager = QManager.manager;
-		QManagerRegion managerRegion = QManagerRegion.managerRegion;
-		QRegion region = QRegion.region;
-		QManagerSchedule managerSchedule = QManagerSchedule.managerSchedule;
-		System.out.println("region : " + region.regionName.toString());
-		QReservation reservation = QReservation.reservation;
+		// System.out.println("region : " + region.regionName.toString());
 		DayOfWeek days = start.getDayOfWeek();
 		LocalTime startTime = start.toLocalTime();
 		LocalTime endTime = end.toLocalTime();
-		System.out.println("days: " + days);
+		// System.out.println("days: " + days);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-		// String uuid = QueryFactory
-		// 	.select(manager.uuid)
-		// 	.from(manager)
-		// 	.fetch();
-		//System.out.println("uuid :" + uuid);
-		// System.out.println("id:" + managerService.GetIdByUuid(uuid));
 		return QueryFactory
 			.select(Projections.constructor(
 				AvailableManagerResponseDto.class,

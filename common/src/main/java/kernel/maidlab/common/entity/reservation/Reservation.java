@@ -14,6 +14,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
 import kernel.maidlab.common.entity.base.Base;
+import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.enums.Status;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "reservation")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Reservation extends Base {
+public class Reservation extends TimeBase {
 	@Column(name = "manager_id")
 	private Long managerId;
 

@@ -14,6 +14,7 @@ import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseD
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
+import kernel.maidlab.common.entity.reservation.Reservation;
 
 public interface ReservationService {
 	void createReservation(ReservationRequestDto dto, HttpServletRequest request);
@@ -35,18 +36,7 @@ public interface ReservationService {
 
 	void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request);
 
-	List<ReservationResponseDto> dailyReservations(LocalDate date, int page, int size);
-
-	List<ReservationResponseDto> adminReservations(HttpServletRequest request, int page, int size);
-
 	WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate);
 
-	AdminWeeklySettlementResponseDto getAdminWeeklySettlements(LocalDate startDate, int page, int size);
-
-	SettlementResponseDto getSettlementDetail(Long settlementId, HttpServletRequest request);
-
-	void settlementApprove(Long settlementId);
-
-	@Transactional
-	void settlementReject(Long settlementId);
+	// Reservation findById(Long reservationId);
 }

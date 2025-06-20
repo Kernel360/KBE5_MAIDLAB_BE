@@ -14,5 +14,4 @@ public interface ManagerRepository extends JpaRepository<Manager, Long>, Manager
 
 	Optional<Manager> findByPhoneNumber(String phoneNumber);
 
-	Page<Manager> findAllByIsVerified(Status status, Pageable pageable);
 }

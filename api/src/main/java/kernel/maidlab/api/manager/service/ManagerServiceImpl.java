@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.servlet.http.HttpServletRequest;
 
 // import jakarta.transaction.Transactional;
+import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.dto.auth.JwtDto;
 import kernel.maidlab.api.auth.jwt.JwtProvider;
@@ -37,6 +38,7 @@ import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -87,7 +89,8 @@ public class ManagerServiceImpl implements ManagerService {
 			for (ServiceListItem serviceItem : req.getServiceTypes()) {
 				try {
 					ServiceType serviceTypeEnum = ServiceType.valueOf(serviceItem.getServiceType());
-					ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager, serviceTypeEnum);
+					ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager,
+						serviceTypeEnum);
 					managerServiceTypeRepository.save(managerServiceType);
 				} catch (IllegalArgumentException e) {
 					throw new BaseException(ResponseType.VALIDATION_FAILED);
@@ -218,7 +221,8 @@ public class ManagerServiceImpl implements ManagerService {
 			for (ServiceListItem serviceItem : req.getServiceTypes()) {
 				try {
 					ServiceType serviceTypeEnum = ServiceType.valueOf(serviceItem.getServiceType());
-					ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager, serviceTypeEnum);
+					ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager,
+						serviceTypeEnum);
 					managerServiceTypeRepository.save(managerServiceType);
 				} catch (IllegalArgumentException e) {
 					throw new BaseException(ResponseType.VALIDATION_FAILED);
@@ -253,48 +257,6 @@ public class ManagerServiceImpl implements ManagerService {
 		return ResponseDto.success();
 	}
 
-	@Override
-	public Page<ManagerListResponseDto> getManagerBypage(int page, int size) {
-		Pageable pageable = PageRequest.of(page, size);
-		return managerRepository.findAll(pageable)
-			.map(manager -> new ManagerListResponseDto(
-				manager.getName(),
-				manager.getUuid(),
-				manager.getId()
-			));
-	}
-
-	@Override
-	public ManagerResponseDto getManager(Long id){
-		Manager manager = managerRepository.findById(id).orElse(null);
-		System.out.println(manager.getId());
-		ManagerResponseDto managerResponseDto = ManagerResponseDto.builder()
-			.uuid(manager.getUuid())
-			.phoneNumber(manager.getPhoneNumber())
-			.name(manager.getName())
-			.birth(manager.getBirth())
-			.gender(manager.getGender())
-			.averageRate(manager.getAverageRate())
-			.region(manager.getRegions())
-			.isVerified(manager.getIsVerified())
-			.isDeleted(manager.getIsDeleted())
-			.build();
-		return managerResponseDto;
-	}
-	@Transactional
-	@Override
-	public void approveManager(Long managerId) {
-		Manager manager = managerRepository.findById(managerId).orElse(null);
-		manager.approve();
-	}
-
-	@Transactional
-	@Override
-	public void rejectManager(Long managerId) {
-		Manager manager = managerRepository.findById(managerId).orElse(null);
-		manager.reject();
-	}
-
 	// 리뷰 목록 조회
 	@Override
 	@Transactional(readOnly = true)
@@ -322,14 +284,9 @@ public class ManagerServiceImpl implements ManagerService {
 	}
 
 	@Override
-	public Page<ManagerListResponseDto> getManagerByPageWithStatus(int page, int size, Status status) {
-		Pageable pageable = PageRequest.of(page, size);
-		return managerRepository.findAllByIsVerified(status, pageable)
-			.map(manager -> new ManagerListResponseDto(
-				manager.getName(),
-				manager.getUuid(),
-				manager.getId()
-			));
+	public List<AvailableManagerResponseDto> findAvailableManagers(String gu, LocalDateTime StartTime,
+		LocalDateTime EndTime) {
+		return managerRepository.findAvailableManagers(gu, StartTime, EndTime);
 	}
 
 }

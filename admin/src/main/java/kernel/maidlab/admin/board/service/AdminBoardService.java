@@ -3,44 +3,31 @@ package kernel.maidlab.admin.board.service;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
 import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
-import kernel.maidlab.common.entity.board.Board;
-import kernel.maidlab.common.entity.board.Image;
-import kernel.maidlab.api.board.repository.BoardRepository;
-import kernel.maidlab.api.board.repository.ImageRepository;
-import lombok.RequiredArgsConstructor;
+import kernel.maidlab.common.dto.board.response.BoardResponseDto;
 
-@Service
-@RequiredArgsConstructor
-public class AdminBoardService {
+public interface AdminBoardService {
 
-	private final BoardRepository boardRepository;
-	private final ImageRepository imageRepository;
+	ResponseEntity<ResponseDto<List<BoardResponseDto>>> getAllRefundBoardList(HttpServletRequest request, int page,
+		int size);
 
-	public BoardDetailResponseDto adminGetConsumerBoard(
+	ResponseEntity<ResponseDto<BoardDetailResponseDto>> adminGetConsumerBoard(
 		HttpServletRequest request,
 		Long boardId
-	) throws AccessDeniedException {
+	) throws AccessDeniedException;
 
-		System.out.println(boardId);
-		Board board = boardRepository.findByIdAndIsDeletedFalse(boardId)
-			.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시물 입니다."));
+	ResponseEntity<ResponseDto<List<BoardResponseDto>>> getAllConsultationBoardList(HttpServletRequest request,
+		int page, int size);
 
+	ResponseEntity<ResponseDto<Void>> createAnswer(AnswerRequestDto requestDto, HttpServletRequest request,
+		Long boardId);
 
-		// 답변여부가 true면 답변까지 조회
-		if (board.getIsAnswered()) {
-			board = boardRepository.findBoardWithAnswerIfAnswered(boardId)
-				.orElseThrow(() -> new EntityNotFoundException("답변이 존재하지 않습니다."));
-		}
-
-
-		List<Image> images = imageRepository.findAllByBoardId(boardId);
-
-		return BoardDetailResponseDto.from(board, images);
-
-	}
+	@Transactional
+	ResponseEntity<ResponseDto<Void>> modifyAnswer(AnswerRequestDto requestDto, Long answerId);
 }

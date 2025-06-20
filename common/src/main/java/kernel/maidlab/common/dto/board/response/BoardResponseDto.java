@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +19,7 @@ public class BoardResponseDto {
 	private String content;
 	private boolean isAnswered;
 	private BoardType boardType;
-	//createAt - Base엔티티 수정시 추가 예정
+	private LocalDateTime createdAt;
 
 	// 정적 팩토리 메서드
 	public static BoardResponseDto from(BoardQueryDto boardQueryDto) {
@@ -28,6 +30,7 @@ public class BoardResponseDto {
 		boardDto.content = boardQueryDto.getContent();
 		boardDto.isAnswered = boardQueryDto.isAnswered();
 		boardDto.boardType = boardQueryDto.getBoardType();
+		boardDto.createdAt = boardQueryDto.getCreatedAt();
 		return boardDto;
 	}
 
