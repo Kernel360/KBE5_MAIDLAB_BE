@@ -31,6 +31,9 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 	QReservation reservation = QReservation.reservation;
 	QServiceDetailType serviceDetailType = QServiceDetailType.serviceDetailType1;
 	QReview review = QReview.review;
+	QManager manager = QManager.manager;
+	QManagerRegion managerRegion = QManagerRegion.managerRegion;
+	QRegion region = QRegion.region;
 
 	@Override
 	public List<ReservationResponseDto> findAllWithReviewByConsumerId(Long consumerId) {
@@ -61,24 +64,24 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 
 	@Override
 	public ReservationDetailResponseDto findDetailReservationByIdAndUser(Long reservationId, Long userId, UserType userType) {
-		QReservation reservation = QReservation.reservation;
-		QManager manager = QManager.manager;
-		QManagerRegion managerRegion = QManagerRegion.managerRegion;
-		QRegion region = QRegion.region;
-		QServiceDetailType sdt = QServiceDetailType.serviceDetailType1;
+
 
 		// 사용자 일치 조건 (권한 체크)
 		BooleanExpression userCondition = (userType == UserType.MANAGER)
 			? reservation.managerId.eq(userId)
 			: reservation.consumerId.eq(userId);
 
-		// 한 번에 가져오기
+		// 방어코드: userCondition null일 수 있으므로
+		if (userCondition == null) {
+			throw new ReservationException(ResponseType.THIS_USER_DOES_NOT_EXIST);
+		}
+
 		List<Tuple> tuples = queryFactory
 			.select(
 				reservation.id,
 				reservation.status,
-				sdt.serviceType.stringValue(),
-				sdt.serviceDetailType,
+				serviceDetailType.serviceType.stringValue(),
+				serviceDetailType.serviceDetailType,
 				reservation.address,
 				reservation.addressDetail,
 				manager.uuid,
@@ -99,7 +102,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 				region.regionName
 			)
 			.from(reservation)
-			.join(reservation.serviceDetailType, sdt)
+			.join(reservation.serviceDetailType, serviceDetailType)
 			.join(manager).on(manager.id.eq(reservation.managerId))
 			.leftJoin(managerRegion).on(managerRegion.manager.id.eq(manager.id))
 			.leftJoin(region).on(region.id.eq(managerRegion.regionId.id))
@@ -107,7 +110,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 			.fetch();
 
 		if (tuples.isEmpty()) {
-			throw new ReservationException(ResponseType.DATABASE_ERROR);
+			throw new ReservationException(ResponseType.THIS_USER_DOES_NOT_EXIST);
 		}
 
 		Tuple first = tuples.getFirst();
@@ -117,29 +120,28 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 			.collect(Collectors.toList());
 
 		return ReservationDetailResponseDto.builder()
-				.status(first.get(reservation.status))
-				.serviceType(first.get(sdt.serviceType.stringValue()))
-				.serviceDetailType(first.get(sdt.serviceDetailType))
-				.address(first.get(reservation.address))
-				.addressDetail(first.get(reservation.addressDetail))
-				.managerUuId(first.get(manager.uuid))
-				.managerName(first.get(manager.name))
-				.managerProfileImageUrl(first.get(manager.profileImage))
-				.managerAverageRate(first.get(manager.averageRate))
-				.managerRegion(regionNames)
-				.managerPhoneNumber(first.get(manager.phoneNumber))
-				.housingType(first.get(reservation.housingType))
-				.roomSize(first.get(reservation.roomSize))
-				.housingInformation(first.get(reservation.housingInformation))
-				.reservationDate(first.get(reservation.reservationDate))
-				.startTime(first.get(reservation.startTime))
-				.endTime(first.get(reservation.endTime))
-				.serviceAdd(first.get(reservation.serviceAdd))
-				.pet(first.get(reservation.pet))
-				.specialRequest(first.get(reservation.specialRequest))
-				.totalPrice(first.get(reservation.totalPrice))
-				.build();
+			.status(first.get(reservation.status))
+			.serviceType(first.get(serviceDetailType.serviceType.stringValue()))
+			.serviceDetailType(first.get(serviceDetailType.serviceDetailType))
+			.address(first.get(reservation.address))
+			.addressDetail(first.get(reservation.addressDetail))
+			.managerUuId(first.get(manager.uuid))
+			.managerName(first.get(manager.name))
+			.managerProfileImageUrl(first.get(manager.profileImage))
+			.managerAverageRate(first.get(manager.averageRate))
+			.managerRegion(regionNames)
+			.managerPhoneNumber(first.get(manager.phoneNumber))
+			.housingType(first.get(reservation.housingType))
+			.roomSize(first.get(reservation.roomSize))
+			.housingInformation(first.get(reservation.housingInformation))
+			.reservationDate(first.get(reservation.reservationDate))
+			.startTime(first.get(reservation.startTime))
+			.endTime(first.get(reservation.endTime))
+			.serviceAdd(first.get(reservation.serviceAdd))
+			.pet(first.get(reservation.pet))
+			.specialRequest(first.get(reservation.specialRequest))
+			.totalPrice(first.get(reservation.totalPrice))
+			.build();
 	}
-
 
 }
