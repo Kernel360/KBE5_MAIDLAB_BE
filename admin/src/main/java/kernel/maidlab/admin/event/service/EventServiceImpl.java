@@ -65,7 +65,8 @@ public class EventServiceImpl implements EventService {
 			event.getMainImageUrl(),
 			event.getImageUrl(),
 			event.getContent(),
-			event.getCreatedAt()
+			event.getCreatedAt(),
+			event.getUpdatedAt()
 		);
 
 		return ResponseDto.success(responseDto);

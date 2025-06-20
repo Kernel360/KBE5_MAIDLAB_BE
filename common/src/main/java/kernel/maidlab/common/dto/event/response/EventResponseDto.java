@@ -15,5 +15,6 @@ public class EventResponseDto {
 	private String imageUrl;
 	private String content;
 	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 
 }

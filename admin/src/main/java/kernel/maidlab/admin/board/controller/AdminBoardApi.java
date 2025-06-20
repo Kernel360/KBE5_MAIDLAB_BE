@@ -16,8 +16,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
+import kernel.maidlab.common.dto.board.response.AdminBoardDetailResponseDto;
+import kernel.maidlab.common.dto.board.response.AdminBoardResponseDto;
 import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
-import kernel.maidlab.common.dto.board.response.BoardResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 
 public interface AdminBoardApi {
@@ -27,7 +28,7 @@ public interface AdminBoardApi {
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "게시물 조회 성공 (SU)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<List<BoardResponseDto>>> refund(HttpServletRequest request,
+	ResponseEntity<ResponseDto<List<AdminBoardResponseDto>>> refund(HttpServletRequest request,
 		@RequestParam int page, @RequestParam int size);
 
 	@GetMapping("/consultation")
@@ -35,7 +36,7 @@ public interface AdminBoardApi {
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "게시물 조회 성공 (SU)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<List<BoardResponseDto>>> consultation(HttpServletRequest request,
+	ResponseEntity<ResponseDto<List<AdminBoardResponseDto>>> consultation(HttpServletRequest request,
 		@RequestParam int page, @RequestParam int size);
 
 	@GetMapping("/{boardId}")
@@ -43,7 +44,7 @@ public interface AdminBoardApi {
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "게시물 조회 성공 (SU)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<BoardDetailResponseDto>> detail(HttpServletRequest request,
+	ResponseEntity<ResponseDto<AdminBoardDetailResponseDto>> detail(HttpServletRequest request,
 		@PathVariable Long boardId) throws AccessDeniedException;
 
 	@PostMapping("/answer")
