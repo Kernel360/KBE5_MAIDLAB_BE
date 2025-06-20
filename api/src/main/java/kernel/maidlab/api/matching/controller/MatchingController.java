@@ -44,7 +44,7 @@ public class MatchingController implements MatchingApi {
 
 	@PostMapping("/matchmanager")
 	@Override
-	public ResponseEntity<List<AvailableManagerResponseDto>> matchManagers(@RequestBody MatchingRequestDto dto) {
+	public ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> matchManagers(@RequestBody MatchingRequestDto dto) {
 		List<AvailableManagerResponseDto> AvailableManagers = matchingService.findAvailableManagers(dto);
 
 		// 후보군 작성을 위한 redis 설정으로 일단 일시중지
@@ -56,9 +56,11 @@ public class MatchingController implements MatchingApi {
 		}
 
 		if (dto.getManagerChoose())
-			return ResponseEntity.ok(AvailableManagers);
+			return ResponseDto.success(ResponseType.SUCCESS, AvailableManagers);
+			// return ResponseEntity.ok(AvailableManagers);
 		else
-			return ResponseEntity.ok(Collections.singletonList(AvailableManagers.getFirst()));
+			// return ResponseEntity.ok(Collections.singletonList(AvailableManagers.getFirst()));
+			return ResponseDto.success(ResponseType.SUCCESS, Collections.singletonList(AvailableManagers.getFirst()));
 	}
 
 	@PostMapping("/matchstart")
