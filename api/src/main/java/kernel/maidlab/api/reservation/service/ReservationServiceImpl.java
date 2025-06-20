@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.entity.consumer.ManagerPreference;
@@ -115,71 +117,34 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public List<ReservationResponseDto> allReservations(HttpServletRequest request) {
 		UserType userType = authUtil.getUserType(request);
-		List<Reservation> reservations;
 
 		if (userType == UserType.CONSUMER) {
 			Long consumerId = authUtil.getConsumer(request).getId();
-			reservations = reservationRepository.findByConsumerId(consumerId);
+			return reservationRepository.findAllWithReviewByConsumerId(consumerId);
 		} else {
 			Long managerId = authUtil.getManager(request).getId();
-			reservations = reservationRepository.findByManagerId(managerId);
-		}
+			return reservationRepository.findAllWithReviewByManagerId(managerId);
 
-		return reservations.stream()
-			.map(reservation -> ReservationResponseDto.builder()
-				.reservationId(reservation.getId())
-				.isExistReview(reviewRepository.existsReviewsByReservationId(reservation.getId()))
-				.status(reservation.getStatus())
-				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
-				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
-				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
-				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
-				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
-				.totalPrice(reservation.getTotalPrice())
-				.build())
-			.toList();
+		}
 	}
 
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
-		Reservation reservation = reservationRepository.findById(reservationId)
-			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		Manager manager = managerRepository.findById(reservation.getManagerId())
-			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		String mangerUuid = manager.getUuid();
-		Long managerId = manager.getId();
-		List<ManagerRegion> managerRegions = managerRegionRepository.findByManagerId(manager.getId());
-		List<String> regionNames = managerRegions.stream()
-			.map(mr -> regionRepository.findById(mr.getRegionId().getId())
-				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR))
-				.getRegionName())
-			.collect(toList());
+		UserBase user = (UserBase) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		UserType userType = (UserType) request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+		Long userId = switch (userType) {
+			case CONSUMER -> ((Consumer) user).getId();
+			case MANAGER -> ((Manager) user).getId();
+			default -> throw new ReservationException(ResponseType.THIS_USER_DOES_NOT_EXIST);
+		};
 
-		return ReservationDetailResponseDto.builder()
-			.status(reservation.getStatus())
-			.serviceType(reservation.getServiceDetailType().getServiceType().toString())
-			.serviceDetailType(reservation.getServiceDetailType().getServiceDetailType())
-			.address(reservation.getAddress())
-			.addressDetail(reservation.getAddressDetail())
-			.managerUuId(mangerUuid)
-			.managerName(manager.getName())
-			.managerProfileImageUrl(manager.getProfileImage())
-			.managerAverageRate(manager.getAverageRate())
-			.managerRegion(regionNames)
-			.managerPhoneNumber(manager.getPhoneNumber())
-			.housingType(reservation.getHousingType())
-			.roomSize(reservation.getRoomSize())
-			.housingInformation(reservation.getHousingInformation())
-			.reservationDate(reservation.getReservationDate())
-			.startTime(reservation.getStartTime())
-			.endTime(reservation.getEndTime())
-			.serviceAdd(reservation.getServiceAdd())
-			.pet(reservation.getPet())
-			.specialRequest(reservation.getSpecialRequest())
-			.totalPrice(reservation.getTotalPrice())
-			.build();
+		return reservationRepository.findDetailReservationByIdAndUser(reservationId, userId, userType);
 	}
+
+
+
+
 
 	@Transactional
 	@Override

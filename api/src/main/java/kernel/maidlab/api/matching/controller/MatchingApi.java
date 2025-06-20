@@ -32,7 +32,7 @@ public interface MatchingApi {
 		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
 		@ApiResponse(responseCode = "403", description = "권한 없음"),
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류")})
-	ResponseEntity<List<AvailableManagerResponseDto>> matchManagers(@RequestBody MatchingRequestDto dto);
+	ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> matchManagers(@RequestBody MatchingRequestDto dto);
 
 	@Operation(summary = "매칭시작", description = "매칭 테이블에 reservationid, status, managerid 값들로 row 생성")
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "테이블 생성 성공"),
