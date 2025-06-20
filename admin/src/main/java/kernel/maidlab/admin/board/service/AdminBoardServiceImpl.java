@@ -2,7 +2,6 @@ package kernel.maidlab.admin.board.service;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +16,8 @@ import kernel.maidlab.admin.board.service.support.AdminAnswerService;
 import kernel.maidlab.admin.board.service.support.AdminImageServiceImpl;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
+import kernel.maidlab.common.dto.board.response.AdminBoardDetailResponseDto;
+import kernel.maidlab.common.dto.board.response.AdminBoardResponseDto;
 import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
 import kernel.maidlab.common.dto.board.response.BoardResponseDto;
 import kernel.maidlab.common.entity.board.Answer;
@@ -33,18 +34,18 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 	private final AdminAnswerService adminAnswerService;
 
 	@Override
-	public ResponseEntity<ResponseDto<List<BoardResponseDto>>> getAllRefundBoardList(HttpServletRequest request,
+	public ResponseEntity<ResponseDto<List<AdminBoardResponseDto>>> getAllRefundBoardList(HttpServletRequest request,
 		int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
-		List<Board> board = adminBoardRepository.findAllByManagerIdNull(pageable);
+		List<Board> board = adminBoardRepository.findAllByManagerIdNullAndIsDeletedFalse(pageable);
 
 		return ResponseDto.success(board.stream()
-			.map(BoardResponseDto::fromBoard)
+			.map(AdminBoardResponseDto::fromBoard)
 			.toList());
 	}
 
 	@Override
-	public ResponseEntity<ResponseDto<BoardDetailResponseDto>> adminGetConsumerBoard(
+	public ResponseEntity<ResponseDto<AdminBoardDetailResponseDto>> adminGetConsumerBoard(
 		HttpServletRequest request,
 		Long boardId
 	) throws AccessDeniedException {
@@ -58,17 +59,17 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 
 		List<Image> images = adminImageService.findAllByBoardId(boardId);
 
-		return ResponseDto.success(BoardDetailResponseDto.from(board, images));
+		return ResponseDto.success(AdminBoardDetailResponseDto.from(board, images));
 	}
 
 	@Override
-	public ResponseEntity<ResponseDto<List<BoardResponseDto>>> getAllConsultationBoardList(HttpServletRequest request,
+	public ResponseEntity<ResponseDto<List<AdminBoardResponseDto>>> getAllConsultationBoardList(HttpServletRequest request,
 		int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		List<Board> boards = adminBoardRepository.findAllByConsumerIdNull(pageable);
 
 		return ResponseDto.success(boards.stream()
-			.map(BoardResponseDto::fromBoard)
+			.map(AdminBoardResponseDto::fromBoard)
 			.toList());
 	}
 

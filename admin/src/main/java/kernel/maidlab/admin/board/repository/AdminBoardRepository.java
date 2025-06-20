@@ -10,7 +10,7 @@ import kernel.maidlab.common.entity.board.Board;
 
 public interface AdminBoardRepository extends JpaRepository<Board, Long>, AdminBoardRepositoryCustom {
 
-	List<Board> findAllByManagerIdNull(Pageable pageable);
+	List<Board> findAllByManagerIdNullAndIsDeletedFalse(Pageable pageable);
 
 	Board findByIdAndIsDeletedFalse(Long boardId);
 
