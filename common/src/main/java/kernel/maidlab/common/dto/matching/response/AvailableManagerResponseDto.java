@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class AvailableManagerResponseDto {
 	private String uuid;
 	private String name;
+	private Float averageRate;
+	private String introduceText;
 }
