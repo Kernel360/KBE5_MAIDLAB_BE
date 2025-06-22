@@ -29,7 +29,7 @@ public class LikedManagerResponseDto {
                         m.getProfileImage(),
                         m.getAverageRate(),
                         m.getIntroduceText(),
-                        m.getRegions()   // 여기서 바로 enum 리스트
+                        m.getRegions()   
                 ))
                 .toList();
     }
