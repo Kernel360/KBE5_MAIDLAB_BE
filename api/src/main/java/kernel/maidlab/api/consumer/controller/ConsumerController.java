@@ -48,6 +48,20 @@ public class ConsumerController {
 		return ResponseDto.success();
 	}
 
+	@GetMapping("/likes")
+	public ResponseEntity<ResponseDto<Object>> getLikes(HttpServletRequest req) {
+
+		var likedManagers = consumerService.getLikedManagerList(req); // 🔧 수정된 호출
+		return ResponseDto.success(likedManagers);
+	}
+
+	@GetMapping("/blacklists")
+	public ResponseEntity<ResponseDto<Object>> getBlackListedManagerList(HttpServletRequest req) {
+
+		var blacklistedManagers = consumerService.getBlackListedManagerList(req); // 🔧 수정된 호출
+		return ResponseDto.success(blacklistedManagers);
+	}
+
 	@PostMapping("/preference/{managerUuid}")
 	public ResponseEntity<ResponseDto<Void>> setManagerPreference(
 		@PathVariable String managerUuid, // 🔧 @RequestParam → @PathVariable
