@@ -1,5 +1,6 @@
 package kernel.maidlab.common.dto.consumer.response;
 
+import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.enums.Region;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,5 +19,19 @@ public class LikedManagerResponseDto {
     private float  averageRate;
     private String introduceText;
     private List<Region> region;
+
+    public static List<LikedManagerResponseDto> getLikedManagerResponseDtoList(List<Manager> likedManagerList){
+
+        return likedManagerList.stream()
+                .map(m -> new LikedManagerResponseDto(
+                        m.getUuid(),
+                        m.getName(),
+                        m.getProfileImage(),
+                        m.getAverageRate(),
+                        m.getIntroduceText(),
+                        m.getRegions()   // 여기서 바로 enum 리스트
+                ))
+                .toList();
+    }
 
 }

@@ -1,27 +1,23 @@
 package kernel.maidlab.api.consumer.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.api.auth.jwt.JwtFilter;
-import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
+import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
+import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepositoryCustom;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.common.dto.consumer.ConsumerMyPageDto;
 import kernel.maidlab.common.dto.consumer.request.ConsumerProfileRequestDto;
 import kernel.maidlab.common.dto.consumer.response.BlackListedManagerResponseDto;
-import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
+import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
 import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
+import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.consumer.ManagerPreference;
-import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
+import kernel.maidlab.common.entity.manager.Manager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,91 +29,94 @@ public class ConsumerService {
 
 	private final ConsumerRepository consumerRepository;
 	private final ManagerPreferenceRepository managerPreferenceRepository;
+	private final ManagerPreferenceRepositoryCustom managerPreferenceRepositoryCustom;
 	private final ManagerRepository managerRepository;
 
-	public Consumer getConsumerByUuid(String uuid) {
-		return consumerRepository.findByUuid(uuid)
-			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+	@Transactional(readOnly = true)
+	public ConsumerMyPageDto getConsumerMyPage(HttpServletRequest req){
+
+		Consumer findedConsumer = getConsumer(req);
+		return ConsumerMyPageDto.getInstance(findedConsumer);
 	}
 
-	public ConsumerProfileResponseDto getConsumerProfile(String uuid) {
-		Consumer consumer = getConsumerByUuid(uuid);
 
-		return ConsumerProfileResponseDto.builder()
-			.profileImage(consumer.getProfileImage())
-			.phoneNumber(consumer.getPhoneNumber())
-			.name(consumer.getName())
-			.birth(consumer.getBirth())
-			.gender(consumer.getGender())
-			.address(consumer.getAddress())
-			.detailAddress(consumer.getDetailAddress())
-			.build();
+	@Transactional(readOnly = true)
+	public ConsumerProfileResponseDto getConsumerProfile(HttpServletRequest req) {
+
+		Consumer consumer = getConsumer(req);
+		return ConsumerProfileResponseDto.getInstance(consumer);
 	}
 
-	public void updateConsumerProfile(String uuid, ConsumerProfileRequestDto req) {
-		Consumer consumer = getConsumerByUuid(uuid);
+	public void updateConsumerProfile(
+			ConsumerProfileRequestDto consumerProfileRequestDto,
+			HttpServletRequest req)
+	{
+		Consumer consumer = getConsumer(req);
 
-		String profileImage = req.getProfileImage();
-		String address = req.getAddress();
-		String detailAddress = req.getDetailAddress();
+		String profileImage = consumerProfileRequestDto.getProfileImage();
+		String address = consumerProfileRequestDto.getAddress();
+		String detailAddress = consumerProfileRequestDto.getDetailAddress();
 
 		consumer.updateProfile(profileImage, address, detailAddress);
 		consumerRepository.save(consumer);
 	}
 
 	// 찜한 매니저 조회
-	public List<LikedManagerResponseDto> getLikeManagerList(Consumer consumer) {
+	@Transactional(readOnly = true)
+	public List<LikedManagerResponseDto> getLikedManagerList(HttpServletRequest req) {
 
-		List<Manager> likedManagerList = managerPreferenceRepository.findLikedManagersWithRegions(consumer.getId());
-		return likedManagerList.stream()
-			.map(m -> new LikedManagerResponseDto(
-				m.getUuid(),
-				m.getName(),
-				m.getProfileImage(),
-				m.getAverageRate(),
-				m.getIntroduceText(),
-				m.getRegions()   // 여기서 바로 enum 리스트
-			))
-			.toList();
+		Consumer consumer = getConsumer(req);
+
+		List<Manager> likedManagerList = managerPreferenceRepositoryCustom
+				.findManagersByPreference(consumer.getId(), true);
+
+		return LikedManagerResponseDto.getLikedManagerResponseDtoList(likedManagerList);
 	}
 
 	// 블랙 리스트 매니저 조회
-	public List<BlackListedManagerResponseDto> getBlackListedManagerList(Consumer consumer) {
+	@Transactional(readOnly = true)
+	public List<BlackListedManagerResponseDto> getBlackListedManagerList(HttpServletRequest req) {
 
-		List<Manager> BlacklistedManagerList = managerPreferenceRepository.findBlackListedManagers(consumer.getId());
-		return BlacklistedManagerList.stream()
-			.map(m -> new BlackListedManagerResponseDto(
-				m.getUuid(),
-				m.getName(),
-				m.getProfileImage(),
-				m.getAverageRate(),
-				m.getIntroduceText()
-			))
-			.toList();
+		Consumer consumer = getConsumer(req);
+
+		List<Manager> BlacklistedManagerList = managerPreferenceRepositoryCustom
+				.findManagersByPreference(consumer.getId(), false);
+
+		return BlackListedManagerResponseDto.getManagerResponseDtoList(BlacklistedManagerList);
 	}
 
 	// 찜/블랙리스트 매니저 등록
-	public void saveLikedOrBlackListedManager(String consumerUuid, String managerUuid, boolean preference) {
+	public void saveLikedOrBlackListedManager(
+			HttpServletRequest req,
+			String managerUuid,
+			boolean preference) {
 
-		Consumer consumer = getConsumerByUuid(consumerUuid);
+		Consumer consumer = getConsumer(req);
+
 		Manager manager = managerRepository.findByUuid(managerUuid).
 			orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저 입니다."));
 
 		ManagerPreference managerPreference = new ManagerPreference(consumer, manager, preference);
 		managerPreferenceRepository.save(managerPreference);
-
 	}
 
-	public long deleteLikedAOrBlackListManager(String managerUuid, HttpServletRequest req) {
+	public long deleteLikedAOrBlackListManager(
+			String managerUuid,
+			HttpServletRequest req) {
 
-		Consumer consumer = (Consumer)req.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		Consumer consumer = getConsumer(req);
 
 		Manager manager = managerRepository.findByUuid(managerUuid)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저입니다."));
 
-		return managerPreferenceRepository.deleteByConsumerIdAndManagerId(
-			consumer.getId(),
-			manager.getId());
+		return managerPreferenceRepository.
+				deleteByConsumerIdAndManagerId(
+					consumer.getId(),
+					manager.getId());
+	}
+
+	public Consumer getConsumer(HttpServletRequest req){
+		return (Consumer)req.getAttribute(JwtFilter.CURRENT_USER_KEY);
 	}
 
 }
