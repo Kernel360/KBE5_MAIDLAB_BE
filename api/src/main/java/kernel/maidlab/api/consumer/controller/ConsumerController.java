@@ -28,69 +28,47 @@ public class ConsumerController {
 	@GetMapping("/mypage")
 	public ResponseEntity<ResponseDto<ConsumerMyPageDto>> getMyPage(HttpServletRequest req) {
 
-		String uuid = (String) req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
-
-		Consumer findedConsumer = consumerService.getConsumerByUuid(uuid);
-		ConsumerMyPageDto myPageDto = ConsumerMyPageDto.builder()
-				.name(findedConsumer.getName())
-				.point(findedConsumer.getPoint())
-				.profileImage(findedConsumer.getProfileImage())
-				.build();
-
-		return ResponseDto.success(ResponseType.SUCCESS, myPageDto);
+		ConsumerMyPageDto myPageDto = consumerService.getConsumerMyPage(req);
+		return ResponseDto.success(myPageDto);
 	}
 
 	@GetMapping("/profile")
 	public ResponseEntity<ResponseDto<ConsumerProfileResponseDto>> getProfile(HttpServletRequest req) {
-		String uuid = (String) req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
 
-		ConsumerProfileResponseDto responseDto = consumerService.getConsumerProfile(uuid);
-
+		ConsumerProfileResponseDto responseDto = consumerService.getConsumerProfile(req);
 		return ResponseDto.success(responseDto);
 	}
 
 	@PatchMapping("/profile")
 	public ResponseEntity<ResponseDto<Void>> updateProfile(
-		@Validated @RequestBody ConsumerProfileRequestDto req,
-		HttpServletRequest httpReq) {
+		@Validated @RequestBody ConsumerProfileRequestDto consumerProfileRequestDto,
+		HttpServletRequest req) {
 
-		String uuid = (String) httpReq.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
-
-		consumerService.updateConsumerProfile(uuid, req);
-
+		consumerService.updateConsumerProfile(consumerProfileRequestDto, req);
 		return ResponseDto.success();
 	}
 
 	@GetMapping("/likes")
 	public ResponseEntity<ResponseDto<Object>> getLikes(HttpServletRequest req) {
-		String uuid = (String) req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
 
-		Consumer consumer = consumerService.getConsumerByUuid(uuid); // 🔧 Consumer 객체 먼저 가져오기
-		var likedManagers = consumerService.getLikeManagerList(consumer); // 🔧 수정된 호출
-
+		var likedManagers = consumerService.getLikedManagerList(req);
 		return ResponseDto.success(likedManagers);
 	}
 
 	@GetMapping("/blacklists")
 	public ResponseEntity<ResponseDto<Object>> getBlackListedManagerList(HttpServletRequest req) {
-		String uuid = (String) req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
 
-		Consumer consumer = consumerService.getConsumerByUuid(uuid); // 🔧 Consumer 객체 먼저 가져오기
-		var blacklistedManagers = consumerService.getBlackListedManagerList(consumer); // 🔧 수정된 호출
-
+		var blacklistedManagers = consumerService.getBlackListedManagerList(req);
 		return ResponseDto.success(blacklistedManagers);
 	}
 
 	@PostMapping("/preference/{managerUuid}")
 	public ResponseEntity<ResponseDto<Void>> setManagerPreference(
-		@PathVariable String managerUuid, // 🔧 @RequestParam → @PathVariable
+		@PathVariable String managerUuid,
 		@RequestParam boolean preference,
 		HttpServletRequest req) {
 
-		String uuid = (String) req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
-
-		consumerService.saveLikedOrBlackListedManager(uuid, managerUuid, preference); // 🔧 수정된 호출
-
+		consumerService.saveLikedOrBlackListedManager(req, managerUuid, preference);
 		return ResponseDto.success();
 	}
 
@@ -100,7 +78,6 @@ public class ConsumerController {
 			HttpServletRequest req) {
 
 		consumerService.deleteLikedAOrBlackListManager(managerUuid, req);
-
 		return ResponseDto.success("삭제 완료");
 	}
 }

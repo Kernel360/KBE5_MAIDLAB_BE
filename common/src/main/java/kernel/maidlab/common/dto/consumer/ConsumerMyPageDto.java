@@ -1,5 +1,6 @@
 package kernel.maidlab.common.dto.consumer;
 
+import kernel.maidlab.common.entity.consumer.Consumer;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,5 +18,14 @@ public class ConsumerMyPageDto {
         this.name = name;
         this.point = point;
         this.profileImage = profileImage;
+    }
+
+    public static ConsumerMyPageDto getInstance(Consumer consumer){
+
+        return new ConsumerMyPageDto(
+                consumer.getName(),
+                consumer.getPoint(),
+                consumer.getProfileImage()
+        );
     }
 }
