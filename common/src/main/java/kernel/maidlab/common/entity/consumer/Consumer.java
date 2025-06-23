@@ -67,9 +67,6 @@ public class Consumer extends TimeBase implements UserBase {
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted;
 
-	@OneToMany
-	private List<ManagerPreference> preferences = new ArrayList<>();
-
 	private Consumer(String phoneNumber,String password, String name, Gender gender, LocalDate birth) {
 		this.phoneNumber = phoneNumber;
 		this.password = password;

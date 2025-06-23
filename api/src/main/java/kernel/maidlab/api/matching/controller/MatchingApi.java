@@ -3,6 +3,7 @@ package kernel.maidlab.api.matching.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
 import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
@@ -33,6 +35,23 @@ public interface MatchingApi {
 		@ApiResponse(responseCode = "403", description = "권한 없음"),
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류")})
 	ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> matchManagers(@RequestBody MatchingRequestDto dto);
+
+	@Operation(summary = "선호 매니저 조회", description = "선호하는 매니저만을 조회합니다.")
+	@ApiResponses({@ApiResponse(responseCode = "200", description = "조회 성공"),
+		@ApiResponse(responseCode = "400", description = "선호 매니저가 없습니다."),
+		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
+		@ApiResponse(responseCode = "403", description = "권한 없음"),
+		@ApiResponse(responseCode = "500", description = "데이터베이스 오류")})
+	@GetMapping("/preferencemanager")
+	ResponseEntity<ResponseDto<List<LikedManagerResponseDto>>> preferenceManager(HttpServletRequest request);
+	@Operation(summary = "이전 매니저 조회", description = "이전에 서비스를 받았던 매니저를 조회합니다.")
+	@ApiResponses({@ApiResponse(responseCode = "200", description = "조회 성공"),
+		@ApiResponse(responseCode = "400", description = "선호 매니저가 없습니다."),
+		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
+		@ApiResponse(responseCode = "403", description = "권한 없음"),
+		@ApiResponse(responseCode = "500", description = "데이터베이스 오류")})
+	@GetMapping("/previousmanager")
+	ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> previousManager(HttpServletRequest request);
 
 	@Operation(summary = "매칭시작", description = "매칭 테이블에 reservationid, status, managerid 값들로 row 생성")
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "테이블 생성 성공"),
