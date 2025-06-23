@@ -57,4 +57,10 @@ public class EventController implements EventApi {
 	public ResponseEntity<ResponseDto<Void>> deleteEvent(@PathVariable Long eventId, HttpServletRequest req) {
 		return eventService.deleteEvent(eventId, req);
 	}
+
+	@GetMapping("/eventcount")
+	@Override
+	public ResponseEntity<ResponseDto<Long>> eventCount(HttpServletRequest request) {
+		return eventService.eventCount(request);
+	}
 }

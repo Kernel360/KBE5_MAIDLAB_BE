@@ -17,6 +17,7 @@ import kernel.maidlab.common.dto.ResponseDto;
 import lombok.Generated;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "AdminEvent", description = "관리자 이벤트(Admin Event) 관련 API")
@@ -60,4 +61,11 @@ public interface EventApi {
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류 (DBE)")})
 	ResponseEntity<ResponseDto<Void>> deleteEvent(@PathVariable Long eventId, HttpServletRequest req);
 
+	@GetMapping("/eventcount")
+	@Operation(summary = "이벤트 개수 조회", description = "현재 진행중인 이벤트의 개수를 확인 가능합니다.", security = @SecurityRequirement(name = "JWT"))
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "이벤트 조회 성공 (SU)"),
+		@ApiResponse(responseCode = "401", description = "인증 실패 (AF)"),
+		@ApiResponse(responseCode = "404", description = "존재하지 않는 이벤트 (NR)"),
+		@ApiResponse(responseCode = "500", description = "데이터베이스 오류 (DBE)")})
+	ResponseEntity<ResponseDto<Long>> eventCount(HttpServletRequest request);
 }
