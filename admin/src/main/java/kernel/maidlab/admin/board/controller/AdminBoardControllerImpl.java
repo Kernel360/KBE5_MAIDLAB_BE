@@ -29,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 public class AdminBoardControllerImpl implements AdminBoardApi {
 
 	private final AdminBoardServiceImpl adminBoardService;
-	private final BoardService boardService;
 
 	@GetMapping("/refund")
 	@Override
