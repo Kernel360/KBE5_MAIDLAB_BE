@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.ManagerResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
@@ -53,4 +54,11 @@ public interface AdminManagerApi {
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<String>> rejectManager(@PathVariable("managerId") Long managerId);
+
+	@GetMapping("/managercount")
+	@Operation(summary = "매니저 수 조회", description = "매니저 계정 수 조회 API")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 완료 (SU)"),
+		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
+		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
+	ResponseEntity<ResponseDto<Long>> managerCount(HttpServletRequest request);
 }

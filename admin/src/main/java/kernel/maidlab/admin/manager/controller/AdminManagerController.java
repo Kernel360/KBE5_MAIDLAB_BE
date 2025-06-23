@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.manager.service.AdminManagerService;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.ManagerResponseDto;
@@ -62,6 +63,12 @@ public class AdminManagerController implements AdminManagerApi {
 	public ResponseEntity<ResponseDto<String>> rejectManager(@PathVariable("managerId") Long managerId) {
 		adminManagerService.rejectManager(managerId);
 		return ResponseDto.success("매니저 거절 완료");
+	}
+
+	@GetMapping("/managercount")
+	@Override
+	public ResponseEntity<ResponseDto<Long>> managerCount(HttpServletRequest request) {
+		return ResponseDto.success(adminManagerService.managerCount(request));
 	}
 
 }

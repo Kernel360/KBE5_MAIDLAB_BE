@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.manager.repository.AdminManagerRepository;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.ManagerResponseDto;
@@ -72,6 +73,11 @@ public class AdminManagerServiceImpl implements AdminManagerService {
 				manager.getUuid(),
 				manager.getId()
 			));
+	}
+
+	@Override
+	public Long managerCount(HttpServletRequest request) {
+		return adminManagerRepository.count();
 	}
 
 }
