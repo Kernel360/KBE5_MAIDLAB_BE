@@ -12,10 +12,12 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.api.consumer.service.ConsumerService;
 import kernel.maidlab.api.manager.service.ManagerService;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
-import kernel.maidlab.api.reservation.service.ReservationService;
+import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
 import kernel.maidlab.common.entity.base.UserBase;
+import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
 import kernel.maidlab.common.entity.reservation.Reservation;
@@ -27,19 +29,15 @@ import kernel.maidlab.common.entity.matching.Matching;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class MatchingServiceImpl implements MatchingService {
 	private final MatchingRepository matchingRepository;
 	private final ManagerService managerService;
 	private final ReservationRepository reservationRepository;
-
-	public MatchingServiceImpl(MatchingRepository matchingRepository, ManagerService managerService,
-		ReservationRepository reservationRepository) {
-		this.matchingRepository = matchingRepository;
-		this.managerService = managerService;
-		this.reservationRepository = reservationRepository;
-	}
+	private final ConsumerService consumerService;
 
 	@Override
 	public List<AvailableManagerResponseDto> findAvailableManagers(MatchingRequestDto dto) {
@@ -87,13 +85,30 @@ public class MatchingServiceImpl implements MatchingService {
 			.toList();
 	}
 
+	@Override
+	public List<LikedManagerResponseDto> preferenceManager(HttpServletRequest request) {
+		return consumerService.getLikedManagerList(request);
+	}
+
+	@Override
+	public List<AvailableManagerResponseDto> previousManager(Consumer consumer) {
+		return managerService.previousManagers(consumer);
+	}
+
 	private String extractGuFromAddress(String address) {
 		// "구" 단위 추출 (예: "서울시 강남구 역삼동" -> "강남구")
 		// 단위를 바꾸고 싶을때는 filter의 endsWith 만 바꾸면 됨
-		return Arrays.stream(address.split(" "))
-			.filter(s -> s.endsWith("구"))
-			.findFirst()
-			.orElseThrow(() -> new BaseException(ResponseType.WRONG_ADDRESS));
+		if(address.startsWith("서"))
+			return Arrays.stream(address.split(" "))
+				.filter(s -> s.endsWith("구"))
+				.findFirst()
+				.orElseThrow(() -> new BaseException(ResponseType.WRONG_ADDRESS));
+		//서울시가 아닌경우 시 단위로 나누게 함
+		else
+			return Arrays.stream(address.split(" "))
+				.filter(s -> s.endsWith("시"))
+				.findFirst()
+				.orElseThrow(() -> new BaseException(ResponseType.WRONG_ADDRESS));
 	}
 
 }
