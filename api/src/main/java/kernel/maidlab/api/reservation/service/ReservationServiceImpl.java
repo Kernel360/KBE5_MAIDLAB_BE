@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +28,7 @@ import kernel.maidlab.common.entity.reservation.Settlement;
 import kernel.maidlab.api.reservation.repository.ReviewRepository;
 import kernel.maidlab.api.reservation.repository.SettlementRepository;
 import kernel.maidlab.api.util.AuthUtil;
+import kernel.maidlab.common.enums.ServiceOptionType;
 import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
@@ -46,6 +46,7 @@ import kernel.maidlab.api.reservation.repository.ServiceDetailTypeRepository;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.common.util.RoomSizeRuleUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -253,10 +254,8 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	public void checkTotalPrice(ReservationRequestDto dto) {
-		ServiceDetailType detailType = serviceDetailTypeRepository.findById(dto.getServiceDetailTypeId())
-			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		BigDecimal serverCalculatedPrice = calculateTotalPrice(dto, detailType.getServicePrice());
-		if (!serverCalculatedPrice.equals(dto.getTotalPrice())) {
+		BigDecimal serverCalculatedPrice = calculateTotalPrice(dto);
+		if (serverCalculatedPrice.compareTo(dto.getTotalPrice()) != 0) {
 			log.warn("금액 불일치 - client={}, server={}", dto.getTotalPrice(), serverCalculatedPrice);
 			throw new ReservationException(ResponseType.VALIDATION_FAILED);
 		}
@@ -267,15 +266,19 @@ public class ReservationServiceImpl implements ReservationService {
 		// 나중에 "laundry", "cleaning" 등 추가 가능
 	);
 
-	private BigDecimal calculateTotalPrice(ReservationRequestDto dto, BigDecimal basePrice) {
-		String serviceAdd = dto.getServiceAdd(); // 기본값이 ""라고 가정
+	private BigDecimal calculateTotalPrice(ReservationRequestDto dto) {
+		BigDecimal basePrice = RoomSizeRuleUtil.resolveBasePrice(dto.getLifeCleaningRoomIdx());
 
-		BigDecimal additional = Arrays.stream(serviceAdd.split(",")).map(String::trim) // 공백 제거
-			.filter(ADDITIONAL_PRICE_MAP::containsKey) // 유효한 서비스만
-			.map(ADDITIONAL_PRICE_MAP::get) // 금액으로 변환
-			.reduce(BigDecimal.ZERO, BigDecimal::add); // 누적 합산
+		BigDecimal optionPrice = dto.getServiceOptions()
+			.stream()
+			.filter(opt -> ServiceOptionType.isValid(opt.getId()))
+			.map(opt -> {
+				ServiceOptionType type = ServiceOptionType.from(opt.getId());
+				return type.getPriceForCount(opt.getCount());
+			})
+			.reduce(BigDecimal.ZERO, BigDecimal::add);
 
-		return basePrice.add(additional);
+		return basePrice.add(optionPrice);
 	}
 
 	@Override
