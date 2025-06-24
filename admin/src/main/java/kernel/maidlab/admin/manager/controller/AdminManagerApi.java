@@ -63,5 +63,9 @@ public interface AdminManagerApi {
 	ResponseEntity<ResponseDto<Long>> managerCount(HttpServletRequest request);
 
 	@GetMapping("/newmanagercount")
+	@Operation(summary = "검토 중 인 매니저 수 조회", description = "검토 중 인 매니저 계정 수 조회 API")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 완료 (SU)"),
+		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
+		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<Long>> newManagerCount(HttpServletRequest request);
 }
