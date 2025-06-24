@@ -18,8 +18,6 @@ import kernel.maidlab.admin.board.service.AdminBoardServiceImpl;
 import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
 import kernel.maidlab.common.dto.board.response.AdminBoardDetailResponseDto;
 import kernel.maidlab.common.dto.board.response.AdminBoardResponseDto;
-import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
-import kernel.maidlab.api.board.service.BoardService;
 import kernel.maidlab.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 
@@ -63,5 +61,11 @@ public class AdminBoardControllerImpl implements AdminBoardApi {
 	@Override
 	public ResponseEntity<ResponseDto<Void>> answer(@RequestBody AnswerRequestDto requestDto, @PathVariable Long answerId) {
 		return adminBoardService.modifyAnswer(requestDto, answerId);
+	}
+
+	@GetMapping("/boardcount")
+	@Override
+	public ResponseEntity<ResponseDto<Long>> boardWithoutAnswerCount(HttpServletRequest request){
+		return ResponseDto.success(adminBoardService.getBoardWithoutAnswerCount(request));
 	}
 }

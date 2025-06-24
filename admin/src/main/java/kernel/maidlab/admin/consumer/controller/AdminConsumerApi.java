@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
 import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
@@ -29,4 +30,11 @@ public interface AdminConsumerApi {
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<ConsumerProfileResponseDto>> getConsumer(@PathVariable("consumerId") Long consumerId);
+
+	@GetMapping("/consumercount")
+	@Operation(summary = "수요자 계정 수 조회", description = "수요자 수 조회 API")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
+		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
+		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
+	ResponseEntity<ResponseDto<Long>> ConsumerCount (HttpServletRequest request);
 }
