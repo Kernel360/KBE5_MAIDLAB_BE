@@ -71,4 +71,10 @@ public class AdminManagerController implements AdminManagerApi {
 		return ResponseDto.success(adminManagerService.managerCount(request));
 	}
 
+	@GetMapping("/newmanagercount")
+	@Override
+	public ResponseEntity<ResponseDto<Long>> newManagerCount(HttpServletRequest request) {
+		return ResponseDto.success(adminManagerService.newManagerCount(request));
+	}
+
 }

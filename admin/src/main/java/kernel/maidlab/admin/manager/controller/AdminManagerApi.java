@@ -61,4 +61,7 @@ public interface AdminManagerApi {
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<Long>> managerCount(HttpServletRequest request);
+
+	@GetMapping("/newmanagercount")
+	ResponseEntity<ResponseDto<Long>> newManagerCount(HttpServletRequest request);
 }

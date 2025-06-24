@@ -63,4 +63,6 @@ public interface AdminBoardApi {
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<Void>> answer(@RequestBody AnswerRequestDto requestDto, @PathVariable Long answerId);
 
+	@GetMapping("/boardWithoutAnswerCount")
+	ResponseEntity<ResponseDto<Long>> boardWithoutAnswerCount(HttpServletRequest request);
 }

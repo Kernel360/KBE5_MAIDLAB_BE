@@ -50,6 +50,6 @@ public class AdminConsumerServiceImpl implements AdminConsumerService{
 
 	@Override
 	public Long getCount(HttpServletRequest request) {
-		return adminConsumerRepository.count();
+		return adminConsumerRepository.countByIsDeletedFalse();
 	}
 }

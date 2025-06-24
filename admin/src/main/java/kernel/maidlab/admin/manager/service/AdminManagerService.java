@@ -22,4 +22,6 @@ public interface AdminManagerService {
 	Page<ManagerListResponseDto> getManagerBypage(int page, int size);
 
 	Long managerCount(HttpServletRequest request);
+
+	Long newManagerCount(HttpServletRequest request);
 }

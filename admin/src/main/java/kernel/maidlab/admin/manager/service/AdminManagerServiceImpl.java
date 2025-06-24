@@ -77,7 +77,12 @@ public class AdminManagerServiceImpl implements AdminManagerService {
 
 	@Override
 	public Long managerCount(HttpServletRequest request) {
-		return adminManagerRepository.count();
+		return adminManagerRepository.countByIsDeletedFalseAndIsVerified(Status.APPROVED);
+	}
+
+	@Override
+	public Long newManagerCount(HttpServletRequest request) {
+		return adminManagerRepository.countByIsDeletedFalseAndIsVerified(Status.PENDING);
 	}
 
 }
