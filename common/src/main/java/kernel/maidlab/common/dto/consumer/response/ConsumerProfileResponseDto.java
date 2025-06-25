@@ -16,7 +16,6 @@ import java.time.LocalDate;
 public class ConsumerProfileResponseDto {
 
     private String profileImage;
-    private String phoneNumber;
     private String name;
     private LocalDate birth;
     private Gender gender;
@@ -28,7 +27,6 @@ public class ConsumerProfileResponseDto {
 
         return new ConsumerProfileResponseDto(
                 consumer.getProfileImage(),
-                consumer.getPhoneNumber(),
                 consumer.getName(),
                 consumer.getBirth(),
                 consumer.getGender(),

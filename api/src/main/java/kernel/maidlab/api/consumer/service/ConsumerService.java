@@ -8,6 +8,7 @@ import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepositoryCustom;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.common.dto.consumer.ConsumerMyPageDto;
 import kernel.maidlab.common.dto.consumer.request.ConsumerProfileRequestDto;
+import kernel.maidlab.common.dto.consumer.request.ConsumerProfileUpdateRequestDto;
 import kernel.maidlab.common.dto.consumer.response.BlackListedManagerResponseDto;
 import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
 import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
@@ -47,7 +48,7 @@ public class ConsumerService {
 		return ConsumerProfileResponseDto.getInstance(consumer);
 	}
 
-	public void updateConsumerProfile(
+	public void createConsumerProfile(
 			ConsumerProfileRequestDto consumerProfileRequestDto,
 			HttpServletRequest req)
 	{
@@ -57,9 +58,19 @@ public class ConsumerService {
 		String address = consumerProfileRequestDto.getAddress();
 		String detailAddress = consumerProfileRequestDto.getDetailAddress();
 
-		consumer.updateProfile(profileImage, address, detailAddress);
+		consumer.createProfile(profileImage, address, detailAddress);
 		consumerRepository.save(consumer);
 	}
+
+	public void updateConsumerProfile(
+			ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto,
+			HttpServletRequest req){
+
+		Consumer consumer = getConsumer(req);
+		consumer.updateProfile(consumerProfileUpdateRequestDto);
+		consumerRepository.save(consumer);
+	}
+
 
 	// 찜한 매니저 조회
 	@Transactional(readOnly = true)
