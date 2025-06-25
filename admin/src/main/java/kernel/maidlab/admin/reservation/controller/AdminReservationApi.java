@@ -75,4 +75,11 @@ public interface AdminReservationApi {
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<String>> settlementReject(HttpServletRequest request,
 		@PathVariable Long settlementId);
+
+	@GetMapping("/todayreservation")
+	@Operation(summary = "오늘의 예약 수 조회", description = "오늘 예약 수 조회 API")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 완료 (SU)"),
+		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
+		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
+	ResponseEntity<ResponseDto<Long>> todayReservation(HttpServletRequest request);
 }

@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.consumer.service.ConsumerService;
+import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
 import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
+import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.exception.BaseException;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
@@ -30,6 +33,7 @@ public class MatchingController implements MatchingApi {
 
 	// private final AuthUtil authUtil;
 	private final MatchingService matchingService;
+	private final ConsumerService consumerService;
 	// private final MatchingRepository matchingRepository;
 	// private final RedisTemplate<String, Object> redisTemplate;
 	// private final RedisService redisService;
@@ -63,6 +67,21 @@ public class MatchingController implements MatchingApi {
 			return ResponseDto.success(ResponseType.SUCCESS, Collections.singletonList(AvailableManagers.getFirst()));
 	}
 
+	@GetMapping("/preferencemanager")
+	@Override
+	public ResponseEntity<ResponseDto<List<LikedManagerResponseDto>>> preferenceManager(HttpServletRequest request) {
+		List<LikedManagerResponseDto> response = matchingService.preferenceManager(request);
+		return ResponseDto.success(ResponseType.SUCCESS, response);
+	}
+
+	@GetMapping("/previousmanager")
+	@Override
+	public ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> previousManager(HttpServletRequest request) {
+		Consumer consumer = consumerService.getConsumer(request);
+		List<AvailableManagerResponseDto> response = matchingService.previousManager(consumer);
+		return ResponseDto.success(ResponseType.SUCCESS, response);
+	}
+
 	@PostMapping("/matchstart")
 	@Override
 	public ResponseEntity<ResponseDto<String>> matchStart(@RequestParam Long reservation_id,
@@ -75,5 +94,6 @@ public class MatchingController implements MatchingApi {
 		matchingService.createMatching(matchingResponseDto);
 		return ResponseDto.success(ResponseType.SUCCESS, matchingResponseDto.toString());
 	}
+
 
 }

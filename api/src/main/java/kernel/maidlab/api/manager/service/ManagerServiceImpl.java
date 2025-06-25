@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 // import jakarta.transaction.Transactional;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
+import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.dto.auth.JwtDto;
 import kernel.maidlab.api.auth.jwt.JwtProvider;
@@ -287,6 +288,11 @@ public class ManagerServiceImpl implements ManagerService {
 	public List<AvailableManagerResponseDto> findAvailableManagers(String gu, LocalDateTime StartTime,
 		LocalDateTime EndTime) {
 		return managerRepository.findAvailableManagers(gu, StartTime, EndTime);
+	}
+
+	@Override
+	public List<AvailableManagerResponseDto> previousManagers(Consumer consumer){
+		return managerRepository.previousManagers(consumer);
 	}
 
 }

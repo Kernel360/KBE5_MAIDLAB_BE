@@ -26,4 +26,6 @@ public interface AdminReservationService {
 	void settlementReject(Long settlementId);
 
 	SettlementResponseDto getSettlementDetail(Long settlementId, HttpServletRequest request);
+
+	Long getTodayReservation(HttpServletRequest request);
 }

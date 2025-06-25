@@ -19,4 +19,6 @@ public interface EventService {
 	ResponseEntity<ResponseDto<Void>> updateEvent(Long eventId, EventRequestDto eventRequestDto, HttpServletRequest req);
 
 	ResponseEntity<ResponseDto<Void>> deleteEvent(Long eventId, HttpServletRequest req);
+
+	ResponseEntity<ResponseDto<Long>> eventCount(HttpServletRequest request);
 }

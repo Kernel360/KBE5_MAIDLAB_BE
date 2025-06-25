@@ -1,10 +1,13 @@
 package kernel.maidlab.admin.consumer.service;
 
+import kernel.maidlab.common.dto.consumer.response.AdminConsumerProfileResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.admin.consumer.controller.AdminConsumerController;
 import kernel.maidlab.admin.consumer.repository.AdminConsumerRepository;
 import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
 import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
@@ -31,11 +34,11 @@ public class AdminConsumerServiceImpl implements AdminConsumerService{
 	}
 
 	@Override
-	public ConsumerProfileResponseDto getConsumerProfileById(Long id) {
+	public AdminConsumerProfileResponseDto getConsumerProfileById(Long id) {
 		Consumer consumer = adminConsumerRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-		return ConsumerProfileResponseDto.builder()
+		return AdminConsumerProfileResponseDto.builder()
 			.profileImage(consumer.getProfileImage())
 			.phoneNumber(consumer.getPhoneNumber())
 			.name(consumer.getName())
@@ -44,5 +47,10 @@ public class AdminConsumerServiceImpl implements AdminConsumerService{
 			.address(consumer.getAddress())
 			.detailAddress(consumer.getDetailAddress())
 			.build();
+	}
+
+	@Override
+	public Long getCount(HttpServletRequest request) {
+		return adminConsumerRepository.countByIsDeletedFalse();
 	}
 }

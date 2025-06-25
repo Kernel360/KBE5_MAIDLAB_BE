@@ -1,15 +1,13 @@
 package kernel.maidlab.api.consumer.controller;
 
-import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.dto.consumer.ConsumerMyPageDto;
 import kernel.maidlab.common.dto.consumer.request.ConsumerProfileRequestDto;
+import kernel.maidlab.common.dto.consumer.request.ConsumerProfileUpdateRequestDto;
 import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
 import kernel.maidlab.api.consumer.service.ConsumerService;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
 import kernel.maidlab.common.dto.ResponseDto;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.enums.ResponseType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,14 +37,25 @@ public class ConsumerController {
 		return ResponseDto.success(responseDto);
 	}
 
-	@PatchMapping("/profile")
-	public ResponseEntity<ResponseDto<Void>> updateProfile(
+	@PostMapping("/profile")
+	public ResponseEntity<ResponseDto<Void>> createProfile(
 		@Validated @RequestBody ConsumerProfileRequestDto consumerProfileRequestDto,
 		HttpServletRequest req) {
 
-		consumerService.updateConsumerProfile(consumerProfileRequestDto, req);
+		consumerService.createConsumerProfile(consumerProfileRequestDto, req);
 		return ResponseDto.success();
 	}
+
+	@PatchMapping("/profile")
+	public ResponseEntity<ResponseDto<Void>> updateProfile(
+			@Validated @RequestBody ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto,
+			HttpServletRequest req
+	){
+		log.info("consumerProfileUpdateRequestDto = {}", consumerProfileUpdateRequestDto);
+		consumerService.updateConsumerProfile(consumerProfileUpdateRequestDto, req);
+		return ResponseDto.success();
+	}
+
 
 	@GetMapping("/likes")
 	public ResponseEntity<ResponseDto<Object>> getLikes(HttpServletRequest req) {

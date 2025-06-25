@@ -139,4 +139,9 @@ public class EventServiceImpl implements EventService {
 
 		return ResponseDto.success();
 	}
+
+	@Override
+	public ResponseEntity<ResponseDto<Long>> eventCount(HttpServletRequest request) {
+		return ResponseDto.success(eventRepository.count());
+	}
 }

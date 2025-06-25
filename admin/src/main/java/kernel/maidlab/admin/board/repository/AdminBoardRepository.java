@@ -15,4 +15,6 @@ public interface AdminBoardRepository extends JpaRepository<Board, Long>, AdminB
 	Board findByIdAndIsDeletedFalse(Long boardId);
 
 	List<Board> findAllByConsumerIdNull(Pageable pageable);
+
+	Long countByIsAnsweredFalseAndIsDeletedFalse();
 }
