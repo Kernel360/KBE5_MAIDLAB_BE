@@ -1,5 +1,5 @@
 INSERT INTO service_detail_type (id, service_detail_type, service_type, service_price)
-SELECT 1, '대청소', 'HOUSEKEEPING', 50000
+SELECT 1, '생활청소', 'GENERAL_CLEANING', 0
 WHERE NOT EXISTS (SELECT 1 FROM service_detail_type WHERE id = 1)
 UNION ALL
 SELECT 2, '부분청소', 'HOUSEKEEPING', 30000
