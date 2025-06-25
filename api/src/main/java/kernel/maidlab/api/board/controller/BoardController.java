@@ -30,7 +30,7 @@ public class BoardController {
             HttpServletRequest request,
             @RequestBody BoardRequestDto boardRequestDto
     ){
-        boardService.createConsumerBoard(request, boardRequestDto);
+        boardService.createBoard(request, boardRequestDto);
         return ResponseDto.success("게시글이 성공적으로 등록완료 되었습니다.");
     }
 
