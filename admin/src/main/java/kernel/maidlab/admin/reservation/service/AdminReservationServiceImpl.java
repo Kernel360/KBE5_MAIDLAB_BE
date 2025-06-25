@@ -192,4 +192,10 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 			settlement.get().getAmount()
 		);
 	}
+
+	@Override
+	public Long getTodayReservation(HttpServletRequest request) {
+		LocalDate today = LocalDate.now();
+		return adminReservationRepository.countByReservationDate(today);
+	}
 }

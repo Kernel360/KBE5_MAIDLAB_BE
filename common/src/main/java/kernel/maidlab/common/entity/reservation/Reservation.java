@@ -14,6 +14,8 @@ import jakarta.persistence.Table;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
 import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.common.util.ReservationOptionUtil;
+import kernel.maidlab.common.util.RoomSizeRuleUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -70,7 +72,6 @@ public class Reservation extends TimeBase {
 	@Column(name = "canceled_at")
 	private LocalDateTime canceledAt;
 
-
 	@Column(name = "checkin_time")
 	private LocalDateTime checkinTime;
 
@@ -121,10 +122,11 @@ public class Reservation extends TimeBase {
 
 	public static Reservation of(ReservationRequestDto dto, Long consumerId, Long managerId,
 		ServiceDetailType detailType) {
+		Integer roomSize = RoomSizeRuleUtil.resolveRoomSize(dto.getLifeCleaningRoomIdx());
+		String serializedOptions = ReservationOptionUtil.serializeOptions(dto.getServiceOptions());
 		return new Reservation(managerId, consumerId, detailType, dto.getReservationDate(), dto.getStartTime(),
-			dto.getEndTime(), dto.getAddress(), dto.getAddressDetail(), dto.getHousingType(), dto.getRoomSize(),
-			dto.getHousingInformation(), dto.getServiceAdd(), dto.getPet(), dto.getSpecialRequest(),
-			dto.getTotalPrice());
+			dto.getEndTime(), dto.getAddress(), dto.getAddressDetail(), dto.getHousingType(), roomSize,
+			dto.getHousingInformation(), serializedOptions, dto.getPet(), dto.getSpecialRequest(), dto.getTotalPrice());
 	}
 
 }

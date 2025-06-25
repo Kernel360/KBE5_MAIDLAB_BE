@@ -6,4 +6,5 @@ import kernel.maidlab.common.entity.consumer.Consumer;
 
 public interface AdminConsumerRepository extends JpaRepository<Consumer, Long> {
 
+	Long countByIsDeletedFalse();
 }

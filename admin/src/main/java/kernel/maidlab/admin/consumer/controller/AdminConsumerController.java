@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.consumer.service.AdminConsumerService;
 import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
 import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
-import kernel.maidlab.api.consumer.service.ConsumerService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +36,12 @@ public class AdminConsumerController implements AdminConsumerApi {
 	public ResponseEntity<ResponseDto<AdminConsumerProfileResponseDto>> getConsumer(
 		@PathVariable("consumerId") Long consumerId) {
 		return ResponseDto.success(ResponseType.SUCCESS, adminConsumerService.getConsumerProfileById((Long)consumerId));
+	}
+
+	@GetMapping("/consumercount")
+	@Override
+	public ResponseEntity<ResponseDto<Long>> ConsumerCount(HttpServletRequest request){
+		return ResponseDto.success(ResponseType.SUCCESS, adminConsumerService.getCount(request));
 	}
 
 }

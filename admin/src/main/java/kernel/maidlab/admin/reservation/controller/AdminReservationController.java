@@ -90,4 +90,11 @@ public class AdminReservationController implements AdminReservationApi {
 		adminReservationsService.settlementReject(settlementId);
 		return ResponseDto.success("success");
 	}
+
+	@GetMapping("/todayreservation")
+	@Override
+	public ResponseEntity<ResponseDto<Long>> todayReservation(HttpServletRequest request) {
+		return ResponseDto.success(adminReservationsService.getTodayReservation(request));
+	}
+
 }

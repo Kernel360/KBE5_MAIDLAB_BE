@@ -46,5 +46,4 @@ public class AdminMatchingController implements AdminMatchingApi {
 		adminmatchingService.changeManager(reservationId, managerId);
 		return ResponseDto.success(ResponseType.SUCCESS, "변경 완료");
 	}
-
 }

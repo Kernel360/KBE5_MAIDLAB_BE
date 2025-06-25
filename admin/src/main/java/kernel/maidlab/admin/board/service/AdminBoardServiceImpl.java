@@ -18,8 +18,6 @@ import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
 import kernel.maidlab.common.dto.board.response.AdminBoardDetailResponseDto;
 import kernel.maidlab.common.dto.board.response.AdminBoardResponseDto;
-import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
-import kernel.maidlab.common.dto.board.response.BoardResponseDto;
 import kernel.maidlab.common.entity.board.Answer;
 import kernel.maidlab.common.entity.board.Board;
 import kernel.maidlab.common.entity.board.Image;
@@ -63,7 +61,8 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 	}
 
 	@Override
-	public ResponseEntity<ResponseDto<List<AdminBoardResponseDto>>> getAllConsultationBoardList(HttpServletRequest request,
+	public ResponseEntity<ResponseDto<List<AdminBoardResponseDto>>> getAllConsultationBoardList(
+		HttpServletRequest request,
 		int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		List<Board> boards = adminBoardRepository.findAllByConsumerIdNull(pageable);
@@ -93,5 +92,9 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 			.orElseThrow(() -> new EntityNotFoundException("답변을 찾을 수 없습니다. boardId: " + boardId));
 		answer.setContent(requestDto);
 		return ResponseDto.success();
+	}
+
+	public Long getBoardWithoutAnswerCount(HttpServletRequest request) {
+		return adminBoardRepository.countByIsAnsweredFalseAndIsDeletedFalse();
 	}
 }

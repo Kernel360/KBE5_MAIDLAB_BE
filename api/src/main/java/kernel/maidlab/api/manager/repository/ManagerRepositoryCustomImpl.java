@@ -12,6 +12,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 
 import static kernel.maidlab.common.entity.manager.QManager.manager;
@@ -19,7 +20,9 @@ import static kernel.maidlab.common.entity.manager.QManagerRegion.managerRegion;
 import static kernel.maidlab.common.entity.manager.QManagerSchedule.managerSchedule;
 import static kernel.maidlab.common.entity.manager.QRegion.region;
 import static kernel.maidlab.common.entity.reservation.QReservation.reservation;
+import static kernel.maidlab.common.entity.consumer.QManagerPreference.managerPreference;
 
+import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.enums.Status;
 import lombok.RequiredArgsConstructor;
 
@@ -56,6 +59,23 @@ public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 							reservation.startTime.lt(end),     // 예약 시작 < 요청 종료
 							reservation.endTime.gt(start)      // 예약 종료 > 요청 시작
 						)))
+			.fetch();
+	}
+
+	@Override
+	public List<AvailableManagerResponseDto> previousManagers(Consumer consumer){
+		return QueryFactory.select(
+				Projections.constructor(AvailableManagerResponseDto.class, manager.uuid, manager.name, manager.averageRate,
+					manager.introduceText, manager.profileImage))
+			.from(manager)
+			.join(reservation)
+			.on(manager.id.eq(reservation.managerId))
+			.where(reservation.consumerId.eq(consumer.getId()), reservation.status.eq(Status.COMPLETED), manager.id.notIn(
+				JPAExpressions.select(managerPreference.manager.id)
+					.from(managerPreference)
+					.where(managerPreference.consumer.id.eq(consumer.getId()),
+						managerPreference.preference.isFalse())
+			))
 			.fetch();
 	}
 

@@ -22,7 +22,6 @@ public class ConsumerProfileResponseDto {
     private String address;
     private String detailAddress;
 
-
     public static ConsumerProfileResponseDto getInstance(Consumer consumer){
 
         return new ConsumerProfileResponseDto(

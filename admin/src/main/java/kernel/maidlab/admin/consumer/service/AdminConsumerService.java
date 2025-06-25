@@ -3,6 +3,7 @@ package kernel.maidlab.admin.consumer.service;
 import kernel.maidlab.common.dto.consumer.response.AdminConsumerProfileResponseDto;
 import org.springframework.data.domain.Page;
 
+import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
 import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
 
@@ -11,4 +12,6 @@ public interface AdminConsumerService {
 	Page<ConsumerListResponseDto> getConsumerBypage(int page, int size);
 
 	AdminConsumerProfileResponseDto getConsumerProfileById(Long id);
+
+	Long getCount(HttpServletRequest request);
 }
