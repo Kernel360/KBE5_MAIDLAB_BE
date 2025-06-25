@@ -1,5 +1,6 @@
 package kernel.maidlab.admin.consumer.controller;
 
+import kernel.maidlab.common.dto.consumer.response.AdminConsumerProfileResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,7 @@ public class AdminConsumerController implements AdminConsumerApi {
 
 	@GetMapping("/{consumerId}")
 	@Override
-	public ResponseEntity<ResponseDto<ConsumerProfileResponseDto>> getConsumer(
+	public ResponseEntity<ResponseDto<AdminConsumerProfileResponseDto>> getConsumer(
 		@PathVariable("consumerId") Long consumerId) {
 		return ResponseDto.success(ResponseType.SUCCESS, adminConsumerService.getConsumerProfileById((Long)consumerId));
 	}

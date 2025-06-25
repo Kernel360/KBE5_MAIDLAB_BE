@@ -1,6 +1,9 @@
 package kernel.maidlab.common.entity.consumer;
 
 import jakarta.persistence.*;
+import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.consumer.request.ConsumerProfileRequestDto;
+import kernel.maidlab.common.dto.consumer.request.ConsumerProfileUpdateRequestDto;
 import kernel.maidlab.common.entity.base.Base;
 import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.entity.base.UserBase;
@@ -102,10 +105,19 @@ public class Consumer extends TimeBase implements UserBase {
 
 	}
 
-	public void updateProfile(String profileImage, String address, String detailAddress){
+	public void createProfile(String profileImage, String address, String detailAddress){
 		this.profileImage = profileImage;
 		this.address = address;
 		this.detailAddress = detailAddress;
+	}
+
+	public void updateProfile(ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto){
+		this.profileImage = consumerProfileUpdateRequestDto.getProfileImage();
+		this.name = consumerProfileUpdateRequestDto.getName();
+		this.gender = consumerProfileUpdateRequestDto.getGender();
+		this.birth = consumerProfileUpdateRequestDto.getBirth();
+		this.address = consumerProfileUpdateRequestDto.getAddress();
+		this.detailAddress = consumerProfileUpdateRequestDto.getDetailAddress();
 	}
 
 	@PrePersist
