@@ -37,11 +37,15 @@ public class AdminManagerController implements AdminManagerApi {
 	@GetMapping("/status")
 	@Override
 	public ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(
-		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-		@RequestParam Status status) {
-		Page<ManagerListResponseDto> response = adminManagerService.getManagerByPageWithStatus(page, size, status);
-		return ResponseDto.success(ResponseType.SUCCESS, response);
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size,
+		@RequestParam Status status,
+		@RequestParam(defaultValue = "false") boolean sortByRating,
+		@RequestParam(required = false) Boolean isDescending) {
 
+		Page<ManagerListResponseDto> response = adminManagerService.getManagerByPageWithStatus(page, size, status, sortByRating,
+			isDescending);
+		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 
 	@GetMapping("/{managerId}")

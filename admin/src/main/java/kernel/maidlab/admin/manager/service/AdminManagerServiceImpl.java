@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,8 +55,18 @@ public class AdminManagerServiceImpl implements AdminManagerService {
 	}
 
 	@Override
-	public Page<ManagerListResponseDto> getManagerByPageWithStatus(int page, int size, Status status) {
-		Pageable pageable = PageRequest.of(page, size);
+	public Page<ManagerListResponseDto> getManagerByPageWithStatus(int page, int size, Status status,
+		boolean sortByRating, Boolean isDescending) {
+		Pageable pageable;
+
+		if (sortByRating) {
+			if(isDescending)
+				pageable = PageRequest.of(page, size, Sort.by("averageRate").descending());
+			else
+				pageable = PageRequest.of(page, size, Sort.by("averageRate").ascending());
+		} else {
+			pageable = PageRequest.of(page, size);
+		}
 		return adminManagerRepository.findAllByIsVerified(status, pageable)
 			.map(manager -> new ManagerListResponseDto(
 				manager.getName(),

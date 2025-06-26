@@ -17,7 +17,10 @@ public interface AdminManagerService {
 	@Transactional
 	void approveManager(Long managerId);
 
-	Page<ManagerListResponseDto> getManagerByPageWithStatus(int page, int size, Status status);
+	// Page<ManagerListResponseDto> getManagerByPageWithStatus(int page, int size, Status status, Boolean sortByRating, Boolean sortDescending);
+
+	Page<ManagerListResponseDto> getManagerByPageWithStatus(int page, int size, Status status, boolean sortByRating,
+		Boolean isDescending);
 
 	Page<ManagerListResponseDto> getManagerBypage(int page, int size);
 

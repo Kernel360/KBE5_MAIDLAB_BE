@@ -27,13 +27,25 @@ public interface AdminManagerApi {
 	ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size);
 
+	// @Operation(summary = "계정 상태별 매니저 계정 조회", description = "상태별 계정 조회 API")
+	// @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
+	// 	@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
+	// 	@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
+	// ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(@RequestParam(defaultValue = "0") int page,
+	// 	@RequestParam(defaultValue = "10") int size, @RequestParam
+	// Status status);
+
 	@Operation(summary = "계정 상태별 매니저 계정 조회", description = "상태별 계정 조회 API")
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "10") int size, @RequestParam
-	Status status);
+	@GetMapping("/status")
+	ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size,
+		@RequestParam Status status,
+		@RequestParam(required = false) boolean sortByRating,
+		@RequestParam(required = false) Boolean isDescending);
 
 	@Operation(summary = "매니저 계정 상세 조회", description = "계정 상세 조회 API")
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
