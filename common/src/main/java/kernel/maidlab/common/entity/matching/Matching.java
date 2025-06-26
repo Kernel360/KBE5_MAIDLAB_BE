@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.common.entity.base.Base;
+import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.enums.Status;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,7 @@ import lombok.Setter;
 @Table(name = "matching")
 @Getter
 @NoArgsConstructor
-public class Matching extends Base {
+public class Matching extends TimeBase {
 
 	@Column
 	private Long reservationId;
