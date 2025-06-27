@@ -178,13 +178,15 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 		boolean isApproved = dto.getStatus(); // approved : true, rejected : false
 		if (isApproved) {
-			reservation.managerRespond(managerId);
-			reservationRepository.save(reservation);
+			reservation.managerRespondApproved(managerId);
+
 			matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId).getId());
 			// TODO : 수요자에게 알림 보내기 (예약 성공)
 		} else {
+			reservation.managerRespondRejected(managerId);
 			matchingService.changeStatus(reservationId, Status.REJECTED);
 		}
+		reservationRepository.save(reservation);
 	}
 
 	@Transactional

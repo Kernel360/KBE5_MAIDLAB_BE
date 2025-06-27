@@ -93,9 +93,14 @@ public class Reservation extends TimeBase {
 		this.status = Status.CANCELED;
 	}
 
-	public void managerRespond(Long managerId) {
+	public void managerRespondApproved(Long managerId) {
 		this.managerId = managerId;
 		this.status = Status.MATCHED;
+	}
+
+	public void managerRespondRejected(Long managerId) {
+		this.managerId = managerId;
+		this.status = Status.REJECTED;
 	}
 
 	private Reservation(Long managerId, Long consumerId, ServiceDetailType serviceDetailType,
