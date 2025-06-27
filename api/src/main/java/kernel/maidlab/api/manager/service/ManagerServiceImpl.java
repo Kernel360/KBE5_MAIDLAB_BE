@@ -152,7 +152,8 @@ public class ManagerServiceImpl implements ManagerService {
 			UserType.MANAGER,
 			manager.getProfileImage(),
 			manager.getName(),
-			isVerified
+			isVerified,
+			manager.getSocialType()
 		);
 
 		return ResponseDto.success(responseDto);
