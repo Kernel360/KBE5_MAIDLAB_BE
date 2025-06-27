@@ -1,5 +1,6 @@
 package kernel.maidlab.common.dto.manager.response;
 
+import kernel.maidlab.common.enums.SocialType;
 import kernel.maidlab.common.enums.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,5 +14,6 @@ public class MypageResponseDto {
 	private String profileImage;
 	private String name;
 	private Boolean isVerified;
+	private SocialType socialType;
 
 }
