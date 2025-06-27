@@ -7,7 +7,6 @@ import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.dto.board.request.BoardRequestDto;
 import kernel.maidlab.common.dto.board.request.BoardUpdateRequestDto;
-import kernel.maidlab.common.entity.base.Base;
 import kernel.maidlab.common.enums.BoardType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -76,7 +75,7 @@ public class Board extends TimeBase {
         this.content = content;
     }
 
-    public static Board createConsumerBoard(UserBase user, BoardRequestDto boardRequestDto){
+    public static Board createBoard(UserBase user, BoardRequestDto boardRequestDto){
 
         if (user instanceof Consumer) {
             return new Board(

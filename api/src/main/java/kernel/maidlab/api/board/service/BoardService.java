@@ -1,7 +1,6 @@
 package kernel.maidlab.api.board.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
 import kernel.maidlab.common.dto.board.request.BoardRequestDto;
 import kernel.maidlab.common.dto.board.request.BoardUpdateRequestDto;
 import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
@@ -13,8 +12,8 @@ import java.util.List;
 public interface BoardService {
 
 	// 수요자 게시판 글 생성
-	void createConsumerBoard(HttpServletRequest request,
-		BoardRequestDto boardRequestDto);
+	void createBoard(HttpServletRequest request,
+					 BoardRequestDto boardRequestDto);
 
 	// 수요자 게시글 전체 조회
 	List<BoardResponseDto> getConsumerBoardList(HttpServletRequest request);

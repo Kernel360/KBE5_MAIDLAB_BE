@@ -8,30 +8,23 @@ import kernel.maidlab.api.auth.jwt.JwtFilter;
 import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.dto.board.BoardQueryDto;
 import kernel.maidlab.common.dto.board.ImageDto;
-import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
 import kernel.maidlab.common.dto.board.request.BoardRequestDto;
 import kernel.maidlab.common.dto.board.request.BoardUpdateRequestDto;
 import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
 import kernel.maidlab.common.dto.board.response.BoardResponseDto;
-import kernel.maidlab.common.entity.board.Answer;
 import kernel.maidlab.common.entity.board.Board;
 import kernel.maidlab.common.entity.board.Image;
-import kernel.maidlab.api.board.repository.AnswerRepository;
 import kernel.maidlab.api.board.repository.BoardRepository;
 import kernel.maidlab.api.board.repository.ImageRepository;
-import kernel.maidlab.api.util.AuthUtil;
 import kernel.maidlab.common.enums.UserType;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,12 +37,13 @@ public class BoardServiceImpl implements BoardService {
 	private final ImageRepository imageRepository;
 
 	// 게시판 글 생성
-	public void createConsumerBoard(
+	public void createBoard(
 		HttpServletRequest request,
 		BoardRequestDto boardRequestDto) {
+
 		UserBase user = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 
-		Board board = Board.createConsumerBoard(user, boardRequestDto);
+		Board board = Board.createBoard(user, boardRequestDto);
 		boardRepository.save(board);
 
 		boardRequestDto.getImages()
