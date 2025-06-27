@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
@@ -33,7 +34,7 @@ public interface AdminReservationApi {
 		@RequestParam int page, @RequestParam int size);
 
 	@GetMapping("/{reservationId}")
-	ResponseEntity<ResponseDto<ReservationDetailResponseDto>> getReservation(HttpServletRequest request,
+	ResponseEntity<ResponseDto<AdminReservationDetailResponseDto>> getReservation(HttpServletRequest request,
 		@PathVariable Long reservationId);
 
 	@Operation(summary = "일별 예약 조회", description = "지정된 날짜별 예약 정보를 조회합니다.", security = @SecurityRequirement(name = "JWT"))
@@ -82,4 +83,14 @@ public interface AdminReservationApi {
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<Long>> todayReservation(HttpServletRequest request);
+
+
+
+	@GetMapping("/consumer/{id}")
+	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> consumerReservation(HttpServletRequest request,
+		@PathVariable Long id, @RequestParam int page, @RequestParam int size);
+
+	@GetMapping("/manager/{id}")
+	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> managerReservation(HttpServletRequest request,
+		@PathVariable Long id, @RequestParam int page, @RequestParam int size);
 }

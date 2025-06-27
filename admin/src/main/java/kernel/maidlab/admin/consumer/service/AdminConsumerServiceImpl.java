@@ -46,6 +46,9 @@ public class AdminConsumerServiceImpl implements AdminConsumerService{
 			.gender(consumer.getGender())
 			.address(consumer.getAddress())
 			.detailAddress(consumer.getDetailAddress())
+			.point(consumer.getPoint())
+			.socialType(consumer.getSocialType())
+			.isDeleted(consumer.getIsDeleted())
 			.build();
 	}
 

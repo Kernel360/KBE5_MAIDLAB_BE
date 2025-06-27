@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.ManagerResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
 import kernel.maidlab.common.enums.Status;
 
 @Tag(name = "Manager", description = "Manager API")
@@ -51,7 +52,7 @@ public interface AdminManagerApi {
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<ManagerResponseDto>> getManager(@PathVariable("managerId") Long managerId);
+	ResponseEntity<ResponseDto<AdminManagerResponseDto>> getManager(@PathVariable("managerId") Long managerId);
 
 	@PatchMapping("/{managerId}/approve")
 	@Operation(summary = "매니저 계정 생성 승인", description = "계정 승인 API")

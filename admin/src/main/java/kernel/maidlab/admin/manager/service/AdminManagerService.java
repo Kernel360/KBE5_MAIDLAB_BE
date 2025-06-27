@@ -6,10 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.ManagerResponseDto;
+import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
 import kernel.maidlab.common.enums.Status;
 
 public interface AdminManagerService {
-	ManagerResponseDto getManager(Long id);
+	AdminManagerResponseDto getManager(Long id);
 
 	@Transactional
 	void rejectManager(Long managerId);

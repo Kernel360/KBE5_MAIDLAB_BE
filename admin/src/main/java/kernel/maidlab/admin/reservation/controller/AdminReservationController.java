@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.reservation.service.AdminReservationService;
+import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
@@ -37,9 +38,9 @@ public class AdminReservationController implements AdminReservationApi {
 
 	@GetMapping("/{reservationId}")
 	@Override
-	public ResponseEntity<ResponseDto<ReservationDetailResponseDto>> getReservation(HttpServletRequest request,
+	public ResponseEntity<ResponseDto<AdminReservationDetailResponseDto>> getReservation(HttpServletRequest request,
 		@PathVariable Long reservationId) {
-		ReservationDetailResponseDto response = adminReservationsService.getReservationDetail(reservationId, request);
+		AdminReservationDetailResponseDto response = adminReservationsService.getReservationDetail(reservationId, request);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 
@@ -95,6 +96,20 @@ public class AdminReservationController implements AdminReservationApi {
 	@Override
 	public ResponseEntity<ResponseDto<Long>> todayReservation(HttpServletRequest request) {
 		return ResponseDto.success(adminReservationsService.getTodayReservation(request));
+	}
+
+	@GetMapping("/consumer/{id}")
+	@Override
+	public ResponseEntity<ResponseDto<List<ReservationResponseDto>>> consumerReservation(HttpServletRequest request,
+		@PathVariable Long id, @RequestParam int page, @RequestParam int size){
+		return ResponseDto.success(adminReservationsService.getConsumerReservation(request, id, page, size));
+	}
+
+	@GetMapping("/manager/{id}")
+	@Override
+	public ResponseEntity<ResponseDto<List<ReservationResponseDto>>> managerReservation(HttpServletRequest request,
+		@PathVariable Long id, @RequestParam int page, @RequestParam int size){
+		return ResponseDto.success(adminReservationsService.getManagerReservation(request, id, page, size));
 	}
 
 }

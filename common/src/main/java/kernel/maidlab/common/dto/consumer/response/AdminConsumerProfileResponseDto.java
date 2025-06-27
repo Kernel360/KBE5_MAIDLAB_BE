@@ -4,6 +4,7 @@ import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.Region;
+import kernel.maidlab.common.enums.SocialType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +24,9 @@ public class AdminConsumerProfileResponseDto {
     private Gender gender;
     private String address;
     private String detailAddress;
-
+    private Integer point;
+    private Boolean isDeleted;
+    private SocialType socialType;
 
     public static AdminConsumerProfileResponseDto getInstance(Consumer consumer){
 
@@ -34,7 +37,10 @@ public class AdminConsumerProfileResponseDto {
                 consumer.getBirth(),
                 consumer.getGender(),
                 consumer.getAddress(),
-                consumer.getDetailAddress()
+                consumer.getDetailAddress(),
+                consumer.getPoint(),
+                consumer.getIsDeleted(),
+                consumer.getSocialType()
         );
     }
 }

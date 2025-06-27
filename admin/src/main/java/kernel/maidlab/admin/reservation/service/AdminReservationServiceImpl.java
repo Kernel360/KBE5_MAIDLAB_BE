@@ -17,17 +17,20 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.admin.consumer.repository.AdminConsumerRepository;
 import kernel.maidlab.admin.manager.repository.AdminManagerRegionRepository;
 import kernel.maidlab.admin.manager.repository.AdminManagerRepository;
 import kernel.maidlab.admin.manager.repository.AdminRegionRepository;
 import kernel.maidlab.admin.reservation.repository.AdminReservationRepository;
 import kernel.maidlab.admin.reservation.repository.AdminServiceDetailTypeRepository;
 import kernel.maidlab.admin.reservation.repository.AdminSettlementRepository;
+import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminSettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
+import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.entity.manager.ManagerRegion;
 import kernel.maidlab.common.entity.reservation.Reservation;
@@ -43,10 +46,9 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 
 	private final AdminReservationRepository adminReservationRepository;
 	private final AdminManagerRepository adminManagerRepository;
-	private final AdminManagerRegionRepository adminManagerRegionRepository;
-	private final AdminRegionRepository adminRegionRepository;
 	private final AdminSettlementRepository adminSettlementRepository;
 	private final AdminServiceDetailTypeRepository adminServiceDetailTypeRepository;
+	private final AdminConsumerRepository adminConsumerRepository;
 
 	@Override
 	public List<ReservationResponseDto> adminReservations(HttpServletRequest request, int page, int size) {
@@ -67,33 +69,27 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 	}
 
 	@Override
-	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
+	public AdminReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
 		Reservation reservation = adminReservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		Manager manager = adminManagerRepository.findById(reservation.getManagerId())
-			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		String mangerUuid = manager.getUuid();
-		Long managerId = manager.getId();
-		List<ManagerRegion> managerRegions = adminManagerRegionRepository.findByManagerId(manager.getId());
-		List<String> regionNames = managerRegions.stream()
-			.map(mr -> adminRegionRepository.findById(mr.getRegionId().getId())
-				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR))
-				.getRegionName())
-			.collect(toList());
+		Optional<Manager> manager = adminManagerRepository.findById(reservation.getManagerId());
 
-		return ReservationDetailResponseDto.builder()
+		Optional<Consumer> consumer = adminConsumerRepository.findById(reservation.getConsumerId());
+
+
+		return AdminReservationDetailResponseDto.builder()
+			.id(reservationId)
+			.checkinTime(reservation.getCheckinTime())
+			.checkoutTime(reservation.getCheckoutTime())
+			.canceledAt(reservation.getCanceledAt())
+			.createdAt(reservation.getCreatedAt())
+			.updatedAt(reservation.getUpdatedAt())
 			.status(reservation.getStatus())
 			.serviceType(reservation.getServiceDetailType().getServiceType().toString())
 			.serviceDetailType(reservation.getServiceDetailType().getServiceDetailType())
 			.address(reservation.getAddress())
 			.addressDetail(reservation.getAddressDetail())
-			.managerUuId(mangerUuid)
-			.managerName(manager.getName())
-			.managerProfileImageUrl(manager.getProfileImage())
-			.managerAverageRate(manager.getAverageRate())
-			.managerRegion(regionNames)
-			.managerPhoneNumber(manager.getPhoneNumber())
 			.housingType(reservation.getHousingType())
 			.roomSize(reservation.getRoomSize())
 			.housingInformation(reservation.getHousingInformation())
@@ -104,6 +100,17 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 			.pet(reservation.getPet())
 			.specialRequest(reservation.getSpecialRequest())
 			.totalPrice(reservation.getTotalPrice())
+			.managerId(reservation.getManagerId())
+			.consumerId(reservation.getConsumerId())
+
+			.managerPhoneNumber(manager.get().getPhoneNumber())
+			.managerName(manager.get().getName())
+			.managerRate(manager.get().getAverageRate())
+			.managerProfileImage(manager.get().getProfileImage())
+
+			.consumerPhoneNumber(manager.get().getPhoneNumber())
+			.consumerName(consumer.get().getName())
+			.consumerProfileImage(consumer.get().getProfileImage())
 			.build();
 	}
 	@Override
@@ -197,5 +204,43 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 	public Long getTodayReservation(HttpServletRequest request) {
 		LocalDate today = LocalDate.now();
 		return adminReservationRepository.countByReservationDate(today);
+	}
+
+	@Override
+	public List<ReservationResponseDto> getConsumerReservation(HttpServletRequest request, Long consumerId, int page, int size) {
+
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+		return  adminReservationRepository.findAllByConsumerId(consumerId, pageable).stream()
+			.map(reservation -> ReservationResponseDto.builder()
+				.reservationId(reservation.getId())
+				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
+				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
+				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
+				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
+				.status(reservation.getStatus())
+				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
+				.totalPrice(reservation.getTotalPrice())
+				.build())
+			.toList();
+	}
+
+	@Override
+	public List<ReservationResponseDto> getManagerReservation(HttpServletRequest request, Long managerId, int page, int size) {
+
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+		return adminReservationRepository.findAllByManagerId(managerId, pageable).stream()
+			.map(reservation -> ReservationResponseDto.builder()
+				.reservationId(reservation.getId())
+				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
+				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
+				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
+				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
+				.status(reservation.getStatus())
+				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
+				.totalPrice(reservation.getTotalPrice())
+				.build())
+			.toList();
 	}
 }

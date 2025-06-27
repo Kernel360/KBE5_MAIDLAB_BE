@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.manager.repository.AdminManagerRepository;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.ManagerResponseDto;
+import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.enums.Status;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +25,11 @@ public class AdminManagerServiceImpl implements AdminManagerService {
 	private final AdminManagerRepository adminManagerRepository;
 
 	@Override
-	public ManagerResponseDto getManager(Long id) {
+	public AdminManagerResponseDto getManager(Long id) {
 		Manager manager = adminManagerRepository.findById(id).orElse(null);
 		Objects.requireNonNull(manager);
-		return ManagerResponseDto.builder()
-			.uuid(manager.getUuid())
+		return AdminManagerResponseDto.builder()
+			.id(manager.getId())
 			.phoneNumber(manager.getPhoneNumber())
 			.name(manager.getName())
 			.birth(manager.getBirth())
@@ -37,6 +38,11 @@ public class AdminManagerServiceImpl implements AdminManagerService {
 			.region(manager.getRegions())
 			.isVerified(manager.getIsVerified())
 			.isDeleted(manager.getIsDeleted())
+			.introduceText(manager.getIntroduceText())
+			.profileImage(manager.getProfileImage())
+			.socialType(manager.getSocialType())
+			.createdAt(manager.getCreatedAt())
+			.updatedAt(manager.getUpdatedAt())
 			.build();
 	}
 

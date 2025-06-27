@@ -14,6 +14,7 @@ import kernel.maidlab.admin.manager.service.AdminManagerService;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.ManagerResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import lombok.RequiredArgsConstructor;
@@ -50,8 +51,8 @@ public class AdminManagerController implements AdminManagerApi {
 
 	@GetMapping("/{managerId}")
 	@Override
-	public ResponseEntity<ResponseDto<ManagerResponseDto>> getManager(@PathVariable("managerId") Long managerId) {
-		ManagerResponseDto response = adminManagerService.getManager(managerId);
+	public ResponseEntity<ResponseDto<AdminManagerResponseDto>> getManager(@PathVariable("managerId") Long managerId) {
+		AdminManagerResponseDto response = adminManagerService.getManager(managerId);
 		return ResponseDto.success(response);
 	}
 
