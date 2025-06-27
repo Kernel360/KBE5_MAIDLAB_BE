@@ -21,6 +21,9 @@ public class BoardResponseDto {
 	private BoardType boardType;
 	private LocalDateTime createdAt;
 
+	private String answerContent;
+	private LocalDateTime answerCreatedAt;
+
 	// 정적 팩토리 메서드
 	public static BoardResponseDto from(BoardQueryDto boardQueryDto) {
 
@@ -31,17 +34,10 @@ public class BoardResponseDto {
 		boardDto.isAnswered = boardQueryDto.isAnswered();
 		boardDto.boardType = boardQueryDto.getBoardType();
 		boardDto.createdAt = boardQueryDto.getCreatedAt();
-		return boardDto;
-	}
 
-	public static BoardResponseDto fromBoard(Board board) {
+		boardDto.answerContent = boardQueryDto.getAnswerContent();
+		boardDto.answerCreatedAt = boardQueryDto.getAnswerCreatedAt();
 
-		BoardResponseDto boardDto = new BoardResponseDto();
-		boardDto.boardId = board.getId();
-		boardDto.title = board.getTitle();
-		boardDto.content = board.getContent();
-		boardDto.isAnswered = board.getIsAnswered();
-		boardDto.boardType = board.getBoardType();
 		return boardDto;
 	}
 }

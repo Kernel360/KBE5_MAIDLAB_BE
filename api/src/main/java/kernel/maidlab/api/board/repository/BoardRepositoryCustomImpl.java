@@ -8,6 +8,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import kernel.maidlab.common.dto.board.BoardQueryDto;
 import kernel.maidlab.common.dto.board.QBoardQueryDto;
 import kernel.maidlab.common.entity.board.Board;
+import kernel.maidlab.common.entity.board.QAnswer;
 import kernel.maidlab.common.entity.board.QBoard;
 import kernel.maidlab.common.enums.UserType;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
     @Override
     public List<BoardQueryDto> findAllByUserIdIsDeletedFalse(Long userId, UserType userType) {
         QBoard board = QBoard.board;
+        QAnswer answer = QAnswer.answer;
 
         BooleanExpression condition = (userType == UserType.CONSUMER)
                 ? board.consumer.id.eq(userId)
@@ -39,9 +41,12 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
                         board.content,
                         board.boardType,
                         board.isAnswered,
-                        board.createdAt
+                        board.createdAt,
+                        answer.content,
+                        answer.createdAt
                 ))
                 .from(board)
+                .leftJoin(answer).on(answer.board.eq(board))
                 .where(condition.and(notDeleted))
                 .fetch();
     }
