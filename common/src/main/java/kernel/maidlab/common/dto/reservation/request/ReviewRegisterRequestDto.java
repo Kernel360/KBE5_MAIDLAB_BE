@@ -1,6 +1,8 @@
 package kernel.maidlab.common.dto.reservation.request;
 
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -14,4 +16,5 @@ public class ReviewRegisterRequestDto {
 	private float rating;
 	private String comment;
 	private Boolean likes;
+	private List<String> keywords;
 }

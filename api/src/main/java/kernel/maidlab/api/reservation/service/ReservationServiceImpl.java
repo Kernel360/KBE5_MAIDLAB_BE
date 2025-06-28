@@ -68,32 +68,49 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	@Override
 	public void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request) {
-		UserType userType = authUtil.getUserType(request);
+		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+
 		Boolean isConsumerToManager = userType == UserType.CONSUMER;
 
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		Consumer consumer = consumerRepository.findById(reservation.getConsumerId())
-			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		Manager manager = managerRepository.findById(reservation.getManagerId())
-			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		if (userType == UserType.CONSUMER) {
+			Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+			Manager manager = managerRepository.findById(reservation.getManagerId())
+				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 			// 매니저 선호도 테이블 관리
 			if (dto.getLikes() != null) {
 				managerPreferenceRepository.save(new ManagerPreference(consumer, manager, dto.getLikes()));
 			}
 
 			// 매니저 평균 평점(average_rate) 관리
-			Long totalReviewedCnt = manager.getTotalReviewedCnt();
+			Long managerTotalReviewedCnt = manager.getTotalReviewedCnt();
 			Float averageRate = manager.getAverageRate();
-			if (totalReviewedCnt == 0) {
+			if (managerTotalReviewedCnt == 0) {
 				manager.updateAverageRate(dto.getRating());
 			} else {
-				Float newAverageRate = (totalReviewedCnt * averageRate + dto.getRating()) / (totalReviewedCnt + 1);
+				Float newAverageRate = (managerTotalReviewedCnt * averageRate + dto.getRating()) / (managerTotalReviewedCnt + 1);
 				manager.updateAverageRate(newAverageRate);
 			}
 			managerRepository.save(manager);
+
+		} else if (userType == UserType.MANAGER) {
+			Consumer consumer = consumerRepository.findById(reservation.getConsumerId())
+				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+
+			// 고객 평균 평점(average_rate) 관리
+			Long consumerTotalReviewedCnt = consumer.getTotalReviewedCnt();
+			Float averageRate = consumer.getAverageRate();
+			if (consumerTotalReviewedCnt == 0) {
+				consumer.updateAverageRate(dto.getRating());
+			} else {
+				Float newAverageRate = (consumerTotalReviewedCnt * averageRate + dto.getRating()) / (consumerTotalReviewedCnt + 1);
+				consumer.updateAverageRate(newAverageRate);
+			}
+			consumerRepository.save(consumer);
+		} else {
+			throw new ReservationException(ResponseType.INVALID_USER_TYPE);
 		}
 
 		// 리뷰 등록

@@ -60,6 +60,12 @@ public class Consumer extends TimeBase implements UserBase {
 	@Column(name = "point", nullable = false)
 	private Integer point;
 
+	@Column(name = "average_rate")
+	private Float averageRate;
+
+	@Column(name = "total_reviewed_cnt")
+	private Long totalReviewedCnt;
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "social_type")
 	private SocialType socialType;
@@ -77,6 +83,8 @@ public class Consumer extends TimeBase implements UserBase {
 		this.gender = gender;
 		this.birth = birth;
 		this.point = 0;
+		this.averageRate = 0.0F;
+		this.totalReviewedCnt = 0L;
 		this.isDeleted = false;
 	}
 
@@ -103,6 +111,11 @@ public class Consumer extends TimeBase implements UserBase {
 	public void deleteAccount() {
 		this.isDeleted = true;
 
+	}
+
+	public void updateAverageRate(Float averageRate) {
+		this.averageRate = averageRate;
+		this.totalReviewedCnt += 1;
 	}
 
 	public void createProfile(String profileImage, String address, String detailAddress){
