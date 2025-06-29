@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import kernel.maidlab.api.reservation.repository.*;
+import kernel.maidlab.common.entity.reservation.*;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,9 +26,6 @@ import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.common.entity.matching.Matching;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
-import kernel.maidlab.common.entity.reservation.Settlement;
-import kernel.maidlab.api.reservation.repository.ReviewRepository;
-import kernel.maidlab.api.reservation.repository.SettlementRepository;
 import kernel.maidlab.api.util.AuthUtil;
 import kernel.maidlab.common.enums.ServiceOptionType;
 import kernel.maidlab.common.exception.custom.ReservationException;
@@ -38,11 +37,6 @@ import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.entity.reservation.Reservation;
-import kernel.maidlab.common.entity.reservation.Review;
-import kernel.maidlab.common.entity.reservation.ServiceDetailType;
-import kernel.maidlab.api.reservation.repository.ReservationRepository;
-import kernel.maidlab.api.reservation.repository.ServiceDetailTypeRepository;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
@@ -64,6 +58,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ConsumerRepository consumerRepository;
 	private final ReviewRepository reviewRepository;
 	private final SettlementRepository settlementRepository;
+	private final ReviewKeywordRepository reviewKeywordRepository;
 
 	@Transactional
 	@Override
@@ -116,6 +111,14 @@ public class ReservationServiceImpl implements ReservationService {
 		// 리뷰 등록
 		Review review = Review.of(dto, reservation, isConsumerToManager);
 		reviewRepository.save(review);
+
+		// 키워드가 있으면 저장
+		if (dto.getKeywords() != null && !dto.getKeywords().isEmpty()) {
+			for (String keyword : dto.getKeywords()) {
+				ReviewKeyword reviewKeyword = new ReviewKeyword(review, keyword);
+				reviewKeywordRepository.save(reviewKeyword);
+			}
+		}
 	}
 
 	@Override
