@@ -10,7 +10,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "review_keyword")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReviewKeyword extends TimeBase {
+public class ReviewKeyword {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
 	// 리뷰 연관관계
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "review_id", nullable = false)
