@@ -25,7 +25,9 @@ import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/matching")
 @RestController
@@ -42,6 +44,7 @@ public class MatchingController implements MatchingApi {
 	@Override
 	public ResponseEntity<ResponseDto<List<RequestMatchingListResponseDto>>> getMatching(HttpServletRequest request,
 		@RequestParam int page, @RequestParam int size) {
+		log.info("Get matching request received with page: {}, size: {}", page, size);
 		List<RequestMatchingListResponseDto> response = matchingService.myMatching(request, page, size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
@@ -49,6 +52,7 @@ public class MatchingController implements MatchingApi {
 	@PostMapping("/matchmanager")
 	@Override
 	public ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> matchManagers(@RequestBody MatchingRequestDto dto) {
+		log.info("Match managers request received for managerChoose: {}", dto.getManagerChoose());
 		List<AvailableManagerResponseDto> AvailableManagers = matchingService.findAvailableManagers(dto);
 
 		// 후보군 작성을 위한 redis 설정으로 일단 일시중지
@@ -70,6 +74,7 @@ public class MatchingController implements MatchingApi {
 	@GetMapping("/preferencemanager")
 	@Override
 	public ResponseEntity<ResponseDto<List<LikedManagerResponseDto>>> preferenceManager(HttpServletRequest request) {
+		log.info("Get preference manager request received");
 		List<LikedManagerResponseDto> response = matchingService.preferenceManager(request);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
@@ -77,6 +82,7 @@ public class MatchingController implements MatchingApi {
 	@GetMapping("/previousmanager")
 	@Override
 	public ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> previousManager(HttpServletRequest request) {
+		log.info("Get previous manager request received");
 		Consumer consumer = consumerService.getConsumer(request);
 		List<AvailableManagerResponseDto> response = matchingService.previousManager(consumer);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
@@ -86,6 +92,7 @@ public class MatchingController implements MatchingApi {
 	@Override
 	public ResponseEntity<ResponseDto<String>> matchStart(@RequestParam Long reservation_id,
 		@RequestParam Long manager_id) {
+		log.info("Match start request received for reservationId: {}, managerId: {}", reservation_id, manager_id);
 		MatchingResponseDto matchingResponseDto = MatchingResponseDto.builder()
 			.managerId(manager_id)
 			.reservationId(reservation_id)

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Log Monitor</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #2d2d2d;
+            border-radius: 5px;
+        }
+        
+        .controls button {
+            margin-right: 10px;
+            padding: 8px 16px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .controls button:hover {
+            background-color: #005999;
+        }
+        
+        .controls button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-left: 20px;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+        
+        .status.connected {
+            background-color: #28a745;
+        }
+        
+        .status.disconnected {
+            background-color: #dc3545;
+        }
+        
+        .log-container {
+            background-color: #000;
+            border: 1px solid #333;
+            border-radius: 5px;
+            height: 600px;
+            overflow-y: auto;
+            padding: 15px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .log-entry {
+            margin-bottom: 2px;
+            word-wrap: break-word;
+        }
+        
+        .log-entry.update {
+            color: #90EE90;
+        }
+        
+        .log-entry.initial {
+            color: #87CEEB;
+        }
+        
+        .log-entry.error {
+            color: #FF6B6B;
+        }
+        
+        .auto-scroll {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Real-time Log Monitor</h1>
+        </div>
+        
+        <div class="controls">
+            <button id="connectBtn">Connect</button>
+            <button id="disconnectBtn" disabled>Disconnect</button>
+            <button id="clearBtn">Clear</button>
+            <button id="fullLogBtn" disabled>Get Full Log</button>
+            <button id="tailLogBtn" disabled>Get Last 50 Lines</button>
+            
+            <span id="status" class="status disconnected">Disconnected</span>
+            
+            <label class="auto-scroll">
+                <input type="checkbox" id="autoScroll" checked> Auto-scroll
+            </label>
+        </div>
+        
+        <div id="logContainer" class="log-container">
+            <div class="log-entry">Waiting for connection...</div>
+        </div>
+    </div>
+
+    <script>
+        let websocket = null;
+        let autoScroll = true;
+        
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const fullLogBtn = document.getElementById('fullLogBtn');
+        const tailLogBtn = document.getElementById('tailLogBtn');
+        const status = document.getElementById('status');
+        const logContainer = document.getElementById('logContainer');
+        const autoScrollCheckbox = document.getElementById('autoScroll');
+        
+        autoScrollCheckbox.addEventListener('change', function() {
+            autoScroll = this.checked;
+        });
+        
+        connectBtn.addEventListener('click', connect);
+        disconnectBtn.addEventListener('click', disconnect);
+        clearBtn.addEventListener('click', clearLog);
+        fullLogBtn.addEventListener('click', () => sendCommand('get_full_log'));
+        tailLogBtn.addEventListener('click', () => sendCommand('get_tail_log'));
+        
+        function connect() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/admin/logs/stream`;
+            
+            websocket = new WebSocket(wsUrl);
+            
+            websocket.onopen = function() {
+                updateStatus('connected', 'Connected');
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                fullLogBtn.disabled = false;
+                tailLogBtn.disabled = false;
+            };
+            
+            websocket.onmessage = function(event) {
+                try {
+                    const message = JSON.parse(event.data);
+                    displayLogMessage(message);
+                } catch (e) {
+                    console.error('Error parsing message:', e);
+                }
+            };
+            
+            websocket.onclose = function() {
+                updateStatus('disconnected', 'Disconnected');
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                fullLogBtn.disabled = true;
+                tailLogBtn.disabled = true;
+            };
+            
+            websocket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                addLogEntry('WebSocket error occurred', 'error');
+            };
+        }
+        
+        function disconnect() {
+            if (websocket) {
+                websocket.close();
+            }
+        }
+        
+        function sendCommand(command) {
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                websocket.send(command);
+            }
+        }
+        
+        function updateStatus(className, text) {
+            status.className = `status ${className}`;
+            status.textContent = text;
+        }
+        
+        function displayLogMessage(message) {
+            const content = message.content || '';
+            const type = message.type || 'update';
+            
+            if (type === 'initial' || type === 'full' || type === 'tail') {
+                // Replace entire content
+                logContainer.innerHTML = '';
+                const lines = content.split('\n');
+                lines.forEach(line => {
+                    if (line.trim()) {
+                        addLogEntry(line, type);
+                    }
+                });
+            } else if (type === 'update') {
+                // Append new content
+                const lines = content.split('\n');
+                lines.forEach(line => {
+                    if (line.trim()) {
+                        addLogEntry(line, type);
+                    }
+                });
+            } else if (type === 'error') {
+                addLogEntry(content, 'error');
+            }
+            
+            if (autoScroll) {
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }
+        }
+        
+        function addLogEntry(text, type = 'update') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = text;
+            logContainer.appendChild(entry);
+        }
+        
+        function clearLog() {
+            logContainer.innerHTML = '<div class="log-entry">Log cleared...</div>';
+        }
+        
+        // Auto-connect on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Uncomment the line below to auto-connect
+            // connect();
+        });
+    </script>
+</body>
+</html>

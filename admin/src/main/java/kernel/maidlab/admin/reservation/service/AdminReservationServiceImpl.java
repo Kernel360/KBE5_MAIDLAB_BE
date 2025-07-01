@@ -1,13 +1,13 @@
 package kernel.maidlab.admin.reservation.service;
 
-import static java.util.stream.Collectors.*;
-
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,25 +18,24 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.admin.consumer.repository.AdminConsumerRepository;
-import kernel.maidlab.admin.manager.repository.AdminManagerRegionRepository;
 import kernel.maidlab.admin.manager.repository.AdminManagerRepository;
-import kernel.maidlab.admin.manager.repository.AdminRegionRepository;
 import kernel.maidlab.admin.reservation.repository.AdminReservationRepository;
+import kernel.maidlab.admin.reservation.repository.AdminReviewRepository;
 import kernel.maidlab.admin.reservation.repository.AdminServiceDetailTypeRepository;
 import kernel.maidlab.admin.reservation.repository.AdminSettlementRepository;
+import kernel.maidlab.api.reservation.repository.ReviewRepository;
 import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminSettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.entity.manager.ManagerRegion;
 import kernel.maidlab.common.entity.reservation.Reservation;
 import kernel.maidlab.common.entity.reservation.ServiceDetailType;
 import kernel.maidlab.common.entity.reservation.Settlement;
 import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.exception.custom.ReservationException;
 import lombok.RequiredArgsConstructor;
 
@@ -49,6 +48,7 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 	private final AdminSettlementRepository adminSettlementRepository;
 	private final AdminServiceDetailTypeRepository adminServiceDetailTypeRepository;
 	private final AdminConsumerRepository adminConsumerRepository;
+	private final AdminReviewRepository adminReviewRepository;
 
 	@Override
 	public List<ReservationResponseDto> adminReservations(HttpServletRequest request, int page, int size) {
@@ -192,6 +192,7 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 
 		return new SettlementResponseDto(
 			settlement.get().getId(),
+			settlement.get().getReservationId(),
 			settlement.get().getServiceType(),
 			adminServiceDetailTypeRepository.findById(settlement.get().getServiceDetailTypeId()).get().getServiceDetailType(),
 			settlement.get().getStatus(),
@@ -242,5 +243,51 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 				.totalPrice(reservation.getTotalPrice())
 				.build())
 			.toList();
+	}
+
+	@Override
+	public Long getCountByConsumerId(HttpServletRequest request, Long consumerId) {
+		return adminReservationRepository.countByConsumerId(consumerId);
+	}
+
+	@Override
+	public BigDecimal getTotalPaidMoney(HttpServletRequest request, Long consumerId) {
+		BigDecimal total = adminReservationRepository.sumTotalPrice(consumerId);
+		if (total != null)
+			return total;
+		else return BigDecimal.ZERO;
+	}
+
+	@Override
+	public BigDecimal getReviewedPercent(HttpServletRequest request, Long consumerId) {
+		Long countReview = adminReviewRepository.countByConsumerIdAndIsConsumerToManager(consumerId, true);
+		Long completed = adminReservationRepository.countByConsumerIdAndStatus(consumerId, Status.COMPLETED);
+		if (completed == 0 || countReview == 0) {
+			return BigDecimal.ZERO;
+		}
+
+		return BigDecimal.valueOf(completed/countReview).multiply(BigDecimal.valueOf(100));
+	}
+
+	@Override
+	public BigDecimal getManagerReviewedPercent(HttpServletRequest request, Long managerId) {
+		Long countReview = adminReviewRepository.countByManagerIdAndIsConsumerToManager(managerId, false);
+		Long completed = adminReservationRepository.countByManagerIdAndStatus(managerId, Status.COMPLETED);
+		if (completed == 0 || countReview == 0) {
+			return BigDecimal.ZERO;
+		}
+
+		return BigDecimal.valueOf(countReview).divide(BigDecimal.valueOf(completed), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+	}
+
+	@Override
+	public Long getActiveReservationCountByManagerId(HttpServletRequest request, Long managerId) {
+		Set<Status> activeStatuses = Set.of(Status.MATCHED, Status.WORKING, Status.COMPLETED);
+		return adminReservationRepository.countByManagerIdAndStatusIn(managerId, activeStatuses);
+	}
+
+	@Override
+	public BigDecimal getTotalSettlementAmountByManagerId(HttpServletRequest request, Long managerId) {
+		return adminSettlementRepository.sumAmountByManagerId(managerId);
 	}
 }

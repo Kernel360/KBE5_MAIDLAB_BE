@@ -1,5 +1,6 @@
 package kernel.maidlab.admin.reservation.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -7,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 
@@ -34,4 +34,16 @@ public interface AdminReservationService {
 	List<ReservationResponseDto> getConsumerReservation(HttpServletRequest request, Long id, int page, int size);
 
 	List<ReservationResponseDto> getManagerReservation(HttpServletRequest request, Long id, int page, int size);
+
+	Long getCountByConsumerId(HttpServletRequest request, Long ConsumerId);
+
+	BigDecimal getTotalPaidMoney(HttpServletRequest request, Long consumerId);
+
+	BigDecimal getReviewedPercent(HttpServletRequest request, Long consumerId);
+
+	Long getActiveReservationCountByManagerId(HttpServletRequest request, Long managerId);
+
+	BigDecimal getTotalSettlementAmountByManagerId(HttpServletRequest request, Long managerId);
+
+	BigDecimal getManagerReviewedPercent(HttpServletRequest request, Long managerId);
 }

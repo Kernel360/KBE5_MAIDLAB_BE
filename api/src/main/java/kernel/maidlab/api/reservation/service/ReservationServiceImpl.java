@@ -300,7 +300,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 			totalAmount = totalAmount.add(settlement.getAmount());
 
-			responseList.add(new SettlementResponseDto(settlement.getId(), settlement.getServiceType(),
+			responseList.add(new SettlementResponseDto(settlement.getId(), settlement.getReservationId(), settlement.getServiceType(),
 				detailType.getServiceDetailType(), settlement.getStatus(), settlement.getPlatformFee(),
 				settlement.getAmount()));
 

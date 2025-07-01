@@ -26,6 +26,7 @@ public class S3Controller {
 	@PostMapping("/presigned-urls")
 	public ResponseEntity<ResponseDto<List<PresignedFileResponseDto>>> getPresignedUrls(
 		@RequestBody FileNamesRequestDto request) {
+		log.info("Presigned URLs request received for {} files", request.getFilenames().size());
 		List<PresignedFileResponseDto> presignedUrls = s3Service.uploadFile(
 			request.getFilenames(),
 			"uploads"
