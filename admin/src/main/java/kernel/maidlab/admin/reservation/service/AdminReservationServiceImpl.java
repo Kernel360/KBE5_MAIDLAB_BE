@@ -185,6 +185,7 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 
 		return new SettlementResponseDto(
 			settlement.get().getId(),
+			settlement.get().getReservationId(),
 			settlement.get().getServiceType(),
 			adminServiceDetailTypeRepository.findById(settlement.get().getServiceDetailTypeId()).get().getServiceDetailType(),
 			settlement.get().getStatus(),

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import kernel.maidlab.api.reservation.repository.*;
+import kernel.maidlab.common.entity.reservation.*;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,25 +26,18 @@ import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.common.entity.matching.Matching;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
-import kernel.maidlab.common.entity.reservation.Settlement;
-import kernel.maidlab.api.reservation.repository.ReviewRepository;
-import kernel.maidlab.api.reservation.repository.SettlementRepository;
 import kernel.maidlab.api.util.AuthUtil;
 import kernel.maidlab.common.enums.ServiceOptionType;
 import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
+import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
 import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.entity.reservation.Reservation;
-import kernel.maidlab.common.entity.reservation.Review;
-import kernel.maidlab.common.entity.reservation.ServiceDetailType;
-import kernel.maidlab.api.reservation.repository.ReservationRepository;
-import kernel.maidlab.api.reservation.repository.ServiceDetailTypeRepository;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
@@ -64,41 +59,67 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ConsumerRepository consumerRepository;
 	private final ReviewRepository reviewRepository;
 	private final SettlementRepository settlementRepository;
+	private final ReviewKeywordRepository reviewKeywordRepository;
 
 	@Transactional
 	@Override
 	public void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request) {
-		UserType userType = authUtil.getUserType(request);
+		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+
 		Boolean isConsumerToManager = userType == UserType.CONSUMER;
 
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		Consumer consumer = consumerRepository.findById(reservation.getConsumerId())
-			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		Manager manager = managerRepository.findById(reservation.getManagerId())
-			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		if (userType == UserType.CONSUMER) {
+			Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+			Manager manager = managerRepository.findById(reservation.getManagerId())
+				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 			// 매니저 선호도 테이블 관리
 			if (dto.getLikes() != null) {
 				managerPreferenceRepository.save(new ManagerPreference(consumer, manager, dto.getLikes()));
 			}
 
 			// 매니저 평균 평점(average_rate) 관리
-			Long totalReviewedCnt = manager.getTotalReviewedCnt();
+			Long managerTotalReviewedCnt = manager.getTotalReviewedCnt();
 			Float averageRate = manager.getAverageRate();
-			if (totalReviewedCnt == 0) {
+			if (managerTotalReviewedCnt == 0) {
 				manager.updateAverageRate(dto.getRating());
 			} else {
-				Float newAverageRate = (totalReviewedCnt * averageRate + dto.getRating()) / (totalReviewedCnt + 1);
+				Float newAverageRate = (managerTotalReviewedCnt * averageRate + dto.getRating()) / (managerTotalReviewedCnt + 1);
 				manager.updateAverageRate(newAverageRate);
 			}
 			managerRepository.save(manager);
+
+		} else if (userType == UserType.MANAGER) {
+			Consumer consumer = consumerRepository.findById(reservation.getConsumerId())
+				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+
+			// 고객 평균 평점(average_rate) 관리
+			Long consumerTotalReviewedCnt = consumer.getTotalReviewedCnt();
+			Float averageRate = consumer.getAverageRate();
+			if (consumerTotalReviewedCnt == 0) {
+				consumer.updateAverageRate(dto.getRating());
+			} else {
+				Float newAverageRate = (consumerTotalReviewedCnt * averageRate + dto.getRating()) / (consumerTotalReviewedCnt + 1);
+				consumer.updateAverageRate(newAverageRate);
+			}
+			consumerRepository.save(consumer);
+		} else {
+			throw new ReservationException(ResponseType.INVALID_USER_TYPE);
 		}
 
 		// 리뷰 등록
 		Review review = Review.of(dto, reservation, isConsumerToManager);
 		reviewRepository.save(review);
+
+		// 키워드가 있으면 저장
+		if (dto.getKeywords() != null && !dto.getKeywords().isEmpty()) {
+			for (String keyword : dto.getKeywords()) {
+				ReviewKeyword reviewKeyword = new ReviewKeyword(review, keyword);
+				reviewKeywordRepository.save(reviewKeyword);
+			}
+		}
 	}
 
 	@Override
@@ -132,7 +153,14 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	@Override
 	public void createReservation(ReservationRequestDto dto, HttpServletRequest request) {
-		Long consumerId = authUtil.getConsumer(request).getId();
+		// 매칭된 매니저 존재 확인
+		if (dto.getManagerUuId().isEmpty() || dto.getManagerUuId().isBlank()){
+			throw new ReservationException(ResponseType.AVAILABLE_MANAGER_DOES_NOT_EXIST);
+		}
+
+		Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		Long consumerId = consumer.getId();
+
 
 		// 결제 검증 로직(애플리케이션 상용 전 true 고정)
 		boolean payValid = true;
@@ -186,6 +214,14 @@ public class ReservationServiceImpl implements ReservationService {
 			reservation.managerRespondRejected(managerId);
 			matchingService.changeStatus(reservationId, Status.REJECTED);
 		}
+		reservationRepository.save(reservation);
+	}
+	@Transactional
+	@Override
+	public void pay(PaymentRequestDto dto, HttpServletRequest request){
+		Reservation reservation = reservationRepository.findById(dto.getReservationId())
+				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+		reservation.pay();
 		reservationRepository.save(reservation);
 	}
 
@@ -300,7 +336,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 			totalAmount = totalAmount.add(settlement.getAmount());
 
-			responseList.add(new SettlementResponseDto(settlement.getId(), settlement.getServiceType(),
+			responseList.add(new SettlementResponseDto(settlement.getId(), settlement.getReservationId(), settlement.getServiceType(),
 				detailType.getServiceDetailType(), settlement.getStatus(), settlement.getPlatformFee(),
 				settlement.getAmount()));
 

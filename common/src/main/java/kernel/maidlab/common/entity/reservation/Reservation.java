@@ -78,6 +78,10 @@ public class Reservation extends TimeBase {
 	@Column(name = "checkout_time")
 	private LocalDateTime checkoutTime;
 
+	public void pay(){
+		this.status = Status.PAID;
+	}
+
 	public void checkin(LocalDateTime checkinTime) {
 		this.checkinTime = checkinTime;
 		this.status = Status.WORKING;

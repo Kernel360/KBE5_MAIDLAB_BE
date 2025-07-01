@@ -18,6 +18,7 @@ public enum ResponseType {
 	ALREADY_CHECKED_IN("AC", "Already checked in.",HttpStatus.BAD_REQUEST),
 	ALREADY_CHECKED_OUT("AC", "Already checked out.",HttpStatus.BAD_REQUEST),
 	ALREADY_WORKING_OR_COMPLETED("AWC", "Already working or completed.",HttpStatus.BAD_REQUEST),
+	INVALID_USER_TYPE("IUT", "Invalid user_type or None user_type.",HttpStatus.BAD_REQUEST),
 
 	// 401
 	AUTHORIZATION_FAILED("AF", "Authorization Failed.", HttpStatus.UNAUTHORIZED),

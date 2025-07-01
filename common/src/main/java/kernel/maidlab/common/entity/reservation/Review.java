@@ -36,12 +36,8 @@ public class Review extends TimeBase {
 	@JoinColumn(name = "service_detail_type_id", nullable = false)
 	private ServiceDetailType serviceDetailType;
 
-	@Column(name = "review_date", nullable = false)
-	private LocalDateTime reviewDate;
-
 	@Column(name = "is_consumer_to_manager", nullable = false)
 	private Boolean isConsumerToManager;
-
 
 	private Review(Long reservationId, Long managerId, Long consumerId, float rating, String comment,
 		ServiceDetailType serviceType, Boolean isConsumerToManager ) {
@@ -52,12 +48,6 @@ public class Review extends TimeBase {
 		this.comment = comment;
 		this.serviceDetailType = serviceType;
 		this.isConsumerToManager = isConsumerToManager;
-	}
-	@PrePersist
-	public void prePersist() {
-		if (reviewDate == null) {
-			this.reviewDate = LocalDateTime.now();
-		}
 	}
 
 	public static Review of(ReviewRegisterRequestDto dto, Reservation reservation, Boolean isConsumerToManager) {
