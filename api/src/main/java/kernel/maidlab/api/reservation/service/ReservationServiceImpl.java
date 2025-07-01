@@ -152,7 +152,14 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	@Override
 	public void createReservation(ReservationRequestDto dto, HttpServletRequest request) {
-		Long consumerId = authUtil.getConsumer(request).getId();
+		// 매칭된 매니저 존재 확인
+		if (dto.getManagerUuId().isEmpty() || dto.getManagerUuId().isBlank()){
+			throw new ReservationException(ResponseType.AVAILABLE_MANAGER_DOES_NOT_EXIST);
+		}
+
+		Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		Long consumerId = consumer.getId();
+
 
 		// 결제 검증 로직(애플리케이션 상용 전 true 고정)
 		boolean payValid = true;
@@ -320,7 +327,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 			totalAmount = totalAmount.add(settlement.getAmount());
 
-			responseList.add(new SettlementResponseDto(settlement.getId(), settlement.getServiceType(),
+			responseList.add(new SettlementResponseDto(settlement.getId(), settlement.getReservationId(), settlement.getServiceType(),
 				detailType.getServiceDetailType(), settlement.getStatus(), settlement.getPlatformFee(),
 				settlement.getAmount()));
 
