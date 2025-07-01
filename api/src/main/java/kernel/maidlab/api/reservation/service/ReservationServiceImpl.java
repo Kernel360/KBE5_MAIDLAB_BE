@@ -31,6 +31,7 @@ import kernel.maidlab.common.enums.ServiceOptionType;
 import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
+import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
 import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
@@ -213,6 +214,14 @@ public class ReservationServiceImpl implements ReservationService {
 			reservation.managerRespondRejected(managerId);
 			matchingService.changeStatus(reservationId, Status.REJECTED);
 		}
+		reservationRepository.save(reservation);
+	}
+	@Transactional
+	@Override
+	public void pay(PaymentRequestDto dto, HttpServletRequest request){
+		Reservation reservation = reservationRepository.findById(dto.getReservationId())
+				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+		reservation.pay();
 		reservationRepository.save(reservation);
 	}
 

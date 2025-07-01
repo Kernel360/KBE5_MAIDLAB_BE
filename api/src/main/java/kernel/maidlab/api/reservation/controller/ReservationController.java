@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
 import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
@@ -32,6 +33,13 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/reservations")
 public class ReservationController implements ReservationApi {
 	private final ReservationService reservationService;
+
+	@Override
+	@PostMapping("/payment")
+	public ResponseEntity<ResponseDto<String>> payment(@RequestBody PaymentRequestDto dto, HttpServletRequest request){
+		reservationService.pay(dto, request);
+		return ResponseDto.success(ResponseType.SUCCESS, "결제 완료");
+	}
 
 	@Override
 	@GetMapping

@@ -3,6 +3,7 @@ package kernel.maidlab.api.reservation.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
 import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
@@ -83,6 +85,9 @@ public interface ReservationApi {
 	})
 	ResponseEntity<ResponseDto<String>> managerResponseToReservation(@PathVariable Long reservationId,
 		@RequestBody ReservationIsApprovedRequestDto dto, HttpServletRequest request);
+
+	@Operation(summary = "결제", description = "임시 결제 로직", security = @SecurityRequirement(name = "JWT"))
+	ResponseEntity<ResponseDto<String>> payment(@RequestBody PaymentRequestDto dto, HttpServletRequest request);
 
 	@Operation(summary = "Check-In", description = "현장 체크인 API", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses(value = {

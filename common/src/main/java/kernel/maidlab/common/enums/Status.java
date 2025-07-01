@@ -9,6 +9,7 @@ public enum Status {
 	APPROVED("승인"),
 	REJECTED("거절"),
 	MATCHED("매칭완료"),
+	PAID("결제완료"),
 	WORKING("작업중"),
 	CANCELED("취소"),
 	FAILURE("실패"),

@@ -4,17 +4,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
+import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
 import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
-import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
-import kernel.maidlab.common.entity.reservation.Reservation;
 
 public interface ReservationService {
 	void createReservation(ReservationRequestDto dto, HttpServletRequest request);
@@ -25,6 +22,8 @@ public interface ReservationService {
 
 	void managerResponseToReservation(Long reservationId, ReservationIsApprovedRequestDto dto,
 		HttpServletRequest request);
+
+	void pay(PaymentRequestDto dto, HttpServletRequest request);
 
 	void checkin(Long reservationId, CheckInOutRequestDto dto, HttpServletRequest request);
 
@@ -37,6 +36,4 @@ public interface ReservationService {
 	void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request);
 
 	WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate);
-
-	// Reservation findById(Long reservationId);
 }
