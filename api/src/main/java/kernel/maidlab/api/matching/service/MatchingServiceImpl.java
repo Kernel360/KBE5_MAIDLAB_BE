@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -94,6 +95,24 @@ public class MatchingServiceImpl implements MatchingService {
 	public List<AvailableManagerResponseDto> previousManager(Consumer consumer) {
 		return managerService.previousManagers(consumer);
 	}
+
+	@Scheduled(fixedRate = 60000) // 1분마다 실행
+	@Transactional
+	public void rejectExpiredPendingMatching() {
+		LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(10);
+		int updatedCount = matchingRepository.bulkExpirePendingMatching(
+			Status.REJECTED,
+			Status.PENDING,
+			expiredTime
+		);
+
+		if (updatedCount > 0) {
+			System.out.println("만료된 매칭 " + updatedCount + "건 상태 변경됨");
+		}else {
+			System.out.println("nothing to change");
+		}
+	}
+
 
 	private String extractGuFromAddress(String address) {
 		// "구" 단위 추출 (예: "서울시 강남구 역삼동" -> "강남구")

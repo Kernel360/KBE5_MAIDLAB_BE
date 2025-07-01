@@ -1,5 +1,6 @@
 package kernel.maidlab.admin.reservation.controller;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,17 +15,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.reservation.service.AdminReservationService;
+import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/reservations")
+@Slf4j
 public class AdminReservationController implements AdminReservationApi {
 	private final AdminReservationService adminReservationsService;
 
@@ -37,9 +40,9 @@ public class AdminReservationController implements AdminReservationApi {
 
 	@GetMapping("/{reservationId}")
 	@Override
-	public ResponseEntity<ResponseDto<ReservationDetailResponseDto>> getReservation(HttpServletRequest request,
+	public ResponseEntity<ResponseDto<AdminReservationDetailResponseDto>> getReservation(HttpServletRequest request,
 		@PathVariable Long reservationId) {
-		ReservationDetailResponseDto response = adminReservationsService.getReservationDetail(reservationId, request);
+		AdminReservationDetailResponseDto response = adminReservationsService.getReservationDetail(reservationId, request);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 
@@ -96,5 +99,57 @@ public class AdminReservationController implements AdminReservationApi {
 	public ResponseEntity<ResponseDto<Long>> todayReservation(HttpServletRequest request) {
 		return ResponseDto.success(adminReservationsService.getTodayReservation(request));
 	}
+
+	@GetMapping("/consumer/{id}")
+	@Override
+	public ResponseEntity<ResponseDto<List<ReservationResponseDto>>> consumerReservation(HttpServletRequest request,
+		@PathVariable Long id, @RequestParam int page, @RequestParam int size){
+		return ResponseDto.success(adminReservationsService.getConsumerReservation(request, id, page, size));
+	}
+
+	@GetMapping("/manager/{id}")
+	@Override
+	public ResponseEntity<ResponseDto<List<ReservationResponseDto>>> managerReservation(HttpServletRequest request,
+		@PathVariable Long id, @RequestParam int page, @RequestParam int size){
+		return ResponseDto.success(adminReservationsService.getManagerReservation(request, id, page, size));
+	}
+
+	@GetMapping("/reservationcount/{consumerId}")
+	@Override
+	public ResponseEntity<ResponseDto<Long>> reservationCount(HttpServletRequest request, @PathVariable Long consumerId) {
+		return ResponseDto.success(ResponseType.SUCCESS, adminReservationsService.getCountByConsumerId(request, consumerId));
+	}
+
+	@GetMapping("/totalpaidmoney/{consumerId}")
+	@Override
+	public ResponseEntity<ResponseDto<BigDecimal>> totalPaidMoney(HttpServletRequest request, @PathVariable Long consumerId) {
+		return ResponseDto.success(ResponseType.SUCCESS, adminReservationsService.getTotalPaidMoney(request, consumerId));
+	}
+
+	@GetMapping("/reviewedpercent/{consumerId}")
+	@Override
+	public ResponseEntity<ResponseDto<BigDecimal>> consumerReviewedPercent(HttpServletRequest request, @PathVariable Long consumerId) {
+		return ResponseDto.success(ResponseType.SUCCESS, adminReservationsService.getReviewedPercent(request, consumerId));
+	}
+
+	@GetMapping("/matchedcount/{managerId}")
+	@Override
+	public ResponseEntity<ResponseDto<Long>> managerActiveReservationCount(HttpServletRequest request, @PathVariable Long managerId) {
+		return ResponseDto.success(ResponseType.SUCCESS, adminReservationsService.getActiveReservationCountByManagerId(request, managerId));
+	}
+
+	@GetMapping("/manager/settlementsum/{managerId}")
+	@Override
+	public ResponseEntity<ResponseDto<BigDecimal>> managerSettlementSum(HttpServletRequest request, @PathVariable Long managerId) {
+		return ResponseDto.success(ResponseType.SUCCESS, adminReservationsService.getTotalSettlementAmountByManagerId(request, managerId));
+	}
+
+	@GetMapping("/managerreviewedpercent/{managerId}")
+	@Override
+	public ResponseEntity<ResponseDto<BigDecimal>> managerReviewedPercent(HttpServletRequest request,
+		@PathVariable Long managerId) {
+		return ResponseDto.success(ResponseType.SUCCESS, adminReservationsService.getManagerReviewedPercent(request, managerId));
+	}
+
 
 }

@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.ManagerResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
 import kernel.maidlab.common.enums.Status;
 
 @Tag(name = "Manager", description = "Manager API")
@@ -27,19 +28,31 @@ public interface AdminManagerApi {
 	ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size);
 
+	// @Operation(summary = "계정 상태별 매니저 계정 조회", description = "상태별 계정 조회 API")
+	// @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
+	// 	@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
+	// 	@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
+	// ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(@RequestParam(defaultValue = "0") int page,
+	// 	@RequestParam(defaultValue = "10") int size, @RequestParam
+	// Status status);
+
 	@Operation(summary = "계정 상태별 매니저 계정 조회", description = "상태별 계정 조회 API")
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "10") int size, @RequestParam
-	Status status);
+	@GetMapping("/status")
+	ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size,
+		@RequestParam Status status,
+		@RequestParam(required = false) boolean sortByRating,
+		@RequestParam(required = false) Boolean isDescending);
 
 	@Operation(summary = "매니저 계정 상세 조회", description = "계정 상세 조회 API")
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<ManagerResponseDto>> getManager(@PathVariable("managerId") Long managerId);
+	ResponseEntity<ResponseDto<AdminManagerResponseDto>> getManager(@PathVariable("managerId") Long managerId);
 
 	@PatchMapping("/{managerId}/approve")
 	@Operation(summary = "매니저 계정 생성 승인", description = "계정 승인 API")

@@ -1,5 +1,6 @@
 package kernel.maidlab.admin.reservation.controller;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,8 +17,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
@@ -33,7 +34,7 @@ public interface AdminReservationApi {
 		@RequestParam int page, @RequestParam int size);
 
 	@GetMapping("/{reservationId}")
-	ResponseEntity<ResponseDto<ReservationDetailResponseDto>> getReservation(HttpServletRequest request,
+	ResponseEntity<ResponseDto<AdminReservationDetailResponseDto>> getReservation(HttpServletRequest request,
 		@PathVariable Long reservationId);
 
 	@Operation(summary = "일별 예약 조회", description = "지정된 날짜별 예약 정보를 조회합니다.", security = @SecurityRequirement(name = "JWT"))
@@ -82,4 +83,43 @@ public interface AdminReservationApi {
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<Long>> todayReservation(HttpServletRequest request);
+
+
+
+	@GetMapping("/consumer/{id}")
+	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> consumerReservation(HttpServletRequest request,
+		@PathVariable Long id, @RequestParam int page, @RequestParam int size);
+
+	@GetMapping("/manager/{id}")
+	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> managerReservation(HttpServletRequest request,
+		@PathVariable Long id, @RequestParam int page, @RequestParam int size);
+
+	@GetMapping("/reservationcount/{consumerId}")
+	ResponseEntity<ResponseDto<Long>> reservationCount(HttpServletRequest request, @PathVariable Long consumerId);
+
+	@GetMapping("/totalpaidmoney/{consumerId}")
+	ResponseEntity<ResponseDto<BigDecimal>> totalPaidMoney(HttpServletRequest request, @PathVariable Long consumerId);
+
+	@GetMapping("/reviewedpercent/{consumerId}")
+	ResponseEntity<ResponseDto<BigDecimal>> consumerReviewedPercent(HttpServletRequest request, @PathVariable Long consumerId);
+
+	@GetMapping("/manager/activecount/{managerId}")
+	@Operation(summary = "매니저의 활성 예약 수 조회", description = "매니저의 PAID, WORKING, COMPLETED 상태 예약 수를 조회합니다.", security = @SecurityRequirement(name = "JWT"))
+	@ApiResponses({@ApiResponse(responseCode = "200", description = "조회 성공"),
+		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
+		@ApiResponse(responseCode = "403", description = "권한 없음"),
+		@ApiResponse(responseCode = "500", description = "데이터베이스 오류")})
+	ResponseEntity<ResponseDto<Long>> managerActiveReservationCount(HttpServletRequest request, @PathVariable Long managerId);
+
+	@GetMapping("/manager/settlementsum/{managerId}")
+	@Operation(summary = "매니저의 승인된 정산 금액 총합 조회", description = "매니저 ID에 해당하는 승인된(APPROVED) 정산 금액의 합계를 조회합니다.", security = @SecurityRequirement(name = "JWT"))
+	@ApiResponses({@ApiResponse(responseCode = "200", description = "조회 성공"),
+		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
+		@ApiResponse(responseCode = "403", description = "권한 없음"),
+		@ApiResponse(responseCode = "500", description = "데이터베이스 오류")})
+	ResponseEntity<ResponseDto<BigDecimal>> managerSettlementSum(HttpServletRequest request, @PathVariable Long managerId);
+
+	@GetMapping("/managerreviewedpercent/{managerId}")
+	ResponseEntity<ResponseDto<BigDecimal>> managerReviewedPercent(HttpServletRequest request,
+		@PathVariable Long consumerId);
 }

@@ -1,13 +1,16 @@
 package kernel.maidlab.admin.reservation.repository;
 
 import static kernel.maidlab.common.entity.reservation.QReservation.*;
+import static kernel.maidlab.common.entity.reservation.QReview.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import kernel.maidlab.common.enums.Status;
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -24,6 +27,18 @@ public class AdminReservationRepositoryCustomImpl implements AdminReservationRep
 			.where(
 				reservation.reservationDate.goe(today.atStartOfDay()),
 				reservation.reservationDate.lt(today.plusDays(1).atStartOfDay())
+			)
+			.fetchOne();
+	}
+
+	@Override
+	public BigDecimal sumTotalPrice(Long consumerId) {
+		return queryFactory
+			.select(reservation.totalPrice.sum())
+			.from(reservation)
+			.where(
+				reservation.consumerId.eq(consumerId),
+				reservation.status.in(Status.COMPLETED, Status.WORKING)
 			)
 			.fetchOne();
 	}

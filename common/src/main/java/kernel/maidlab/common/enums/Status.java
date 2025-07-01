@@ -15,6 +15,7 @@ public enum Status {
 	FAILURE("실패"),
 	COMPLETED("완료");
 
+
 	private final String value;
 
 	Status(String value) {

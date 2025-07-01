@@ -14,6 +14,7 @@ import kernel.maidlab.admin.manager.service.AdminManagerService;
 import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.ManagerResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import lombok.RequiredArgsConstructor;
@@ -37,17 +38,21 @@ public class AdminManagerController implements AdminManagerApi {
 	@GetMapping("/status")
 	@Override
 	public ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(
-		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-		@RequestParam Status status) {
-		Page<ManagerListResponseDto> response = adminManagerService.getManagerByPageWithStatus(page, size, status);
-		return ResponseDto.success(ResponseType.SUCCESS, response);
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size,
+		@RequestParam Status status,
+		@RequestParam(defaultValue = "false") boolean sortByRating,
+		@RequestParam(required = false) Boolean isDescending) {
 
+		Page<ManagerListResponseDto> response = adminManagerService.getManagerByPageWithStatus(page, size, status, sortByRating,
+			isDescending);
+		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 
 	@GetMapping("/{managerId}")
 	@Override
-	public ResponseEntity<ResponseDto<ManagerResponseDto>> getManager(@PathVariable("managerId") Long managerId) {
-		ManagerResponseDto response = adminManagerService.getManager(managerId);
+	public ResponseEntity<ResponseDto<AdminManagerResponseDto>> getManager(@PathVariable("managerId") Long managerId) {
+		AdminManagerResponseDto response = adminManagerService.getManager(managerId);
 		return ResponseDto.success(response);
 	}
 

@@ -1,13 +1,13 @@
 package kernel.maidlab.admin.reservation.service;
 
-import static java.util.stream.Collectors.*;
-
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,23 +17,25 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import kernel.maidlab.admin.manager.repository.AdminManagerRegionRepository;
+import kernel.maidlab.admin.consumer.repository.AdminConsumerRepository;
 import kernel.maidlab.admin.manager.repository.AdminManagerRepository;
-import kernel.maidlab.admin.manager.repository.AdminRegionRepository;
 import kernel.maidlab.admin.reservation.repository.AdminReservationRepository;
+import kernel.maidlab.admin.reservation.repository.AdminReviewRepository;
 import kernel.maidlab.admin.reservation.repository.AdminServiceDetailTypeRepository;
 import kernel.maidlab.admin.reservation.repository.AdminSettlementRepository;
+import kernel.maidlab.api.reservation.repository.ReviewRepository;
+import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminSettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
+import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.entity.manager.ManagerRegion;
 import kernel.maidlab.common.entity.reservation.Reservation;
 import kernel.maidlab.common.entity.reservation.ServiceDetailType;
 import kernel.maidlab.common.entity.reservation.Settlement;
 import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.exception.custom.ReservationException;
 import lombok.RequiredArgsConstructor;
 
@@ -43,10 +45,10 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 
 	private final AdminReservationRepository adminReservationRepository;
 	private final AdminManagerRepository adminManagerRepository;
-	private final AdminManagerRegionRepository adminManagerRegionRepository;
-	private final AdminRegionRepository adminRegionRepository;
 	private final AdminSettlementRepository adminSettlementRepository;
 	private final AdminServiceDetailTypeRepository adminServiceDetailTypeRepository;
+	private final AdminConsumerRepository adminConsumerRepository;
+	private final AdminReviewRepository adminReviewRepository;
 
 	@Override
 	public List<ReservationResponseDto> adminReservations(HttpServletRequest request, int page, int size) {
@@ -67,33 +69,27 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 	}
 
 	@Override
-	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
+	public AdminReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
 		Reservation reservation = adminReservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		Manager manager = adminManagerRepository.findById(reservation.getManagerId())
-			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		String mangerUuid = manager.getUuid();
-		Long managerId = manager.getId();
-		List<ManagerRegion> managerRegions = adminManagerRegionRepository.findByManagerId(manager.getId());
-		List<String> regionNames = managerRegions.stream()
-			.map(mr -> adminRegionRepository.findById(mr.getRegionId().getId())
-				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR))
-				.getRegionName())
-			.collect(toList());
+		Optional<Manager> manager = adminManagerRepository.findById(reservation.getManagerId());
 
-		return ReservationDetailResponseDto.builder()
+		Optional<Consumer> consumer = adminConsumerRepository.findById(reservation.getConsumerId());
+
+
+		return AdminReservationDetailResponseDto.builder()
+			.id(reservationId)
+			.checkinTime(reservation.getCheckinTime())
+			.checkoutTime(reservation.getCheckoutTime())
+			.canceledAt(reservation.getCanceledAt())
+			.createdAt(reservation.getCreatedAt())
+			.updatedAt(reservation.getUpdatedAt())
 			.status(reservation.getStatus())
 			.serviceType(reservation.getServiceDetailType().getServiceType().toString())
 			.serviceDetailType(reservation.getServiceDetailType().getServiceDetailType())
 			.address(reservation.getAddress())
 			.addressDetail(reservation.getAddressDetail())
-			.managerUuId(mangerUuid)
-			.managerName(manager.getName())
-			.managerProfileImageUrl(manager.getProfileImage())
-			.managerAverageRate(manager.getAverageRate())
-			.managerRegion(regionNames)
-			.managerPhoneNumber(manager.getPhoneNumber())
 			.housingType(reservation.getHousingType())
 			.roomSize(reservation.getRoomSize())
 			.housingInformation(reservation.getHousingInformation())
@@ -104,6 +100,17 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 			.pet(reservation.getPet())
 			.specialRequest(reservation.getSpecialRequest())
 			.totalPrice(reservation.getTotalPrice())
+			.managerId(reservation.getManagerId())
+			.consumerId(reservation.getConsumerId())
+
+			.managerPhoneNumber(manager.get().getPhoneNumber())
+			.managerName(manager.get().getName())
+			.managerRate(manager.get().getAverageRate())
+			.managerProfileImage(manager.get().getProfileImage())
+
+			.consumerPhoneNumber(manager.get().getPhoneNumber())
+			.consumerName(consumer.get().getName())
+			.consumerProfileImage(consumer.get().getProfileImage())
 			.build();
 	}
 	@Override
@@ -198,5 +205,89 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 	public Long getTodayReservation(HttpServletRequest request) {
 		LocalDate today = LocalDate.now();
 		return adminReservationRepository.countByReservationDate(today);
+	}
+
+	@Override
+	public List<ReservationResponseDto> getConsumerReservation(HttpServletRequest request, Long consumerId, int page, int size) {
+
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+		return  adminReservationRepository.findAllByConsumerId(consumerId, pageable).stream()
+			.map(reservation -> ReservationResponseDto.builder()
+				.reservationId(reservation.getId())
+				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
+				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
+				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
+				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
+				.status(reservation.getStatus())
+				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
+				.totalPrice(reservation.getTotalPrice())
+				.build())
+			.toList();
+	}
+
+	@Override
+	public List<ReservationResponseDto> getManagerReservation(HttpServletRequest request, Long managerId, int page, int size) {
+
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+		return adminReservationRepository.findAllByManagerId(managerId, pageable).stream()
+			.map(reservation -> ReservationResponseDto.builder()
+				.reservationId(reservation.getId())
+				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
+				.detailServiceType(reservation.getServiceDetailType().getServiceDetailType())
+				.reservationDate(reservation.getReservationDate().toLocalDate().toString())
+				.startTime(reservation.getStartTime().toLocalTime().toString().substring(0, 5))
+				.status(reservation.getStatus())
+				.endTime(reservation.getEndTime().toLocalTime().toString().substring(0, 5))
+				.totalPrice(reservation.getTotalPrice())
+				.build())
+			.toList();
+	}
+
+	@Override
+	public Long getCountByConsumerId(HttpServletRequest request, Long consumerId) {
+		return adminReservationRepository.countByConsumerId(consumerId);
+	}
+
+	@Override
+	public BigDecimal getTotalPaidMoney(HttpServletRequest request, Long consumerId) {
+		BigDecimal total = adminReservationRepository.sumTotalPrice(consumerId);
+		if (total != null)
+			return total;
+		else return BigDecimal.ZERO;
+	}
+
+	@Override
+	public BigDecimal getReviewedPercent(HttpServletRequest request, Long consumerId) {
+		Long countReview = adminReviewRepository.countByConsumerIdAndIsConsumerToManager(consumerId, true);
+		Long completed = adminReservationRepository.countByConsumerIdAndStatus(consumerId, Status.COMPLETED);
+		if (completed == 0 || countReview == 0) {
+			return BigDecimal.ZERO;
+		}
+
+		return BigDecimal.valueOf(completed/countReview).multiply(BigDecimal.valueOf(100));
+	}
+
+	@Override
+	public BigDecimal getManagerReviewedPercent(HttpServletRequest request, Long managerId) {
+		Long countReview = adminReviewRepository.countByManagerIdAndIsConsumerToManager(managerId, false);
+		Long completed = adminReservationRepository.countByManagerIdAndStatus(managerId, Status.COMPLETED);
+		if (completed == 0 || countReview == 0) {
+			return BigDecimal.ZERO;
+		}
+
+		return BigDecimal.valueOf(countReview).divide(BigDecimal.valueOf(completed), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+	}
+
+	@Override
+	public Long getActiveReservationCountByManagerId(HttpServletRequest request, Long managerId) {
+		Set<Status> activeStatuses = Set.of(Status.MATCHED, Status.WORKING, Status.COMPLETED);
+		return adminReservationRepository.countByManagerIdAndStatusIn(managerId, activeStatuses);
+	}
+
+	@Override
+	public BigDecimal getTotalSettlementAmountByManagerId(HttpServletRequest request, Long managerId) {
+		return adminSettlementRepository.sumAmountByManagerId(managerId);
 	}
 }
