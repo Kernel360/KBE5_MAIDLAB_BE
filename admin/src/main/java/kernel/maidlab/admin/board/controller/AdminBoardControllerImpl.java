@@ -63,9 +63,15 @@ public class AdminBoardControllerImpl implements AdminBoardApi {
 		return adminBoardService.modifyAnswer(requestDto, answerId);
 	}
 
-	@GetMapping("/boardcount")
+	@GetMapping("/refundboardcount")
 	@Override
-	public ResponseEntity<ResponseDto<Long>> boardWithoutAnswerCount(HttpServletRequest request){
-		return ResponseDto.success(adminBoardService.getBoardWithoutAnswerCount(request));
+	public ResponseEntity<ResponseDto<Long>> refundBoardCount(HttpServletRequest request){
+		return ResponseDto.success(adminBoardService.getRefundBoardWithoutAnswerCount(request));
+	}
+
+	@GetMapping("/counselboardcount")
+	@Override
+	public ResponseEntity<ResponseDto<Long>> counselBoardCount(HttpServletRequest request){
+		return ResponseDto.success(adminBoardService.getCounselBoardWithoutAnswerCount(request));
 	}
 }

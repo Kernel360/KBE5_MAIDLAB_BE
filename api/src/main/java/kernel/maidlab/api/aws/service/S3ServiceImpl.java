@@ -58,6 +58,7 @@ public class S3ServiceImpl implements S3Service {
 			case "pdf" -> "application/pdf";
 			case "doc" -> "application/msword";
 			case "docx" -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+			case "webp" -> "image/webp";
 			default -> "application/octet-stream";
 		};
 	}

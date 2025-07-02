@@ -1,18 +1,22 @@
-INSERT INTO service_detail_type (id, service_detail_type, service_type, service_price)
-SELECT 1, '생활청소', 'GENERAL_CLEANING', 0
+INSERT INTO service_detail_type (id, service_detail_type, service_type)
+SELECT 1, '생활청소', 'GENERAL_CLEANING'
 WHERE NOT EXISTS (SELECT 1 FROM service_detail_type WHERE id = 1)
 UNION ALL
-SELECT 2, '부분청소', 'HOUSEKEEPING', 30000
+SELECT 2, '부분청소', 'GENERAL_CLEANING'
 WHERE NOT EXISTS (SELECT 1 FROM service_detail_type WHERE id = 2)
 UNION ALL
-SELECT 3, '기타청소', 'HOUSEKEEPING', 20000
+SELECT 3, '영유아 돌봄', 'BABYSITTER'
 WHERE NOT EXISTS (SELECT 1 FROM service_detail_type WHERE id = 3)
 UNION ALL
-SELECT 4, '아이돌봄', 'CARE', 50000
+SELECT 4, '유아 교육', 'BABYSITTER'
 WHERE NOT EXISTS (SELECT 1 FROM service_detail_type WHERE id = 4)
 UNION ALL
-SELECT 5, '어르신돌봄', 'CARE', 30000
-WHERE NOT EXISTS (SELECT 1 FROM service_detail_type WHERE id = 5);
+SELECT 5, '기본 돌봄', 'PET_CARE'
+WHERE NOT EXISTS (SELECT 1 FROM service_detail_type WHERE id = 5)
+UNION ALL
+SELECT 6, '산책', 'PET_CARE'
+WHERE NOT EXISTS (SELECT 1 FROM service_detail_type WHERE id = 6);
+
 INSERT INTO region (region)
 SELECT '강남구' FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM region WHERE region = '강남구');
 INSERT INTO region (region)

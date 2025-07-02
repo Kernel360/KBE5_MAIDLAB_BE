@@ -76,6 +76,9 @@ public class Consumer extends TimeBase implements UserBase {
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted;
 
+	@Column(name = "emergency_call")
+	private String emergencyCall;
+
 	private Consumer(String phoneNumber,String password, String name, Gender gender, LocalDate birth) {
 		this.phoneNumber = phoneNumber;
 		this.password = password;
