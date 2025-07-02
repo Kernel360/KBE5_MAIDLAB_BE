@@ -19,5 +19,5 @@ public interface ManagerRegionRepository extends JpaRepository<ManagerRegion, St
 
 	@Modifying
 	@Query("DELETE FROM ManagerRegion mr WHERE mr.manager.id = :managerId")
-	void deleteByManagerId(@Param("managerId") Long managerId);
+	void deleteAllByManagerId(@Param("managerId") Long managerId);
 }

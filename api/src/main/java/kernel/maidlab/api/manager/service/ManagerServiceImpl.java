@@ -215,9 +215,9 @@ public class ManagerServiceImpl implements ManagerService {
 			manager.updateIntroduceText(req.getIntroduceText());
 		}
 
-		managerServiceTypeRepository.deleteByManagerId(manager.getId());
-		managerRegionRepository.deleteByManagerId(manager.getId());
-		managerScheduleRepository.deleteByManagerId(manager.getId());
+		managerServiceTypeRepository.deleteAllByManagerId(manager.getId());
+		managerRegionRepository.deleteAllByManagerId(manager.getId());
+		managerScheduleRepository.deleteAllByManagerId(manager.getId());
 
 		if (req.getServiceTypes() != null && !req.getServiceTypes().isEmpty()) {
 			for (ServiceListItem serviceItem : req.getServiceTypes()) {

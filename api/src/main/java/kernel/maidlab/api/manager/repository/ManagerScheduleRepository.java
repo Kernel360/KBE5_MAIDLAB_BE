@@ -16,5 +16,5 @@ public interface ManagerScheduleRepository extends JpaRepository<ManagerSchedule
 
 	@Modifying
 	@Query("DELETE FROM ManagerSchedule ms WHERE ms.manager.id = :managerId")
-	void deleteByManagerId(@Param("managerId") Long managerId);
+	void deleteAllByManagerId(@Param("managerId") Long managerId);
 }

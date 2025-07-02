@@ -20,5 +20,5 @@ public interface ManagerServiceTypeRepository extends JpaRepository<ManagerServi
 
 	@Modifying
 	@Query("DELETE FROM ManagerServiceType ms WHERE ms.manager.id = :managerId")
-	void deleteByManagerId(@Param("managerId") Long managerId);
+	void deleteAllByManagerId(@Param("managerId") Long managerId);
 }
