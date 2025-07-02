@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class ReviewRegisterRequestDto {
+	private Long reservationId;
 	private float rating;
 	private String comment;
 	private Boolean likes;
