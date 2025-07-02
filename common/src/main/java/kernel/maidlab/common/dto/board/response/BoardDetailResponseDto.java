@@ -2,7 +2,7 @@ package kernel.maidlab.common.dto.board.response;
 
 import kernel.maidlab.common.dto.board.ImageDto;
 import kernel.maidlab.common.entity.board.Board;
-import kernel.maidlab.common.entity.board.Image;
+import kernel.maidlab.common.entity.board.BoardImage;
 import kernel.maidlab.common.enums.BoardType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class BoardDetailResponseDto {
     private List<ImageDto> images;
     private AnswerResponseDto answer;
 
-    public static BoardDetailResponseDto from (Board board, List<Image> images){
+    public static BoardDetailResponseDto from (Board board, List<BoardImage> boardImages){
 
         return new BoardDetailResponseDto(
                 board.getTitle(),
@@ -32,7 +32,7 @@ public class BoardDetailResponseDto {
                 board.getIsAnswered(),
                 board.getBoardType(),
                 board.getCreatedAt(),
-                images.stream()
+                boardImages.stream()
                         .map(ImageDto::from)
                         .toList(),
                 board.getIsAnswered() ? AnswerResponseDto.from(board.getAnswer()) : null

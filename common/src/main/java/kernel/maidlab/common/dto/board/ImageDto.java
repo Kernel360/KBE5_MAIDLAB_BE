@@ -1,6 +1,6 @@
 package kernel.maidlab.common.dto.board;
 
-import kernel.maidlab.common.entity.board.Image;
+import kernel.maidlab.common.entity.board.BoardImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,11 +14,11 @@ public class ImageDto {
     private String imagePath;
     private String name;
 
-    public static ImageDto from(Image image){
+    public static ImageDto from(BoardImage boardImage){
         return new ImageDto(
-                image.getId(),
-                image.getImagePath(),
-                image.getName()
+                boardImage.getId(),
+                boardImage.getImagePath(),
+                boardImage.getName()
         );
     }
 
