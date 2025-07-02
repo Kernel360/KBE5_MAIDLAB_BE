@@ -131,7 +131,7 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "403", description = "Do not have permission (NP)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
 	})
-	ResponseEntity<ResponseDto<String>> review(@PathVariable Long reservationId,
+	ResponseEntity<ResponseDto<String>> review(
 		@RequestBody ReviewRegisterRequestDto dto, HttpServletRequest request);
 
 	@Operation(summary = "주간 정산 조회", description = "매니저 주간 정산 정보 조회 API", security = @SecurityRequirement(name = "JWT"))

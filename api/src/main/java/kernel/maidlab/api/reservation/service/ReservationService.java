@@ -33,7 +33,7 @@ public interface ReservationService {
 
 	ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request);
 
-	void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request);
+	void registerReview(ReviewRegisterRequestDto dto, HttpServletRequest request);
 
 	WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate);
 }

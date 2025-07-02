@@ -63,12 +63,12 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Transactional
 	@Override
-	public void registerReview(Long reservationId, ReviewRegisterRequestDto dto, HttpServletRequest request) {
+	public void registerReview(ReviewRegisterRequestDto dto, HttpServletRequest request) {
 		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
 
 		Boolean isConsumerToManager = userType == UserType.CONSUMER;
 
-		Reservation reservation = reservationRepository.findById(reservationId)
+		Reservation reservation = reservationRepository.findById(dto.getReservationId())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		if (userType == UserType.CONSUMER) {

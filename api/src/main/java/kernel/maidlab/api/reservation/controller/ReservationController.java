@@ -115,11 +115,10 @@ public class ReservationController implements ReservationApi {
 	}
 
 	@Override
-	@PostMapping("/{reservationId}/review")
-	public ResponseEntity<ResponseDto<String>> review(@PathVariable Long reservationId,
+	@PostMapping("/review")
+	public ResponseEntity<ResponseDto<String>> review(
 		@RequestBody ReviewRegisterRequestDto dto, HttpServletRequest request) {
-		log.info("Register review request received for reservationId: {}", reservationId);
-		reservationService.registerReview(reservationId, dto, request);
+		reservationService.registerReview(dto, request);
 		return ResponseDto.success(ResponseType.SUCCESS, "리뷰 등록 완료!");
 	}
 
