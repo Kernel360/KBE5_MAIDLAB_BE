@@ -97,4 +97,14 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 	public Long getBoardWithoutAnswerCount(HttpServletRequest request) {
 		return adminBoardRepository.countByIsAnsweredFalseAndIsDeletedFalse();
 	}
+
+	@Override
+	public Long getRefundBoardWithoutAnswerCount(HttpServletRequest request) {
+		return adminBoardRepository.countByManagerIdNullAndIsAnsweredFalseAndIsDeletedFalse();
+	}
+
+	@Override
+	public Long getCounselBoardWithoutAnswerCount(HttpServletRequest request) {
+		return adminBoardRepository.countByConsumerIdNullAndIsAnsweredFalseAndIsDeletedFalse();
+	}
 }

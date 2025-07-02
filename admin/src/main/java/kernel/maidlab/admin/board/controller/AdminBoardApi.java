@@ -63,6 +63,17 @@ public interface AdminBoardApi {
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<Void>> answer(@RequestBody AnswerRequestDto requestDto, @PathVariable Long answerId);
 
-	@GetMapping("/boardWithoutAnswerCount")
-	ResponseEntity<ResponseDto<Long>> boardWithoutAnswerCount(HttpServletRequest request);
+	@GetMapping("/refundboardcount")
+	@Operation(summary = "답변 없는 환불 게시판 수 조회", description = "답변이 없는 환불 게시판(소비자)의 게시물 수를 조회합니다.")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "게시물 수 조회 성공 (SU)"),
+		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
+		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
+	ResponseEntity<ResponseDto<Long>> refundBoardCount(HttpServletRequest request);
+
+	@GetMapping("/counselboardcount")
+	@Operation(summary = "답변 없는 상담 게시판 수 조회", description = "답변이 없는 상담 게시판(매니저)의 게시물 수를 조회합니다.")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "게시물 수 조회 성공 (SU)"),
+		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
+		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
+	ResponseEntity<ResponseDto<Long>> counselBoardCount(HttpServletRequest request);
 }
