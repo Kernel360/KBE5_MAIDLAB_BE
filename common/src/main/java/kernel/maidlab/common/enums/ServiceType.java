@@ -4,11 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ServiceType {
-	// 기존
-	HOUSEKEEPING("가사"),
-	CARE("돌봄"),
 
-	// 업데이트
 	GENERAL_CLEANING("일반청소"),
 	BABYSITTER("베이비시터"),
 	PET_CARE("반려동물 케어");
