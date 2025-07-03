@@ -30,7 +30,6 @@ public class BoardController {
             HttpServletRequest request,
             @RequestBody BoardRequestDto boardRequestDto
     ){
-        log.info("Create board request received for boardType: {}", boardRequestDto.getBoardType());
         boardService.createBoard(request, boardRequestDto);
         return ResponseDto.success("게시글이 성공적으로 등록완료 되었습니다.");
     }
@@ -57,7 +56,6 @@ public class BoardController {
             @PathVariable("boardId")Long boardId,
             @RequestBody BoardUpdateRequestDto boardUpdateRequestDto
     ){
-        log.info("Update board request received for boardId: {}", boardId);
         boardService.modifyBoard(request, boardId, boardUpdateRequestDto);
         return ResponseDto.success("게시글 수정이 완료되었습니다.");
     }
@@ -67,7 +65,6 @@ public class BoardController {
             HttpServletRequest request,
             @PathVariable("boardId") Long boardId
     ){
-        log.info("Delete board request received for boardId: {}", boardId);
         boardService.deleteBoard(request, boardId);
         return ResponseDto.success("게시글이 삭제되었습니다.");
 

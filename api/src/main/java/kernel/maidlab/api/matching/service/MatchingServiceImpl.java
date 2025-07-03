@@ -31,7 +31,9 @@ import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MatchingServiceImpl implements MatchingService {
@@ -54,14 +56,17 @@ public class MatchingServiceImpl implements MatchingService {
 		if (matchingRepository.existsByReservationId(matching.getReservationId())) {
 			throw new BaseException(ResponseType.DUPLICATE_RESERVATION_ID);
 		}
-		matchingRepository.save(matching);
+		Matching savedMatching = matchingRepository.save(matching);
+		log.info("매칭 생성 완료 - 매칭 ID: {}, 예약 ID: {}", savedMatching.getId(), dto.getReservationId());
 	}
 
 	@Transactional
 	@Override
 	public void changeStatus(Long reservationId, Status status) {
 		Matching matching = matchingRepository.findByReservationId(reservationId);
+		Status previousStatus = matching.getMatchingStatus();
 		matching.setMatchingStatus(status);
+		log.info("매칭 상태 변경 완료 - 예약 ID: {}, 이전 상태: {} -> 새 상태: {}", reservationId, previousStatus, status);
 	}
 
 	@Override
@@ -106,11 +111,7 @@ public class MatchingServiceImpl implements MatchingService {
 			expiredTime
 		);
 
-		if (updatedCount > 0) {
-			System.out.println("만료된 매칭 " + updatedCount + "건 상태 변경됨");
-		}else {
-			System.out.println("nothing to change");
-		}
+		// Expired matching status updates are handled silently
 	}
 
 

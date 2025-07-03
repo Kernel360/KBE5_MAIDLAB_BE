@@ -28,12 +28,16 @@ public class LogWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        log.info("WebSocket connection established: {}", session.getId());
         sessions.add(session);
         
-        // Send initial log content (last 100 lines)
-        String initialContent = logMonitoringService.getTailLogContent(100);
-        sendMessage(session, new LogMessage("initial", initialContent));
+        // Send initial log content (last 5 lines) - send each line separately
+        String initialContent = logMonitoringService.getTailLogContent(5);
+        String[] lines = initialContent.split("\n");
+        for (String line : lines) {
+            if (!line.trim().isEmpty()) {
+                sendMessage(session, new LogMessage("initial", line));
+            }
+        }
         
         // Start monitoring if this is the first connection
         if (!isMonitoring) {
@@ -43,7 +47,6 @@ public class LogWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        log.info("WebSocket connection closed: {}", session.getId());
         sessions.remove(session);
         
         // Stop monitoring if no more sessions
@@ -55,8 +58,7 @@ public class LogWebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
-        log.info("Received message from {}: {}", session.getId(), payload);
-        
+
         // Handle different message types
         switch (payload) {
             case "get_full_log":
@@ -81,13 +83,11 @@ public class LogWebSocketHandler extends TextWebSocketHandler {
     private void startLogMonitoring() {
         isMonitoring = true;
         logMonitoringService.startMonitoring(this::broadcastLogUpdate);
-        log.info("Started log monitoring");
     }
 
     private void stopLogMonitoring() {
         isMonitoring = false;
         logMonitoringService.stopMonitoring();
-        log.info("Stopped log monitoring");
     }
 
     private void broadcastLogUpdate(String newContent) {
@@ -100,7 +100,6 @@ public class LogWebSocketHandler extends TextWebSocketHandler {
                         sendMessage(session, message);
                         return false;
                     } catch (Exception e) {
-                        log.warn("Failed to send message to session {}: {}", session.getId(), e.getMessage());
                         return true; // Remove session if sending fails
                     }
                 });

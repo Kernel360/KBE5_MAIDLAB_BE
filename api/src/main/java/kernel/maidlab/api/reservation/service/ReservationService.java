@@ -14,7 +14,7 @@ import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
 
 public interface ReservationService {
-	void createReservation(ReservationRequestDto dto, HttpServletRequest request);
+	Long createReservation(ReservationRequestDto dto, HttpServletRequest request);
 
 	List<ReservationResponseDto> allReservations(HttpServletRequest request);
 
