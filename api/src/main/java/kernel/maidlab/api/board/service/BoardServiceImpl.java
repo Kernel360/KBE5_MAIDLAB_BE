@@ -18,6 +18,7 @@ import kernel.maidlab.api.board.repository.BoardRepository;
 import kernel.maidlab.api.board.repository.ImageRepository;
 import kernel.maidlab.common.enums.UserType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -44,7 +46,7 @@ public class BoardServiceImpl implements BoardService {
 		UserBase user = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 
 		Board board = Board.createBoard(user, boardRequestDto);
-		boardRepository.save(board);
+		Board savedBoard = boardRepository.save(board);
 
 		boardRequestDto.getImages()
 			.forEach((imageDto) -> imageRepository.save(
@@ -52,6 +54,7 @@ public class BoardServiceImpl implements BoardService {
 					board,
 					imageDto.getImagePath(),
 					imageDto.getName())));
+		log.info("게시글 생성 완료 - 게시글 ID: {}, 제목: {}", savedBoard.getId(), boardRequestDto.getTitle());
 	}
 
 	// 게시글 전체 조회
@@ -118,6 +121,7 @@ public class BoardServiceImpl implements BoardService {
 		List<ImageDto> newImageDataList = boardUpdateRequestDto.getImages();
 
 		updateImages(currentBoardImages, newImageDataList, board);
+		log.info("게시글 수정 완료 - 게시글 ID: {}", boardId);
 
 	}
 
@@ -131,6 +135,7 @@ public class BoardServiceImpl implements BoardService {
 			.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시판 입니다."));
 
 		board.updateIsDelete(true);
+		log.info("게시글 삭제 완료 - 게시글 ID: {}", boardId);
 	}
 
 	/**

@@ -25,14 +25,12 @@ public class ConsumerController {
 
 	@GetMapping("/mypage")
 	public ResponseEntity<ResponseDto<ConsumerMyPageDto>> getMyPage(HttpServletRequest req) {
-		log.info("Get consumer mypage request received");
 		ConsumerMyPageDto myPageDto = consumerService.getConsumerMyPage(req);
 		return ResponseDto.success(myPageDto);
 	}
 
 	@GetMapping("/profile")
 	public ResponseEntity<ResponseDto<ConsumerProfileResponseDto>> getProfile(HttpServletRequest req) {
-		log.info("Get consumer profile request received");
 		ConsumerProfileResponseDto responseDto = consumerService.getConsumerProfile(req);
 		return ResponseDto.success(responseDto);
 	}
@@ -41,7 +39,6 @@ public class ConsumerController {
 	public ResponseEntity<ResponseDto<Void>> createProfile(
 		@Validated @RequestBody ConsumerProfileRequestDto consumerProfileRequestDto,
 		HttpServletRequest req) {
-		log.info("Create consumer profile request received");
 		consumerService.createConsumerProfile(consumerProfileRequestDto, req);
 		return ResponseDto.success();
 	}
@@ -51,7 +48,6 @@ public class ConsumerController {
 			@Validated @RequestBody ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto,
 			HttpServletRequest req
 	){
-		log.info("Update consumer profile request received");
 		consumerService.updateConsumerProfile(consumerProfileUpdateRequestDto, req);
 		return ResponseDto.success();
 	}
@@ -59,14 +55,12 @@ public class ConsumerController {
 
 	@GetMapping("/likes")
 	public ResponseEntity<ResponseDto<Object>> getLikes(HttpServletRequest req) {
-		log.info("Get liked managers request received");
 		var likedManagers = consumerService.getLikedManagerList(req);
 		return ResponseDto.success(likedManagers);
 	}
 
 	@GetMapping("/blacklists")
 	public ResponseEntity<ResponseDto<Object>> getBlackListedManagerList(HttpServletRequest req) {
-		log.info("Get blacklisted managers request received");
 		var blacklistedManagers = consumerService.getBlackListedManagerList(req);
 		return ResponseDto.success(blacklistedManagers);
 	}
@@ -76,7 +70,6 @@ public class ConsumerController {
 		@PathVariable String managerUuid,
 		@RequestParam boolean preference,
 		HttpServletRequest req) {
-		log.info("Set manager preference request received for managerUuid: {}, preference: {}", managerUuid, preference);
 		consumerService.saveLikedOrBlackListedManager(req, managerUuid, preference);
 		return ResponseDto.success();
 	}
@@ -85,7 +78,6 @@ public class ConsumerController {
 	public ResponseEntity<ResponseDto<String>> deleteManagerPreference(
 			@PathVariable String managerUuid,
 			HttpServletRequest req) {
-		log.info("Delete manager preference request received for managerUuid: {}", managerUuid);
 		consumerService.deleteLikedAOrBlackListManager(managerUuid, req);
 		return ResponseDto.success("삭제 완료");
 	}

@@ -22,7 +22,7 @@ public class LogMonitoringService {
     @Value("${LOG_DIR:logs}")
     private String logDir;
 
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private volatile ScheduledExecutorService scheduler;
     private volatile long lastPosition = 0;
 
     public interface LogUpdateListener {
@@ -63,6 +63,10 @@ public class LogMonitoringService {
     }
 
     public void startMonitoring(LogUpdateListener listener) {
+        if (scheduler == null || scheduler.isShutdown()) {
+            scheduler = Executors.newSingleThreadScheduledExecutor();
+        }
+        
         CompletableFuture.runAsync(() -> {
             try {
                 Path logPath = getLogPath();
@@ -87,7 +91,9 @@ public class LogMonitoringService {
     }
 
     public void stopMonitoring() {
-        scheduler.shutdown();
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
+        }
         lastPosition = 0;
     }
 
