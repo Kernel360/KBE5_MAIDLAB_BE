@@ -38,7 +38,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -235,8 +234,7 @@ public class ReservationServiceImpl implements ReservationService {
 		// 2. 포인트 사용
 		// 포인트 적립
 		Consumer consumer = (Consumer) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		String paymentPreference = generatePaymentReference(reservation.getId(), consumer.getId());
-		Point point = Point.createPointForPayment(consumer, reservation.getTotalPrice(), paymentPreference);
+		Point point = Point.createPointForPayment(consumer, reservation.getTotalPrice());
 		pointRepository.save(point);
 
 	}
@@ -365,14 +363,6 @@ public class ReservationServiceImpl implements ReservationService {
 	// 	return reservationRepository.findById(reservationId)
 	// 		.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
 	// }
-
-	// 현재 결제 테이블이 따로 없으므로 임의의 결제 고유값 만들기
-	public String generatePaymentReference(Long reservationId, Long consumerId){
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-		String timeStamp = LocalDateTime.now().format(formatter);
-		return "ORD" + reservationId + timeStamp;
-	}
-
 
 }
 

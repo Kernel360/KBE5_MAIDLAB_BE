@@ -33,12 +33,6 @@ public class Point extends TimeBase {
     @Enumerated(EnumType.STRING)
     private PointType pointType;
 
-    /**
-     * 결제 테이블이 없으므로 String으로 관리
-     */
-    @Column(name = "payment_reference", length = 50)
-    private String paymentReference;
-
     @Column(nullable = false)
     private String description;
 
@@ -47,7 +41,7 @@ public class Point extends TimeBase {
         return Math.max(earnedPoint, 0);
     }
 
-    public static Point createPointForPayment(Consumer consumer, BigDecimal totalPrice, String paymentReference){
+    public static Point createPointForPayment(Consumer consumer, BigDecimal totalPrice){
         int payAmount = totalPrice.intValue();
         Integer amount = calculateEarnedPoint(payAmount);
 
@@ -56,7 +50,6 @@ public class Point extends TimeBase {
                 null,  // 이벤트 없음
                 amount,
                 PointType.PAYMENT,
-                paymentReference,
                 "결제 적립 포인트"
         );
     }
