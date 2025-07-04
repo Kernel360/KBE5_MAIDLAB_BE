@@ -42,7 +42,12 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom{
     }
 
     @Override
-    public Page<PointRecordResponseDto> findPointRecords(Long consumerId, Integer monthOffset, String pointType, Pageable pageable) {
+    public Page<PointRecordResponseDto> findPointRecords(
+            Long consumerId,
+            Integer monthOffset,
+            String pointType,
+            Pageable pageable)
+    {
         QPoint point = QPoint.point;
 
         JPQLQuery<Point> query = queryFactory

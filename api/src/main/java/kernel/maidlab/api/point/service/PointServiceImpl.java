@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,11 +35,15 @@ public class PointServiceImpl implements PointService{
     @Override
     public PageResponseDto<PointRecordResponseDto> getPointRecordList(HttpServletRequest request, PointRecordRequestDto requestDto) {
 
+        Integer page = requestDto.getPageable().getPage();
+        Integer size = requestDto.getPageable().getSize();
+        List<PointRecordRequestDto.PageableRequest.SortRequest> sort = requestDto.getPageable().getSort();
+
         Pageable pageable = PageRequest.of(
-                requestDto.getPageable().getPage(),
-                requestDto.getPageable().getSize(),
+                page,
+                size,
                 Sort.by(
-                        requestDto.getPageable().getSort().stream()
+                        sort.stream()
                                 .map(sortRequest ->
                                         new Sort.Order(
                                                 sortRequest.getDirection(),
@@ -54,15 +59,16 @@ public class PointServiceImpl implements PointService{
         LocalDate startOfMonth = LocalDate.now().plusMonths(requestDto.getMonthOffset()).withDayOfMonth(1);
         LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
 
-        Page<PointRecordResponseDto> page = pointRepository.findPointRecords(
+        Page<PointRecordResponseDto> pointRecordsPage = pointRepository.findPointRecords(
                 consumer.getId(),
                 requestDto.getMonthOffset(),
                 requestDto.getPointType(),
                 pageable
         );
+
         return PageResponseDto.<PointRecordResponseDto>builder()
-                .content(page.getContent())
-                .hasNext(page.hasNext())
+                .content(pointRecordsPage.getContent())
+                .hasNext(pointRecordsPage.hasNext())
                 .build();
     }
 
