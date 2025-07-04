@@ -4,14 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import kernel.maidlab.api.reservation.repository.*;
 import kernel.maidlab.common.entity.reservation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -280,6 +278,15 @@ public class ReservationServiceImpl implements ReservationService {
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 		reservation.pay();
 		reservationRepository.save(reservation);
+
+		// 1. 포인트 정립하기
+		// 2. 포인트 사용
+		// 포인트 적립
+		Consumer consumer = (Consumer) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String paymentPreference = generatePaymentReference(reservation.getId(), consumer.getId());
+		Point point = Point.createPointForPayment(consumer, reservation.getTotalPrice(), paymentPreference);
+		pointRepository.save(point);
+
 	}
 
 	@Transactional

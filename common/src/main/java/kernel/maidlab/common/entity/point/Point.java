@@ -5,12 +5,16 @@ import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.event.Event;
 import kernel.maidlab.common.enums.PointType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "point")
 public class Point extends TimeBase {
 
@@ -38,23 +42,23 @@ public class Point extends TimeBase {
     @Column(nullable = false)
     private String description;
 
-    public void addPointFromPaymentAmount(int paymentAmount) {
-        int earnedPoint = (int) Math.floor(paymentAmount * 0.01); // 결제금액의 1%
-        if (earnedPoint > 0) {
-            this.amount += earnedPoint;
-        }
+    public static Integer calculateEarnedPoint(int paymentAmount){
+        int earnedPoint =  (int) Math.floor(paymentAmount * 0.01); // 결제금액의 1%
+        return Math.max(earnedPoint, 0);
     }
 
-    public void addPoint(Integer point){
-        this.amount += point;
-    }
+    public static Point createPointForPayment(Consumer consumer, BigDecimal totalPrice, String paymentReference){
+        int payAmount = totalPrice.intValue();
+        Integer amount = calculateEarnedPoint(payAmount);
 
-    public void deductPoint(Integer point){
-
-        if (amount - point < 0){
-            amount = 0;
-        }
-        amount -= point;
+        return new Point(
+                consumer,
+                null,  // 이벤트 없음
+                amount,
+                PointType.PAYMENT,
+                paymentReference,
+                "결제 적립 포인트"
+        );
     }
 }
 
