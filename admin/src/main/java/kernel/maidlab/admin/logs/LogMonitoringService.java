@@ -47,11 +47,17 @@ public class LogMonitoringService {
     public String getTailLogContent(int lines) {
         try {
             Path logPath = getLogPath();
+            
             if (!Files.exists(logPath)) {
                 return "Log file not found at: " + logPath.toString();
             }
 
             List<String> allLines = Files.readAllLines(logPath);
+            
+            if (allLines.isEmpty()) {
+                return "Log file is empty";
+            }
+            
             int start = Math.max(0, allLines.size() - lines);
             List<String> tailLines = allLines.subList(start, allLines.size());
             
