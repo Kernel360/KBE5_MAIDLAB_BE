@@ -3,17 +3,30 @@ package kernel.maidlab.api.board.repository;
 import static kernel.maidlab.common.entity.board.QAnswer.*;
 import static kernel.maidlab.common.entity.board.QBoard.*;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kernel.maidlab.common.dto.board.BoardQueryDto;
 import kernel.maidlab.common.dto.board.QBoardQueryDto;
 import kernel.maidlab.common.entity.board.Board;
 import kernel.maidlab.common.entity.board.QAnswer;
 import kernel.maidlab.common.entity.board.QBoard;
+import kernel.maidlab.common.entity.point.Point;
+import kernel.maidlab.common.entity.point.QPoint;
+import kernel.maidlab.common.enums.PointType;
 import kernel.maidlab.common.enums.UserType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
