@@ -77,18 +77,13 @@ public class MatchingServiceImpl implements MatchingService {
 
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<Matching> matchings = matchingRepository.findByManagerId(manager.getId(), pageable);
-
-		return matchings.stream()
-			.filter(
-				matching -> matching.getMatchingStatus() != null && matching.getMatchingStatus().equals(Status.PENDING))
-			.map(matching -> {
-				Long reservationId = matching.getReservationId();
-				Reservation reservation = reservationRepository.findById(reservationId)
-					.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
-				return new RequestMatchingListResponseDto(reservation);
-			})
-			.toList();
+		return matchingRepository.findByManagerIdAndMatchingStatus(manager.getId(), Status.PENDING,
+			pageable).stream().map(matching -> {
+					Long reservationId = matching.getReservationId();
+					Reservation reservation = reservationRepository.findById(reservationId)
+						.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
+					return new RequestMatchingListResponseDto(reservation);
+			}).toList();
 	}
 
 	@Override
@@ -114,16 +109,15 @@ public class MatchingServiceImpl implements MatchingService {
 		// Expired matching status updates are handled silently
 	}
 
-
 	private String extractGuFromAddress(String address) {
 		// "구" 단위 추출 (예: "서울시 강남구 역삼동" -> "강남구")
 		// 단위를 바꾸고 싶을때는 filter의 endsWith 만 바꾸면 됨
-		if(address.startsWith("서"))
+		if (address.startsWith("서"))
 			return Arrays.stream(address.split(" "))
 				.filter(s -> s.endsWith("구"))
 				.findFirst()
 				.orElseThrow(() -> new BaseException(ResponseType.WRONG_ADDRESS));
-		//서울시가 아닌경우 시 단위로 나누게 함
+			//서울시가 아닌경우 시 단위로 나누게 함
 		else
 			return Arrays.stream(address.split(" "))
 				.filter(s -> s.endsWith("시"))
