@@ -1,13 +1,21 @@
 package kernel.maidlab.api.reservation.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
@@ -19,6 +27,7 @@ import kernel.maidlab.common.entity.reservation.QReservation;
 import kernel.maidlab.common.entity.reservation.QReview;
 import kernel.maidlab.common.entity.reservation.QServiceDetailType;
 import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.common.exception.custom.ReservationException;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +73,6 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 
 	@Override
 	public ReservationDetailResponseDto findDetailReservationByIdAndUser(Long reservationId, Long userId, UserType userType) {
-
 
 		// 사용자 일치 조건 (권한 체크)
 		BooleanExpression userCondition = (userType == UserType.MANAGER)
@@ -142,6 +150,75 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 			.specialRequest(first.get(reservation.specialRequest))
 			.totalPrice(first.get(reservation.totalPrice))
 			.build();
+	}
+
+	@Override
+	public Page<ReservationResponseDto> findConsumerReservationsWithPaging(Long consumerId, Status status, Pageable pageable) {
+		BooleanExpression baseCondition = reservation.consumerId.eq(consumerId);
+		
+		BooleanExpression statusCondition = status != null ? reservation.status.eq(status) : null;
+		BooleanExpression finalCondition = statusCondition != null ? baseCondition.and(statusCondition) : baseCondition;
+		
+		// Pageable의 Sort 정보를 QueryDSL OrderSpecifier로 변환
+		List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
+		
+		if (pageable.getSort().isSorted()) {
+			for (org.springframework.data.domain.Sort.Order sortOrder : pageable.getSort()) {
+				Order direction = sortOrder.isAscending() ? Order.ASC : Order.DESC;
+				switch (sortOrder.getProperty()) {
+					case "createdAt":
+						orderSpecifiers.add(new OrderSpecifier<>(direction, reservation.createdAt));
+						break;
+					case "reservationDate":
+						orderSpecifiers.add(new OrderSpecifier<>(direction, reservation.reservationDate));
+						break;
+					case "totalPrice":
+						orderSpecifiers.add(new OrderSpecifier<>(direction, reservation.totalPrice));
+						break;
+					case "startTime":
+						orderSpecifiers.add(new OrderSpecifier<>(direction, reservation.startTime));
+						break;
+					default:
+						orderSpecifiers.add(new OrderSpecifier<>(direction, reservation.createdAt));
+						break;
+				}
+			}
+		} else {
+			// 기본 정렬: createdAt DESC
+			orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, reservation.createdAt));
+		}
+		
+		JPAQuery<ReservationResponseDto> query = queryFactory
+			.select(Projections.constructor(ReservationResponseDto.class,
+				reservation.id,
+				reservation.status,
+				reservation.serviceDetailType.serviceType.stringValue(),
+				reservation.serviceDetailType.serviceDetailType,
+				reservation.reservationDate.stringValue(),
+				reservation.startTime.stringValue().substring(11, 16),
+				reservation.endTime.stringValue().substring(11, 16),
+				JPAExpressions.selectOne().from(review).where(review.reservationId.eq(reservation.id)).exists(),
+				reservation.totalPrice))
+			.from(reservation)
+			.join(reservation.serviceDetailType, serviceDetailType)
+			.where(finalCondition)
+			.orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]));
+		
+		Long totalCount = queryFactory
+			.select(reservation.count())
+			.from(reservation)
+			.join(reservation.serviceDetailType, serviceDetailType)
+			.where(finalCondition)
+			.fetchOne();
+		
+		long total = totalCount != null ? totalCount : 0L;
+		
+		List<ReservationResponseDto> content = query
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+		
+		return new PageImpl<>(content, pageable, total);
 	}
 
 }

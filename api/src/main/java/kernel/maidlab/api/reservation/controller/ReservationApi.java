@@ -3,7 +3,7 @@ package kernel.maidlab.api.reservation.controller;
 import java.time.LocalDate;
 import java.util.List;
 
-
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -143,4 +143,20 @@ public interface ReservationApi {
 	})
 	ResponseEntity<ResponseDto<WeeklySettlementResponseDto>> getWeeklySettlements(HttpServletRequest request,
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate);
+
+	@Operation(summary = "소비자 예약 조회 (페이징)", description = "소비자의 예약을 페이징, 필터링, 정렬하여 조회합니다. MATCHED 상태가 PAID보다 우선순위가 높습니다.", security = @SecurityRequirement(name = "JWT"))
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Success (SU)", content = @Content(schema = @Schema(implementation = Page.class))),
+		@ApiResponse(responseCode = "400", description = "Validation failed (VF) - 잘못된 파라미터"),
+		@ApiResponse(responseCode = "401", description = "Authorization failed / Login failed (AF | LF)"),
+		@ApiResponse(responseCode = "403", description = "Do not have permission (NP)"),
+		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
+	})
+	ResponseEntity<ResponseDto<Page<ReservationResponseDto>>> getConsumerReservationsWithPaging(
+		@RequestParam(required = false) String status,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "5") int size,
+		@RequestParam(defaultValue = "reservationDate") String sortBy,
+		@RequestParam(defaultValue = "DESC") String sortOrder,
+		HttpServletRequest request);
 }

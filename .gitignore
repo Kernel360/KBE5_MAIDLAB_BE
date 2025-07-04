@@ -42,3 +42,7 @@ out/
 
 ### env ###
 .env
+
+CLAUDE.md
+
+*.log

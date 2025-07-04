@@ -4,12 +4,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import kernel.maidlab.api.reservation.repository.*;
 import kernel.maidlab.common.entity.reservation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -121,7 +123,7 @@ public class ReservationServiceImpl implements ReservationService {
 			}
 		}
 	}
-
+	// 이전 예약 전체 조회 api
 	@Override
 	public List<ReservationResponseDto> allReservations(HttpServletRequest request) {
 		UserType userType = authUtil.getUserType(request);
@@ -135,6 +137,37 @@ public class ReservationServiceImpl implements ReservationService {
 
 		}
 	}
+
+	// 고객 맞춤 예약 내역 페이징 및 상태별 필터링
+    @Override
+    public Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size, String sortBy, String sortOrder, HttpServletRequest request) {
+        Consumer consumer = authUtil.getConsumer(request);
+        Long consumerId = consumer.getId();
+
+        if (size > 50) {
+            size = 50;
+        }
+
+        Set<String> allowedSortFields = new HashSet<>(Arrays.asList("createdAt", "reservationDate", "totalPrice", "completedAt", "startTime"));
+        if (!allowedSortFields.contains(sortBy)) {
+            sortBy = "createdAt";
+        }
+
+        Status statusEnum = null;
+        if (status != null && !status.trim().isEmpty()) {
+            try {
+                statusEnum = Status.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new ReservationException(ResponseType.VALIDATION_FAILED);
+            }
+        }
+
+        Sort.Direction direction = "ASC".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return reservationRepository.findConsumerReservationsWithPaging(consumerId, statusEnum, pageable);
+    }
 
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
