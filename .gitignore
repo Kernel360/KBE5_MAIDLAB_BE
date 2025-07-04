@@ -42,3 +42,9 @@ out/
 
 ### env ###
 .env
+
+### log ###
+*.log
+
+### claude ###
+.claude
