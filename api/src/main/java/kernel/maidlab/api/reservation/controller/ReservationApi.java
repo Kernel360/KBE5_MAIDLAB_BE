@@ -159,4 +159,11 @@ public interface ReservationApi {
 		@RequestParam(defaultValue = "reservationDate") String sortBy,
 		@RequestParam(defaultValue = "DESC") String sortOrder,
 		HttpServletRequest request);
+
+	ResponseEntity<ResponseDto<org.springframework.data.domain.Page<ReservationResponseDto>>> getManagerReservationsWithPaging(
+			@RequestParam(required = false) String status,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "5") int size,
+			@RequestParam(defaultValue = "DESC") String sortOrder,
+			HttpServletRequest request);
 }

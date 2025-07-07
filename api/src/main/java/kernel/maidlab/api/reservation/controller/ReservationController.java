@@ -68,6 +68,22 @@ public class ReservationController implements ReservationApi {
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 
+	@GetMapping("/manager")
+	public ResponseEntity<ResponseDto<org.springframework.data.domain.Page<ReservationResponseDto>>> getManagerReservationsWithPaging(
+			@RequestParam(required = false) String status,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "5") int size,
+			@RequestParam(defaultValue = "DESC") String sortOrder,
+			HttpServletRequest request) {
+		log.info("Get manager reservations with paging - status: {}, page: {}, size: {}, sortOrder: {}", 
+			status, page, size, sortOrder);
+		
+		org.springframework.data.domain.Page<ReservationResponseDto> response = 
+			reservationService.getManagerReservationsWithPaging(status, page, size, sortOrder, request);
+		
+		return ResponseDto.success(ResponseType.SUCCESS, response);
+	}
+
 	@GetMapping("/{reservationId}")
 	@Override
 	public ResponseEntity<ResponseDto<ReservationDetailResponseDto>> reservationDetail(@PathVariable Long reservationId,

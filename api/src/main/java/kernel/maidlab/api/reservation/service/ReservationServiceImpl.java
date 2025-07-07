@@ -169,6 +169,22 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationRepository.findConsumerReservationsWithPaging(consumerId, statusEnum, pageable);
     }
 
+    @Override
+    public Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size, String sortOrder, HttpServletRequest request) {
+        Manager manager = authUtil.getManager(request);
+        Long managerId = manager.getId();
+
+        if (size > 50) {
+            size = 50;
+        }
+
+        Sort.Direction direction = "ASC".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, "reservationDate");
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return reservationRepository.getManagerReservationsWithPaging(managerId, status, pageable);
+    }
+
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
 

@@ -18,5 +18,7 @@ public interface ReservationRepositoryCustom {
 	ReservationDetailResponseDto findDetailReservationByIdAndUser(Long reservationId, Long userId, UserType userType);
 
 	Page<ReservationResponseDto> findConsumerReservationsWithPaging(Long consumerId, Status status, Pageable pageable);
+	
+	Page<ReservationResponseDto> getManagerReservationsWithPaging(Long managerId, String status, Pageable pageable);
 
 }

@@ -1,5 +1,7 @@
 package kernel.maidlab.api.reservation.repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +16,8 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -186,6 +190,86 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 		} else {
 			// 기본 정렬: createdAt DESC
 			orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, reservation.createdAt));
+		}
+		
+		JPAQuery<ReservationResponseDto> query = queryFactory
+			.select(Projections.constructor(ReservationResponseDto.class,
+				reservation.id,
+				reservation.status,
+				reservation.serviceDetailType.serviceType.stringValue(),
+				reservation.serviceDetailType.serviceDetailType,
+				reservation.reservationDate.stringValue(),
+				reservation.startTime.stringValue().substring(11, 16),
+				reservation.endTime.stringValue().substring(11, 16),
+				JPAExpressions.selectOne().from(review).where(review.reservationId.eq(reservation.id)).exists(),
+				reservation.totalPrice))
+			.from(reservation)
+			.join(reservation.serviceDetailType, serviceDetailType)
+			.where(finalCondition)
+			.orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]));
+		
+		Long totalCount = queryFactory
+			.select(reservation.count())
+			.from(reservation)
+			.join(reservation.serviceDetailType, serviceDetailType)
+			.where(finalCondition)
+			.fetchOne();
+		
+		long total = totalCount != null ? totalCount : 0L;
+		
+		List<ReservationResponseDto> content = query
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+		
+		return new PageImpl<>(content, pageable, total);
+	}
+
+	@Override
+	public Page<ReservationResponseDto> getManagerReservationsWithPaging(Long managerId, String status, Pageable pageable) {
+		BooleanExpression baseCondition = reservation.managerId.eq(managerId);
+		BooleanExpression statusCondition = null;
+		
+		// 상태별 조건 처리
+		if ("TODAY".equals(status)) {
+			// 오늘 날짜 조건 (LocalDate와 LocalDateTime 비교를 위해 날짜 범위로 조건 생성)
+			LocalDate today = LocalDate.now();
+			LocalDateTime startOfDay = today.atStartOfDay();
+			LocalDateTime endOfDay = today.atTime(23, 59, 59);
+			statusCondition = reservation.reservationDate.goe(startOfDay).and(reservation.reservationDate.loe(endOfDay));
+		} else if ("PAID".equals(status)) {
+			// PAID와 MATCHED 상태 함께 조회
+			statusCondition = reservation.status.eq(Status.PAID).or(reservation.status.eq(Status.MATCHED));
+		} else if ("WORKING".equals(status)) {
+			statusCondition = reservation.status.eq(Status.WORKING);
+		} else if ("COMPLETED".equals(status)) {
+			statusCondition = reservation.status.eq(Status.COMPLETED);
+		}
+		
+		BooleanExpression finalCondition = statusCondition != null ? baseCondition.and(statusCondition) : baseCondition;
+		
+		// 정렬 조건 처리
+		List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
+		
+		if ("TODAY".equals(status)) {
+			// TODAY 요청시 상태별 우선순위 정렬 (WORKING > PAID > 나머지)
+			NumberExpression<Integer> statusPriority = new CaseBuilder()
+				.when(reservation.status.eq(Status.WORKING)).then(0)
+				.when(reservation.status.eq(Status.PAID)).then(1)
+				.otherwise(2);
+			orderSpecifiers.add(new OrderSpecifier<>(Order.ASC, statusPriority));
+		}
+		
+		// reservationDate 기준 정렬
+		Order direction = pageable.getSort().isSorted() && 
+			pageable.getSort().getOrderFor("reservationDate") != null &&
+			pageable.getSort().getOrderFor("reservationDate").isAscending() ? Order.ASC : Order.DESC;
+		
+		orderSpecifiers.add(new OrderSpecifier<>(direction, reservation.reservationDate));
+		
+		// PAID 상태일 때는 시간까지 고려한 정렬
+		if ("PAID".equals(status)) {
+			orderSpecifiers.add(new OrderSpecifier<>(direction, reservation.startTime));
 		}
 		
 		JPAQuery<ReservationResponseDto> query = queryFactory

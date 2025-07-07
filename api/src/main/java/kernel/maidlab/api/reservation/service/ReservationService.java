@@ -40,4 +40,6 @@ public interface ReservationService {
 	WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate);
 
 	Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size, String sortBy, String sortOrder, HttpServletRequest request);
+
+	Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size, String sortOrder, HttpServletRequest request);
 }
