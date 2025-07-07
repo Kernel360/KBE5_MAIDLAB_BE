@@ -20,9 +20,9 @@ spring:
 
 app:
   cookie:
-    domain: "api-maidlab.duckdns.org"
+    domain: ""
     secure: true
-    same-site: "Lax"
+    same-site: "None"
 
 aws:
   region: ap-northeast-2 #asia/seoul
