@@ -22,7 +22,7 @@ public class ReservationDetailResponseDto {
 	private String address;
 	private String addressDetail;
 
-	private String managerUuId;
+	private String managerUuid;
 	private String managerName;
 	private String managerProfileImageUrl;
 	private Float managerAverageRate;

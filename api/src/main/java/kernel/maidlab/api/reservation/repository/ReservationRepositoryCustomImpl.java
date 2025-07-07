@@ -137,7 +137,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 			.serviceDetailType(first.get(serviceDetailType.serviceDetailType))
 			.address(first.get(reservation.address))
 			.addressDetail(first.get(reservation.addressDetail))
-			.managerUuId(first.get(manager.uuid))
+			.managerUuid(first.get(manager.uuid))
 			.managerName(first.get(manager.name))
 			.managerProfileImageUrl(first.get(manager.profileImage))
 			.managerAverageRate(first.get(manager.averageRate))
