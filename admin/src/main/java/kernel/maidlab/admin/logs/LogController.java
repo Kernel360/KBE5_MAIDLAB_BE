@@ -20,7 +20,6 @@ public class LogController {
 
     @GetMapping("/full")
     public ResponseEntity<ResponseDto<String>> getFullLog() {
-        log.info("Admin request to get full log content");
         String logContent = logMonitoringService.getFullLogContent();
         return ResponseDto.success(logContent);
     }
@@ -28,14 +27,12 @@ public class LogController {
     @GetMapping("/tail")
     public ResponseEntity<ResponseDto<String>> getTailLog(
             @RequestParam(defaultValue = "100") int lines) {
-        log.info("Admin request to get tail log content with {} lines", lines);
         String logContent = logMonitoringService.getTailLogContent(lines);
         return ResponseDto.success(logContent);
     }
 
     @GetMapping("/info")
     public ResponseEntity<ResponseDto<LogInfo>> getLogInfo() {
-        log.info("Admin request to get log info");
         LogInfo info = new LogInfo();
         info.setWebSocketEndpoint("/admin/logs/stream");
         info.setCommands(new String[]{"get_full_log", "get_tail_log"});

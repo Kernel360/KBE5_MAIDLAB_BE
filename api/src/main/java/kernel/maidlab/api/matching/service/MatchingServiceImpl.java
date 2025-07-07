@@ -31,7 +31,9 @@ import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MatchingServiceImpl implements MatchingService {
@@ -54,14 +56,17 @@ public class MatchingServiceImpl implements MatchingService {
 		if (matchingRepository.existsByReservationId(matching.getReservationId())) {
 			throw new BaseException(ResponseType.DUPLICATE_RESERVATION_ID);
 		}
-		matchingRepository.save(matching);
+		Matching savedMatching = matchingRepository.save(matching);
+		log.info("매칭 생성 완료 - 매칭 ID: {}, 예약 ID: {}", savedMatching.getId(), dto.getReservationId());
 	}
 
 	@Transactional
 	@Override
 	public void changeStatus(Long reservationId, Status status) {
 		Matching matching = matchingRepository.findByReservationId(reservationId);
+		Status previousStatus = matching.getMatchingStatus();
 		matching.setMatchingStatus(status);
+		log.info("매칭 상태 변경 완료 - 예약 ID: {}, 이전 상태: {} -> 새 상태: {}", reservationId, previousStatus, status);
 	}
 
 	@Override
@@ -72,18 +77,13 @@ public class MatchingServiceImpl implements MatchingService {
 
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<Matching> matchings = matchingRepository.findByManagerId(manager.getId(), pageable);
-
-		return matchings.stream()
-			.filter(
-				matching -> matching.getMatchingStatus() != null && matching.getMatchingStatus().equals(Status.PENDING))
-			.map(matching -> {
-				Long reservationId = matching.getReservationId();
-				Reservation reservation = reservationRepository.findById(reservationId)
-					.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
-				return new RequestMatchingListResponseDto(reservation);
-			})
-			.toList();
+		return matchingRepository.findByManagerIdAndMatchingStatus(manager.getId(), Status.PENDING,
+			pageable).stream().map(matching -> {
+					Long reservationId = matching.getReservationId();
+					Reservation reservation = reservationRepository.findById(reservationId)
+						.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
+					return new RequestMatchingListResponseDto(reservation);
+			}).toList();
 	}
 
 	@Override
@@ -106,23 +106,18 @@ public class MatchingServiceImpl implements MatchingService {
 			expiredTime
 		);
 
-		if (updatedCount > 0) {
-			System.out.println("만료된 매칭 " + updatedCount + "건 상태 변경됨");
-		}else {
-			System.out.println("nothing to change");
-		}
+		// Expired matching status updates are handled silently
 	}
-
 
 	private String extractGuFromAddress(String address) {
 		// "구" 단위 추출 (예: "서울시 강남구 역삼동" -> "강남구")
 		// 단위를 바꾸고 싶을때는 filter의 endsWith 만 바꾸면 됨
-		if(address.startsWith("서"))
+		if (address.startsWith("서"))
 			return Arrays.stream(address.split(" "))
 				.filter(s -> s.endsWith("구"))
 				.findFirst()
 				.orElseThrow(() -> new BaseException(ResponseType.WRONG_ADDRESS));
-		//서울시가 아닌경우 시 단위로 나누게 함
+			//서울시가 아닌경우 시 단위로 나누게 함
 		else
 			return Arrays.stream(address.split(" "))
 				.filter(s -> s.endsWith("시"))

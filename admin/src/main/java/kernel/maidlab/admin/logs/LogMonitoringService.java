@@ -22,7 +22,7 @@ public class LogMonitoringService {
     @Value("${LOG_DIR:logs}")
     private String logDir;
 
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private volatile ScheduledExecutorService scheduler;
     private volatile long lastPosition = 0;
 
     public interface LogUpdateListener {
@@ -47,11 +47,17 @@ public class LogMonitoringService {
     public String getTailLogContent(int lines) {
         try {
             Path logPath = getLogPath();
+            
             if (!Files.exists(logPath)) {
                 return "Log file not found at: " + logPath.toString();
             }
 
             List<String> allLines = Files.readAllLines(logPath);
+            
+            if (allLines.isEmpty()) {
+                return "Log file is empty";
+            }
+            
             int start = Math.max(0, allLines.size() - lines);
             List<String> tailLines = allLines.subList(start, allLines.size());
             
@@ -63,6 +69,10 @@ public class LogMonitoringService {
     }
 
     public void startMonitoring(LogUpdateListener listener) {
+        if (scheduler == null || scheduler.isShutdown()) {
+            scheduler = Executors.newSingleThreadScheduledExecutor();
+        }
+        
         CompletableFuture.runAsync(() -> {
             try {
                 Path logPath = getLogPath();
@@ -87,7 +97,9 @@ public class LogMonitoringService {
     }
 
     public void stopMonitoring() {
-        scheduler.shutdown();
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
+        }
         lastPosition = 0;
     }
 

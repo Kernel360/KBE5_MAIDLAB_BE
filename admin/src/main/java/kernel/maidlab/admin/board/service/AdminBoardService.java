@@ -32,4 +32,8 @@ public interface AdminBoardService {
 
 	@Transactional
 	ResponseEntity<ResponseDto<Void>> modifyAnswer(AnswerRequestDto requestDto, Long answerId);
+
+	Long getRefundBoardWithoutAnswerCount(HttpServletRequest request);
+
+	Long getCounselBoardWithoutAnswerCount(HttpServletRequest request);
 }

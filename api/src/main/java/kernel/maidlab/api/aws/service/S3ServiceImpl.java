@@ -9,11 +9,13 @@ import org.springframework.stereotype.Service;
 
 import kernel.maidlab.common.dto.aws.PresignedFileResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3ServiceImpl implements S3Service {
@@ -42,6 +44,7 @@ public class S3ServiceImpl implements S3Service {
 				.build();
 
 			PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
+			log.info("Presigned URL 생성 완료 - 파일명: {}, URL 길이: {}", filename, presignedRequest.url().toString().length());
 
 			return new PresignedFileResponseDto(key, presignedRequest.url().toString());
 		}).toList();
@@ -58,6 +61,7 @@ public class S3ServiceImpl implements S3Service {
 			case "pdf" -> "application/pdf";
 			case "doc" -> "application/msword";
 			case "docx" -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+			case "webp" -> "image/webp";
 			default -> "application/octet-stream";
 		};
 	}

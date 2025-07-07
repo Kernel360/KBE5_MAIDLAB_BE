@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Image extends Base {
+public class BoardImage extends Base {
 
     @ManyToOne
     @JoinColumn(name = "board_id")

@@ -2,6 +2,7 @@ package kernel.maidlab.api.board.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.entity.board.BoardImage;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.api.auth.jwt.JwtFilter;
@@ -13,11 +14,11 @@ import kernel.maidlab.common.dto.board.request.BoardUpdateRequestDto;
 import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
 import kernel.maidlab.common.dto.board.response.BoardResponseDto;
 import kernel.maidlab.common.entity.board.Board;
-import kernel.maidlab.common.entity.board.Image;
 import kernel.maidlab.api.board.repository.BoardRepository;
 import kernel.maidlab.api.board.repository.ImageRepository;
 import kernel.maidlab.common.enums.UserType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -44,14 +46,15 @@ public class BoardServiceImpl implements BoardService {
 		UserBase user = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 
 		Board board = Board.createBoard(user, boardRequestDto);
-		boardRepository.save(board);
+		Board savedBoard = boardRepository.save(board);
 
 		boardRequestDto.getImages()
 			.forEach((imageDto) -> imageRepository.save(
-				new Image(
+				new BoardImage(
 					board,
 					imageDto.getImagePath(),
 					imageDto.getName())));
+		log.info("게시글 생성 완료 - 게시글 ID: {}, 제목: {}", savedBoard.getId(), boardRequestDto.getTitle());
 	}
 
 	// 게시글 전체 조회
@@ -91,9 +94,9 @@ public class BoardServiceImpl implements BoardService {
 				.orElseThrow(() -> new EntityNotFoundException("답변이 존재하지 않습니다."));
 		}
 
-		List<Image> images = imageRepository.findAllByBoardId(boardId);
+		List<BoardImage> boardImages = imageRepository.findAllByBoardId(boardId);
 
-		return BoardDetailResponseDto.from(board, images);
+		return BoardDetailResponseDto.from(board, boardImages);
 
 	}
 
@@ -114,10 +117,11 @@ public class BoardServiceImpl implements BoardService {
 
 		board.boardUpdate(boardUpdateRequestDto);
 
-		List<Image> currentImages = imageRepository.findAllByBoardId(boardId);
+		List<BoardImage> currentBoardImages = imageRepository.findAllByBoardId(boardId);
 		List<ImageDto> newImageDataList = boardUpdateRequestDto.getImages();
 
-		updateImages(currentImages, newImageDataList, board);
+		updateImages(currentBoardImages, newImageDataList, board);
+		log.info("게시글 수정 완료 - 게시글 ID: {}", boardId);
 
 	}
 
@@ -131,6 +135,7 @@ public class BoardServiceImpl implements BoardService {
 			.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시판 입니다."));
 
 		board.updateIsDelete(true);
+		log.info("게시글 삭제 완료 - 게시글 ID: {}", boardId);
 	}
 
 	/**
@@ -176,18 +181,18 @@ public class BoardServiceImpl implements BoardService {
 
 	// 이미지 수정 로직
 	// todo:너무 많은 역할을 담담하고 있음 - 추후 리펙토링 필요
-	public void updateImages(List<Image> currentImages, List<ImageDto> newImageDataList, Board board) {
+	public void updateImages(List<BoardImage> currentBoardImages, List<ImageDto> newImageDataList, Board board) {
 
 		// 사용자가 images null을 보낸 경우 기존 이미지만 삭제후 리턴
 		if (newImageDataList == null) {
 			imageRepository.deleteAllByBoard(board);
-			board.getImages().clear();
+			board.getBoardImages().clear();
 			return;
 		}
 
 		// 현재 이미지 ID 목록
-		Set<Long> currentImageIds = currentImages.stream()
-			.map(Image::getId)
+		Set<Long> currentImageIds = currentBoardImages.stream()
+			.map(BoardImage::getId)
 			.collect(Collectors.toSet());
 
 		// 사용자가 보낸 ID들 중 유효하지 않은 ID 체크
@@ -207,23 +212,23 @@ public class BoardServiceImpl implements BoardService {
 			.filter(Objects::nonNull)
 			.collect(Collectors.toSet());
 
-		List<Image> imagesToRemove = currentImages.stream()
+		List<BoardImage> imagesToRemove = currentBoardImages.stream()
 			.filter(img -> !newImageIds.contains(img.getId()))
 			.toList();
 
 		// 기존 이미지 업데이트
-		for (Image currentImage : currentImages) {
+		for (BoardImage currentBoardImage : currentBoardImages) {
 			newImageDataList.stream()
-				.filter(dto -> dto.getId() != null && dto.getId().equals(currentImage.getId()))
+				.filter(dto -> dto.getId() != null && dto.getId().equals(currentBoardImage.getId()))
 				.findFirst()
-				.ifPresent(currentImage::updateImage);
+				.ifPresent(currentBoardImage::updateImage);
 		}
 
 		// 새 이미지 추가 (ID가 null인 것들)
 		for (ImageDto dto : newImageDataList) {
 			if (dto.getId() == null) {
-				Image newImage = new Image(board, dto.getImagePath(), dto.getName());
-				board.getImages().add(newImage); // 연관관계 추가
+				BoardImage newBoardImage = new BoardImage(board, dto.getImagePath(), dto.getName());
+				board.getBoardImages().add(newBoardImage); // 연관관계 추가
 			}
 		}
 		imageRepository.deleteAll(imagesToRemove);

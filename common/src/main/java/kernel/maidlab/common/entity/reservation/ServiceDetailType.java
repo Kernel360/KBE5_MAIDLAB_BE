@@ -31,6 +31,4 @@ public class ServiceDetailType {
 	@Column(nullable = false)
 	private ServiceType serviceType;
 
-	@Column(nullable = false)
-	private BigDecimal servicePrice;
 }

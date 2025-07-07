@@ -20,7 +20,7 @@ import kernel.maidlab.common.dto.board.response.AdminBoardDetailResponseDto;
 import kernel.maidlab.common.dto.board.response.AdminBoardResponseDto;
 import kernel.maidlab.common.entity.board.Answer;
 import kernel.maidlab.common.entity.board.Board;
-import kernel.maidlab.common.entity.board.Image;
+import kernel.maidlab.common.entity.board.BoardImage;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -55,9 +55,9 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 			board = adminBoardRepository.findBoardWithAnswerIfAnswered(boardId);
 		}
 
-		List<Image> images = adminImageService.findAllByBoardId(boardId);
+		List<BoardImage> boardImages = adminImageService.findAllByBoardId(boardId);
 
-		return ResponseDto.success(AdminBoardDetailResponseDto.from(board, images));
+		return ResponseDto.success(AdminBoardDetailResponseDto.from(board, boardImages));
 	}
 
 	@Override
@@ -96,5 +96,15 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 
 	public Long getBoardWithoutAnswerCount(HttpServletRequest request) {
 		return adminBoardRepository.countByIsAnsweredFalseAndIsDeletedFalse();
+	}
+
+	@Override
+	public Long getRefundBoardWithoutAnswerCount(HttpServletRequest request) {
+		return adminBoardRepository.countByManagerIdNullAndIsAnsweredFalseAndIsDeletedFalse();
+	}
+
+	@Override
+	public Long getCounselBoardWithoutAnswerCount(HttpServletRequest request) {
+		return adminBoardRepository.countByConsumerIdNullAndIsAnsweredFalseAndIsDeletedFalse();
 	}
 }

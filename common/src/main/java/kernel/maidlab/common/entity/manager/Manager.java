@@ -52,6 +52,7 @@ public class Manager extends TimeBase implements UserBase {
 	@Column(name = "gender", nullable = false)
 	private Gender gender;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "social_type")
 	private SocialType socialType;
 
@@ -78,6 +79,9 @@ public class Manager extends TimeBase implements UserBase {
 
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted;
+
+	@Column(name = "emergency_call")
+	private String emergencyCall;
 
 	@ElementCollection(targetClass = Region.class, fetch = FetchType.LAZY)
 	@CollectionTable(

@@ -15,8 +15,7 @@ import kernel.maidlab.common.enums.Status;
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
 	boolean existsByReservationId(Long ReservationId);
 	Matching findByReservationId(Long ReservationId);
-	Page<Matching> findByManagerId(Long ManagerId, Pageable pageable);
-	Page<Matching> findAllByMatchingStatus(Status MatchingStatus, Pageable pageable);
+	Page<Matching> findByManagerIdAndMatchingStatus(Long id, Status status, Pageable pageable);
 
 	@Modifying
 	@Query("UPDATE Matching m SET m.matchingStatus = :rejectedStatus " +
@@ -26,4 +25,5 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
 		@Param("pendingStatus") Status pendingStatus,
 		@Param("expiredTime") LocalDateTime expiredTime
 	);
+
 }

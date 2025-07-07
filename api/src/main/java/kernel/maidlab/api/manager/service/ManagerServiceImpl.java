@@ -94,9 +94,11 @@ public class ManagerServiceImpl implements ManagerService {
 						serviceTypeEnum);
 					managerServiceTypeRepository.save(managerServiceType);
 				} catch (IllegalArgumentException e) {
+					log.warn("잘못된 서비스 타입 - 매니저 ID: {}, 서비스 타입: {}", manager.getId(), serviceItem.getServiceType());
 					throw new BaseException(ResponseType.VALIDATION_FAILED);
 				}
 			}
+			log.info("서비스 타입 등록 완료 - 매니저 ID: {}, 서비스 갯수: {}", manager.getId(), req.getServiceTypes().size());
 		}
 
 		if (req.getRegions() != null && !req.getRegions().isEmpty()) {
@@ -107,6 +109,7 @@ public class ManagerServiceImpl implements ManagerService {
 				ManagerRegion managerRegion = ManagerRegion.managerRegion(manager, region);
 				managerRegionRepository.save(managerRegion);
 			}
+			log.info("지역 정보 등록 완료 - 매니저 ID: {}, 지역 갯수: {}", manager.getId(), req.getRegions().size());
 		}
 
 		if (req.getAvailableTimes() != null && !req.getAvailableTimes().isEmpty()) {
@@ -119,6 +122,7 @@ public class ManagerServiceImpl implements ManagerService {
 				);
 				managerScheduleRepository.save(schedule);
 			}
+			log.info("스케줄 정보 등록 완료 - 매니저 ID: {}, 스케줄 갯수: {}", manager.getId(), req.getAvailableTimes().size());
 		}
 
 		if (req.getDocuments() != null && !req.getDocuments().isEmpty()) {
@@ -131,9 +135,11 @@ public class ManagerServiceImpl implements ManagerService {
 				);
 				managerDocumentRepository.save(document);
 			}
+			log.info("문서 등록 완료 - 매니저 ID: {}, 문서 갯수: {}", manager.getId(), req.getDocuments().size());
 		}
 
 		managerRepository.save(manager);
+		log.info("매니저 프로필 생성 완료 - 매니저 ID: {}", manager.getId());
 
 		return ResponseDto.success();
 	}
@@ -218,6 +224,7 @@ public class ManagerServiceImpl implements ManagerService {
 		managerServiceTypeRepository.deleteByManagerId(manager.getId());
 		managerRegionRepository.deleteByManagerId(manager.getId());
 		managerScheduleRepository.deleteByManagerId(manager.getId());
+		log.info("기존 매니저 서비스, 지역, 스케줄 정보 삭제 완료 - 매니저 ID: {}", manager.getId());
 
 		if (req.getServiceTypes() != null && !req.getServiceTypes().isEmpty()) {
 			for (ServiceListItem serviceItem : req.getServiceTypes()) {
@@ -227,9 +234,11 @@ public class ManagerServiceImpl implements ManagerService {
 						serviceTypeEnum);
 					managerServiceTypeRepository.save(managerServiceType);
 				} catch (IllegalArgumentException e) {
+					log.warn("잘못된 서비스 타입 수정 시도 - 매니저 ID: {}, 서비스 타입: {}", manager.getId(), serviceItem.getServiceType());
 					throw new BaseException(ResponseType.VALIDATION_FAILED);
 				}
 			}
+			log.info("서비스 타입 수정 완료 - 매니저 ID: {}, 새 서비스 갯수: {}", manager.getId(), req.getServiceTypes().size());
 		}
 
 		if (req.getRegions() != null && !req.getRegions().isEmpty()) {
@@ -240,6 +249,7 @@ public class ManagerServiceImpl implements ManagerService {
 				ManagerRegion managerRegion = ManagerRegion.managerRegion(manager, region);
 				managerRegionRepository.save(managerRegion);
 			}
+			log.info("지역 정보 수정 완료 - 매니저 ID: {}, 새 지역 갯수: {}", manager.getId(), req.getRegions().size());
 		}
 
 		if (req.getAvailableTimes() != null && !req.getAvailableTimes().isEmpty()) {
@@ -252,9 +262,11 @@ public class ManagerServiceImpl implements ManagerService {
 				);
 				managerScheduleRepository.save(schedule);
 			}
+			log.info("스케줄 정보 수정 완료 - 매니저 ID: {}, 새 스케줄 갯수: {}", manager.getId(), req.getAvailableTimes().size());
 		}
 
 		managerRepository.save(manager);
+		log.info("매니저 프로필 수정 완료 - 매니저 ID: {}", manager.getId());
 
 		return ResponseDto.success();
 	}

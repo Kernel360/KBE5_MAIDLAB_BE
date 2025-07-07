@@ -37,26 +37,12 @@ public class GoogleOAuthService {
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-		log.info("Google OAuth API 호출:");
-		log.info("  - URL: {}", url);
-		log.info("  - client_id: {}", clientId != null ? clientId.substring(0, 10) + "..." : "null");
-		log.info("  - redirect_uri: {}", redirectUri);
-		log.info("  - code: {}", code != null ? code.substring(0, 10) + "..." : "null");
-		log.info("  - grant_type: authorization_code");
 
 		try {
 			ResponseEntity<GoogleTokenDto> response = restTemplate.postForEntity(
 				url, request, GoogleTokenDto.class);
 
-			log.info("Google OAuth API 성공:");
-			log.info("  - status: {}", response.getStatusCode());
-			log.info("  - body: {}", response.getBody() != null ? "Present" : "null");
-
 			GoogleTokenDto tokenDto = response.getBody();
-			if (tokenDto != null) {
-				log.info("  - access_token: {}", tokenDto.getAccessToken() != null ? "Present" : "null");
-				log.info("  - token_type: {}", tokenDto.getTokenType());
-			}
 
 			return tokenDto;
 

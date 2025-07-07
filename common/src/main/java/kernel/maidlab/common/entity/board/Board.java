@@ -31,7 +31,7 @@ public class Board extends TimeBase {
     private Answer answer;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images;
+    private List<BoardImage> boardImages;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -97,8 +97,8 @@ public class Board extends TimeBase {
         }
     }
 
-    public List<Image> getImages() {
-        return images != null ? images : Collections.emptyList();
+    public List<BoardImage> getBoardImages() {
+        return boardImages != null ? boardImages : Collections.emptyList();
     }
 
     public void boardUpdate(BoardUpdateRequestDto dto) {

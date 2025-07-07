@@ -80,6 +80,7 @@ public class ReservationServiceImpl implements ReservationService {
 			// 매니저 선호도 테이블 관리
 			if (dto.getLikes() != null) {
 				managerPreferenceRepository.save(new ManagerPreference(consumer, manager, dto.getLikes()));
+				log.info("매니저 선호도 등록 - Consumer ID: {}, Manager ID: {}, 선호도: {}", consumer.getId(), manager.getId(), dto.getLikes());
 			}
 
 			// 매니저 평균 평점(average_rate) 관리
@@ -92,6 +93,7 @@ public class ReservationServiceImpl implements ReservationService {
 				manager.updateAverageRate(newAverageRate);
 			}
 			managerRepository.save(manager);
+			log.info("매니저 평균 평점 업데이트 - Manager ID: {}, 이전 평점: {}, 새 평점: {}", manager.getId(), averageRate, manager.getAverageRate());
 
 		} else if (userType == UserType.MANAGER) {
 			Consumer consumer = consumerRepository.findById(reservation.getConsumerId())
@@ -107,13 +109,14 @@ public class ReservationServiceImpl implements ReservationService {
 				consumer.updateAverageRate(newAverageRate);
 			}
 			consumerRepository.save(consumer);
+			log.info("Consumer 평균 평점 업데이트 - Consumer ID: {}, 이전 평점: {}, 새 평점: {}", consumer.getId(), averageRate, consumer.getAverageRate());
 		} else {
 			throw new ReservationException(ResponseType.INVALID_USER_TYPE);
 		}
 
 		// 리뷰 등록
 		Review review = Review.of(dto, reservation, isConsumerToManager);
-		reviewRepository.save(review);
+		Review savedReview = reviewRepository.save(review);
 
 		// 키워드가 있으면 저장
 		if (dto.getKeywords() != null && !dto.getKeywords().isEmpty()) {
@@ -122,6 +125,7 @@ public class ReservationServiceImpl implements ReservationService {
 				reviewKeywordRepository.save(reviewKeyword);
 			}
 		}
+		log.info("리뷰 등록 완료 - 리뷰 ID: {}, 예약 ID: {}", savedReview.getId(), reservation.getId());
 	}
 	// 이전 예약 전체 조회 api
 	@Override
@@ -201,7 +205,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Transactional
 	@Override
-	public void createReservation(ReservationRequestDto dto, HttpServletRequest request) {
+	public Long createReservation(ReservationRequestDto dto, HttpServletRequest request) {
 		// 매칭된 매니저 존재 확인
 		if (dto.getManagerUuId().isEmpty() || dto.getManagerUuId().isBlank()){
 			throw new ReservationException(ResponseType.AVAILABLE_MANAGER_DOES_NOT_EXIST);
@@ -231,6 +235,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 		Reservation reservation = Reservation.of(dto, consumerId, managerId, detailType);
 		Reservation matchingReservation = reservationRepository.save(reservation);
+		log.info("예약 생성 완료 - 예약 ID: {}, Consumer ID: {}, Manager ID: {}", matchingReservation.getId(), consumerId, managerId);
 
 		// 예약 완료 시 manager 매칭
 		Matching match = Matching.of(MatchingResponseDto.builder()
@@ -238,7 +243,10 @@ public class ReservationServiceImpl implements ReservationService {
 			.managerId(matchingReservation.getManagerId())
 			.matchingStatus(Status.PENDING)
 			.build());
-		matchingRepository.save(match);
+		Matching savedMatching = matchingRepository.save(match);
+		log.info("매칭 생성 완료 - 매칭 ID: {}, 예약 ID: {}", savedMatching.getId(), matchingReservation.getId());
+
+		return reservation.getId();
 
 	}
 

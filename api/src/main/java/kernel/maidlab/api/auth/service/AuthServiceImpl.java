@@ -87,7 +87,8 @@ public class AuthServiceImpl implements AuthService {
 				req.getGender(),
 				req.getBirth()
 			);
-			consumerRepository.save(consumer);
+			Long id = consumerRepository.save(consumer).getId();
+			log.info("Consumer 회원가입 완료 - ID: {}, 이름: {}", id, req.getName());
 		} else {
 			Manager manager = Manager.createManager(
 				req.getPhoneNumber(),
@@ -96,7 +97,8 @@ public class AuthServiceImpl implements AuthService {
 				req.getGender(),
 				req.getBirth()
 			);
-			managerRepository.save(manager);
+			Long id = managerRepository.save(manager).getId();
+			log.info("Manager 회원가입 완료 - ID: {}, 이름: {}", id, req.getName());
 		}
 
 		return ResponseDto.success();
@@ -117,10 +119,12 @@ public class AuthServiceImpl implements AuthService {
 			.orElseThrow(() -> new BaseException(ResponseType.LOGIN_FAILED));
 
 		if (consumer.getIsDeleted()) {
+			log.warn("탈퇴한 Consumer 계정 로그인 시도 - ID: {}", consumer.getId());
 			throw new BaseException(ResponseType.ACCOUNT_DELETED);
 		}
 
 		if (!passwordUtil.checkPassword(req.getPassword(), consumer.getPassword())) {
+			log.warn("Consumer 로그인 실패 - 잘못된 비밀번호, ID: {}", consumer.getId());
 			throw new BaseException(ResponseType.LOGIN_FAILED);
 		}
 
@@ -130,6 +134,7 @@ public class AuthServiceImpl implements AuthService {
 		cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
 
 		boolean profileCompleted = consumer.hasCompleteProfile();
+		log.info("Consumer 로그인 성공 - ID: {},이름: {}, 프로필 완성 여부: {},", consumer.getId(), consumer.getName(),profileCompleted);
 
 		LoginResponseDto responseDto = new LoginResponseDto(
 			tokenPair.getAccessToken(),
@@ -145,10 +150,12 @@ public class AuthServiceImpl implements AuthService {
 			.orElseThrow(() -> new BaseException(ResponseType.LOGIN_FAILED));
 
 		if (manager.getIsDeleted()) {
+			log.warn("탈퇴한 Manager 계정 로그인 시도 - ID: {}", manager.getId());
 			throw new BaseException(ResponseType.ACCOUNT_DELETED);
 		}
 
 		if (!passwordUtil.checkPassword(req.getPassword(), manager.getPassword())) {
+			log.warn("Manager 로그인 실패 - 잘못된 비밀번호, ID: {}", manager.getId());
 			throw new BaseException(ResponseType.LOGIN_FAILED);
 		}
 
@@ -158,6 +165,7 @@ public class AuthServiceImpl implements AuthService {
 		cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
 
 		boolean profileCompleted = manager.hasCompleteProfile();
+		log.info("Manager 로그인 성공 - ID: {}, 프로필 완성 여부: {}", manager.getId(), profileCompleted);
 
 		LoginResponseDto responseDto = new LoginResponseDto(
 			tokenPair.getAccessToken(),
@@ -176,11 +184,13 @@ public class AuthServiceImpl implements AuthService {
 		HttpServletResponse res) {
 
 		if (req.getCode() == null || req.getCode().trim().isEmpty()) {
+			log.warn("소셜 로그인 실패 - 인증 코드 누락");
 			throw new BaseException(ResponseType.VALIDATION_FAILED);
 		}
 
 		String accessToken = getGoogleAccessToken(req.getCode(), request);  // request 전달
 		GoogleResourceDto googleUser = getGoogleUserResource(accessToken);
+		log.info("Google 사용자 정보 조회 성공 - ID: {}, 이름: {}", googleUser.getId(), googleUser.getName());
 
 		if (req.getUserType() == UserType.CONSUMER) {
 			return socialLoginConsumer(googleUser, res);
@@ -364,7 +374,6 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public ResponseEntity<ResponseDto<Void>> socialSignUp(SocialSignUpRequestDto req, HttpServletRequest req2) {
 		JwtDto.TempTokenInfo googleInfo = extractGoogleInfo(req2);
-
 		if (googleInfo.getUserType() == UserType.CONSUMER) {
 			Consumer consumer = Consumer.createSocialConsumer(
 				googleInfo.getGoogleId(),
@@ -373,7 +382,8 @@ public class AuthServiceImpl implements AuthService {
 				req.getBirth(),
 				SocialType.GOOGLE
 			);
-			consumerRepository.save(consumer);
+			Consumer savedConsumer = consumerRepository.save(consumer);
+			log.info("소셜 Consumer 회원가입 완료 - ID: {}, 이름: {}", savedConsumer.getId(), googleInfo.getGoogleName());
 		} else {
 			Manager manager = Manager.createSocialManager(
 				googleInfo.getGoogleId(),
@@ -382,7 +392,8 @@ public class AuthServiceImpl implements AuthService {
 				req.getBirth(),
 				SocialType.GOOGLE
 			);
-			managerRepository.save(manager);
+			Manager savedManager = managerRepository.save(manager);
+			log.info("소셜 Manager 회원가입 완료 - ID: {}, 이름: {}", savedManager.getId(), googleInfo.getGoogleName());
 		}
 
 		return ResponseDto.success(null);
@@ -394,10 +405,12 @@ public class AuthServiceImpl implements AuthService {
 		JwtDto.RefreshResult result = jwtProvider.refreshTokens(refreshToken);
 
 		if (!result.isSuccess()) {
+			log.warn("토큰 갱신 실패 - 유효하지 않은 리프레시 토큰");
 			throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);
 		}
 
 		cookieUtil.setRefreshTokenCookie(res, result.getRefreshToken());
+		log.info("토큰 갱신 성공");
 
 		long expirationTime = jwtProperties.getExpiration().getAccess();
 
@@ -421,21 +434,25 @@ public class AuthServiceImpl implements AuthService {
 				.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
 
 			if (consumer.getSocialType() != null) {
+				log.warn("소셜 계정 비밀번호 변경 시도 - ID: {}, 소셜 타입: {}", consumer.getId(), consumer.getSocialType());
 				throw new BaseException(ResponseType.VALIDATION_FAILED);
 			}
 
 			consumer.updatePassword(encodedNewPassword);
 			consumerRepository.save(consumer);
+			log.info("Consumer 비밀번호 변경 완료 - ID: {}", consumer.getId());
 		} else {
 			Manager manager = managerRepository.findByUuid(uuid)
 				.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
 
 			if (manager.getSocialType() != null) {
+				log.warn("소셜 계정 비밀번호 변경 시도 - ID: {}, 소셜 타입: {}", manager.getId(), manager.getSocialType());
 				throw new BaseException(ResponseType.VALIDATION_FAILED);
 			}
 
 			manager.updatePassword(encodedNewPassword);
 			managerRepository.save(manager);
+			log.info("Manager 비밀번호 변경 완료 - ID: {}", manager.getId());
 		}
 
 		jwtProvider.removeRefreshToken(uuid, userType);
@@ -448,7 +465,6 @@ public class AuthServiceImpl implements AuthService {
 	public ResponseEntity<ResponseDto<Void>> logout(HttpServletRequest req, HttpServletResponse res) {
 		String uuid = (String)req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
 		UserType userType = (UserType)req.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-
 		jwtProvider.removeRefreshToken(uuid, userType);
 		cookieUtil.clearRefreshTokenCookie(res);
 
@@ -460,13 +476,13 @@ public class AuthServiceImpl implements AuthService {
 	public ResponseEntity<ResponseDto<Void>> withdraw(HttpServletRequest req, HttpServletResponse res) {
 		String uuid = (String)req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
 		UserType userType = (UserType)req.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-
 		if (userType == UserType.CONSUMER) {
 			Consumer consumer = consumerRepository.findByUuid(uuid)
 				.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
 
 			consumer.deleteAccount();
 			consumerRepository.save(consumer);
+			log.info("Consumer 회원탈퇴 완료 - ID: {}", consumer.getId());
 
 		} else {
 			Manager manager = managerRepository.findByUuid(uuid)
@@ -474,6 +490,7 @@ public class AuthServiceImpl implements AuthService {
 
 			manager.deleteAccount();
 			managerRepository.save(manager);
+			log.info("Manager 회원탈퇴 완료 - ID: {}", manager.getId());
 
 		}
 
