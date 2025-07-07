@@ -204,7 +204,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public Long createReservation(ReservationRequestDto dto, HttpServletRequest request) {
 		// 매칭된 매니저 존재 확인
-		if (dto.getManagerUuId().isEmpty() || dto.getManagerUuId().isBlank()){
+		if (dto.getManagerUuid().isEmpty() || dto.getManagerUuid().isBlank()){
 			throw new ReservationException(ResponseType.AVAILABLE_MANAGER_DOES_NOT_EXIST);
 		}
 
@@ -226,7 +226,7 @@ public class ReservationServiceImpl implements ReservationService {
 			.orElseThrow(() -> new ReservationException(ResponseType.VALIDATION_FAILED));
 
 		// managerUuid → managerId 변환
-		Manager manager = managerRepository.findByUuid(dto.getManagerUuId())
+		Manager manager = managerRepository.findByUuid(dto.getManagerUuid())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 		Long managerId = manager.getId();
 
