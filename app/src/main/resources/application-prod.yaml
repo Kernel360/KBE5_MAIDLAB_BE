@@ -20,7 +20,7 @@ spring:
 
 app:
   cookie:
-    domain: ""
+    domain: "api-maidlab.duckdns.org"
     secure: true
     same-site: "Lax"
 
