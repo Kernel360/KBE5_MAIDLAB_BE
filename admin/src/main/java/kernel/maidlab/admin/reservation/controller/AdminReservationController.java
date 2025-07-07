@@ -19,6 +19,7 @@ import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResp
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
+import kernel.maidlab.common.dto.reservation.response.SettlementGraphDataDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import lombok.RequiredArgsConstructor;
@@ -151,5 +152,15 @@ public class AdminReservationController implements AdminReservationApi {
 		return ResponseDto.success(ResponseType.SUCCESS, adminReservationsService.getManagerReviewedPercent(request, managerId));
 	}
 
+	@GetMapping("/settlements/graph")
+	@Override
+	public ResponseEntity<ResponseDto<SettlementGraphDataDto>> getSettlementGraphData(
+		HttpServletRequest request,
+		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+		@RequestParam(required = false, defaultValue = "DAILY") String period) {
+		SettlementGraphDataDto response = adminReservationsService.getSettlementGraphData(request, startDate, endDate, period);
+		return ResponseDto.success(ResponseType.SUCCESS, response);
+	}
 
 }

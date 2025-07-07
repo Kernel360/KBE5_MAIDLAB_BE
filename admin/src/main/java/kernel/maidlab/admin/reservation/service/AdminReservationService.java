@@ -10,6 +10,7 @@ import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResp
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
+import kernel.maidlab.common.dto.reservation.response.SettlementGraphDataDto;
 
 public interface AdminReservationService {
 	List<ReservationResponseDto> adminReservations(HttpServletRequest request, int page, int size);
@@ -46,4 +47,6 @@ public interface AdminReservationService {
 	BigDecimal getTotalSettlementAmountByManagerId(HttpServletRequest request, Long managerId);
 
 	BigDecimal getManagerReviewedPercent(HttpServletRequest request, Long managerId);
+
+	SettlementGraphDataDto getSettlementGraphData(HttpServletRequest request, LocalDate startDate, LocalDate endDate, String period);
 }

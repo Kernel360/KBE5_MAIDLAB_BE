@@ -5,9 +5,14 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.WeekFields;
+import java.util.Locale;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +34,7 @@ import kernel.maidlab.common.dto.reservation.response.AdminSettlementResponseDto
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
+import kernel.maidlab.common.dto.reservation.response.SettlementGraphDataDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.entity.reservation.Reservation;
@@ -289,5 +295,134 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 	@Override
 	public BigDecimal getTotalSettlementAmountByManagerId(HttpServletRequest request, Long managerId) {
 		return adminSettlementRepository.sumAmountByManagerId(managerId);
+	}
+
+	@Override
+	public SettlementGraphDataDto getSettlementGraphData(HttpServletRequest request, LocalDate startDate, LocalDate endDate, String period) {
+		if (startDate == null) {
+			startDate = LocalDate.now().minusDays(30);
+		}
+		if (endDate == null) {
+			endDate = LocalDate.now();
+		}
+
+		LocalDateTime startDateTime = startDate.atStartOfDay();
+		LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
+
+		List<Settlement> settlements = adminSettlementRepository.findAllByCreatedAtBetween(startDateTime, endDateTime);
+
+		List<SettlementGraphDataDto.DailySettlementData> dailyData = getDailyData(settlements);
+		List<SettlementGraphDataDto.WeeklySettlementData> weeklyData = getWeeklyData(settlements);
+		List<SettlementGraphDataDto.MonthlySettlementData> monthlyData = getMonthlyData(settlements);
+
+		List<SettlementGraphDataDto.ServiceTypeData> serviceTypeData = settlements.stream()
+			.collect(Collectors.groupingBy(settlement -> settlement.getServiceType().toString()))
+			.entrySet().stream()
+			.map(entry -> {
+				String serviceType = entry.getKey();
+				List<Settlement> serviceSettlements = entry.getValue();
+				BigDecimal totalAmount = serviceSettlements.stream()
+					.map(Settlement::getAmount)
+					.reduce(BigDecimal.ZERO, BigDecimal::add);
+				return new SettlementGraphDataDto.ServiceTypeData(serviceType, totalAmount, (long) serviceSettlements.size());
+			})
+			.collect(Collectors.toList());
+
+		List<SettlementGraphDataDto.StatusData> statusData = settlements.stream()
+			.collect(Collectors.groupingBy(settlement -> settlement.getStatus().toString()))
+			.entrySet().stream()
+			.map(entry -> {
+				String status = entry.getKey();
+				List<Settlement> statusSettlements = entry.getValue();
+				BigDecimal totalAmount = statusSettlements.stream()
+					.map(Settlement::getAmount)
+					.reduce(BigDecimal.ZERO, BigDecimal::add);
+				return new SettlementGraphDataDto.StatusData(status, totalAmount, (long) statusSettlements.size());
+			})
+			.collect(Collectors.toList());
+
+		BigDecimal totalAmount = settlements.stream()
+			.map(Settlement::getAmount)
+			.reduce(BigDecimal.ZERO, BigDecimal::add);
+
+		BigDecimal totalPlatformFee = settlements.stream()
+			.map(Settlement::getPlatformFee)
+			.reduce(BigDecimal.ZERO, BigDecimal::add);
+
+		Long totalCount = (long) settlements.size();
+
+		return new SettlementGraphDataDto(dailyData, weeklyData, monthlyData, serviceTypeData, statusData, totalAmount, totalPlatformFee, totalCount);
+	}
+
+	private List<SettlementGraphDataDto.DailySettlementData> getDailyData(List<Settlement> settlements) {
+		return settlements.stream()
+			.collect(Collectors.groupingBy(settlement -> settlement.getCreatedAt().toLocalDate()))
+			.entrySet().stream()
+			.map(entry -> {
+				LocalDate date = entry.getKey();
+				List<Settlement> dailySettlements = entry.getValue();
+				BigDecimal totalAmount = dailySettlements.stream()
+					.map(Settlement::getAmount)
+					.reduce(BigDecimal.ZERO, BigDecimal::add);
+				BigDecimal totalPlatformFee = dailySettlements.stream()
+					.map(Settlement::getPlatformFee)
+					.reduce(BigDecimal.ZERO, BigDecimal::add);
+				return new SettlementGraphDataDto.DailySettlementData(date, totalAmount, totalPlatformFee, (long) dailySettlements.size());
+			})
+			.sorted((a, b) -> a.getDate().compareTo(b.getDate()))
+			.collect(Collectors.toList());
+	}
+
+	private List<SettlementGraphDataDto.WeeklySettlementData> getWeeklyData(List<Settlement> settlements) {
+		WeekFields weekFields = WeekFields.of(Locale.getDefault());
+		return settlements.stream()
+			.collect(Collectors.groupingBy(settlement -> {
+				LocalDate date = settlement.getCreatedAt().toLocalDate();
+				return date.with(weekFields.dayOfWeek(), 1);
+			}))
+			.entrySet().stream()
+			.map(entry -> {
+				LocalDate weekStart = entry.getKey();
+				LocalDate weekEnd = weekStart.plusDays(6);
+				List<Settlement> weeklySettlements = entry.getValue();
+				BigDecimal totalAmount = weeklySettlements.stream()
+					.map(Settlement::getAmount)
+					.reduce(BigDecimal.ZERO, BigDecimal::add);
+				BigDecimal totalPlatformFee = weeklySettlements.stream()
+					.map(Settlement::getPlatformFee)
+					.reduce(BigDecimal.ZERO, BigDecimal::add);
+				return new SettlementGraphDataDto.WeeklySettlementData(weekStart, weekEnd, totalAmount, totalPlatformFee, (long) weeklySettlements.size());
+			})
+			.sorted((a, b) -> a.getWeekStart().compareTo(b.getWeekStart()))
+			.collect(Collectors.toList());
+	}
+
+	private List<SettlementGraphDataDto.MonthlySettlementData> getMonthlyData(List<Settlement> settlements) {
+		return settlements.stream()
+			.collect(Collectors.groupingBy(settlement -> {
+				LocalDate date = settlement.getCreatedAt().toLocalDate();
+				return date.getYear() * 100 + date.getMonthValue();
+			}))
+			.entrySet().stream()
+			.map(entry -> {
+				int yearMonth = entry.getKey();
+				int year = yearMonth / 100;
+				int month = yearMonth % 100;
+				List<Settlement> monthlySettlements = entry.getValue();
+				BigDecimal totalAmount = monthlySettlements.stream()
+					.map(Settlement::getAmount)
+					.reduce(BigDecimal.ZERO, BigDecimal::add);
+				BigDecimal totalPlatformFee = monthlySettlements.stream()
+					.map(Settlement::getPlatformFee)
+					.reduce(BigDecimal.ZERO, BigDecimal::add);
+				return new SettlementGraphDataDto.MonthlySettlementData(year, month, totalAmount, totalPlatformFee, (long) monthlySettlements.size());
+			})
+			.sorted((a, b) -> {
+				if (a.getYear() != b.getYear()) {
+					return Integer.compare(a.getYear(), b.getYear());
+				}
+				return Integer.compare(a.getMonth(), b.getMonth());
+			})
+			.collect(Collectors.toList());
 	}
 }

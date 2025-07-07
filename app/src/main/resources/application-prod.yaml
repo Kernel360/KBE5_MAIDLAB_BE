@@ -22,7 +22,7 @@ app:
   cookie:
     domain: ""
     secure: true
-    same-site: "None"
+    same-site: "Lax"
 
 aws:
   region: ap-northeast-2 #asia/seoul
