@@ -21,6 +21,7 @@ import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResp
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
+import kernel.maidlab.common.dto.reservation.response.SettlementGraphDataDto;
 import kernel.maidlab.common.dto.ResponseDto;
 
 @Tag(name = "Reservation", description = "예약 관련 API")
@@ -122,4 +123,16 @@ public interface AdminReservationApi {
 	@GetMapping("/managerreviewedpercent/{managerId}")
 	ResponseEntity<ResponseDto<BigDecimal>> managerReviewedPercent(HttpServletRequest request,
 		@PathVariable Long consumerId);
+
+	@GetMapping("/settlements/graph")
+	@Operation(summary = "정산 그래프 데이터 조회", description = "관리자 대시보드용 정산 그래프 데이터를 조회합니다.", security = @SecurityRequirement(name = "JWT"))
+	@ApiResponses({@ApiResponse(responseCode = "200", description = "조회 성공"),
+		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
+		@ApiResponse(responseCode = "403", description = "권한 없음"),
+		@ApiResponse(responseCode = "500", description = "데이터베이스 오류")})
+	ResponseEntity<ResponseDto<SettlementGraphDataDto>> getSettlementGraphData(
+		HttpServletRequest request,
+		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+		@RequestParam(required = false, defaultValue = "DAILY") String period);
 }
