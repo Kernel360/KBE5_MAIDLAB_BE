@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,13 +24,15 @@ public class AdminMatchingServiceImpl implements AdminMatchingService {
 
 	@Override
 	public List<MatchingResponseDto> allMatching(HttpServletRequest request, int page, int size) {
-		Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "updatedAt"));
 		Page<Matching> matchings = adminMatchingRepository.findAll(pageable);
 		return matchings.stream()
 			.map(matching -> MatchingResponseDto.builder()
 				.reservationId(matching.getReservationId())
 				.managerId(matching.getManagerId())
 				.matchingStatus(matching.getMatchingStatus())
+				.matchingCount(matching.getMatchingCount())
+				.updatedAt(matching.getUpdatedAt())
 				.build())
 			.toList();
 	}
@@ -38,12 +41,14 @@ public class AdminMatchingServiceImpl implements AdminMatchingService {
 	public List<MatchingResponseDto> statusMatching(Status status, int page, int size) {
 		Page<Matching> matchings;
 		Pageable pageable = PageRequest.of(page, size);
-		matchings = adminMatchingRepository.findAllByMatchingStatus(status, pageable);
+		matchings = adminMatchingRepository.findAllByMatchingStatusOrderByUpdatedAtDesc(status, pageable);
 		return matchings.stream()
 			.map(matching -> MatchingResponseDto.builder()
 				.reservationId(matching.getReservationId())
 				.managerId(matching.getManagerId())
 				.matchingStatus(matching.getMatchingStatus())
+				.matchingCount(matching.getMatchingCount())
+				.updatedAt(matching.getUpdatedAt())
 				.build())
 			.toList();
 	}

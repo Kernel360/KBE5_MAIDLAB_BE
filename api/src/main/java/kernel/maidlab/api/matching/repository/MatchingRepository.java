@@ -1,6 +1,7 @@
 package kernel.maidlab.api.matching.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,4 +27,7 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
 		@Param("expiredTime") LocalDateTime expiredTime
 	);
 
+	List<Matching> findByMatchingStatusAndUpdatedAtBefore(Status status, LocalDateTime expiredTime);
+
+	List<Matching> findByMatchingCountGreaterThanEqualOrderByUpdatedAtDesc(int i);
 }
