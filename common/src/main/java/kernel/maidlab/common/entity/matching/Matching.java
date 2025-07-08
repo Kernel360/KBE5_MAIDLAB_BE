@@ -31,21 +31,28 @@ public class Matching extends TimeBase {
 	@Enumerated(EnumType.STRING)
 	private Status matchingStatus;
 
+	@Setter
+	@Column
+	private Integer matchingCount;
+
 	private Matching (
 		Long reservationId,
 		Long managerId,
-		Status matchingStatus
+		Status matchingStatus,
+		Integer matchingCount
 	) {
 		this.reservationId = reservationId;
 		this.managerId = managerId;
 		this.matchingStatus = matchingStatus;
+		this.matchingCount = matchingCount;
 	}
 
 	public static Matching of(MatchingResponseDto dto){
 		return new Matching(
 			dto.getReservationId(),
 			dto.getManagerId(),
-			dto.getMatchingStatus()
+			dto.getMatchingStatus(),
+			dto.getMatchingCount()
 		);
 	}
 
