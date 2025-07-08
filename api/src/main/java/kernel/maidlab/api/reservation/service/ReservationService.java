@@ -3,6 +3,8 @@ package kernel.maidlab.api.reservation.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
 import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
@@ -36,4 +38,8 @@ public interface ReservationService {
 	void registerReview(ReviewRegisterRequestDto dto, HttpServletRequest request);
 
 	WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate);
+
+	Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size, String sortBy, String sortOrder, HttpServletRequest request);
+
+	Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size, String sortOrder, HttpServletRequest request);
 }
