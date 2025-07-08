@@ -45,6 +45,10 @@ dependencies {
     implementation project(':common')
     implementation project(':api')
 
+    // 모니터링
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
     //FeignClient
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 

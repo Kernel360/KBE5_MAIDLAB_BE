@@ -32,15 +32,17 @@ import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.common.util.RoomSizeRuleUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -123,7 +125,7 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 		log.info("리뷰 등록 완료 - 리뷰 ID: {}, 예약 ID: {}", savedReview.getId(), reservation.getId());
 	}
-
+	// 이전 예약 전체 조회 api
 	@Override
 	public List<ReservationResponseDto> allReservations(HttpServletRequest request) {
 		UserType userType = authUtil.getUserType(request);
@@ -137,6 +139,53 @@ public class ReservationServiceImpl implements ReservationService {
 
 		}
 	}
+
+	// 고객 맞춤 예약 내역 페이징 및 상태별 필터링
+    @Override
+    public Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size, String sortBy, String sortOrder, HttpServletRequest request) {
+        Consumer consumer = authUtil.getConsumer(request);
+        Long consumerId = consumer.getId();
+
+        if (size > 50) {
+            size = 50;
+        }
+
+        Set<String> allowedSortFields = new HashSet<>(Arrays.asList("createdAt", "reservationDate", "totalPrice", "completedAt", "startTime"));
+        if (!allowedSortFields.contains(sortBy)) {
+            sortBy = "createdAt";
+        }
+
+        Status statusEnum = null;
+        if (status != null && !status.trim().isEmpty()) {
+            try {
+                statusEnum = Status.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new ReservationException(ResponseType.VALIDATION_FAILED);
+            }
+        }
+
+        Sort.Direction direction = "ASC".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return reservationRepository.findConsumerReservationsWithPaging(consumerId, statusEnum, pageable);
+    }
+
+    @Override
+    public Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size, String sortOrder, HttpServletRequest request) {
+        Manager manager = authUtil.getManager(request);
+        Long managerId = manager.getId();
+
+        if (size > 50) {
+            size = 50;
+        }
+
+        Sort.Direction direction = "ASC".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, "reservationDate");
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return reservationRepository.getManagerReservationsWithPaging(managerId, status, pageable);
+    }
 
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
@@ -156,7 +205,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public Long createReservation(ReservationRequestDto dto, HttpServletRequest request) {
 		// 매칭된 매니저 존재 확인
-		if (dto.getManagerUuId().isEmpty() || dto.getManagerUuId().isBlank()){
+		if (dto.getManagerUuid().isEmpty() || dto.getManagerUuid().isBlank()){
 			throw new ReservationException(ResponseType.AVAILABLE_MANAGER_DOES_NOT_EXIST);
 		}
 
@@ -178,7 +227,7 @@ public class ReservationServiceImpl implements ReservationService {
 			.orElseThrow(() -> new ReservationException(ResponseType.VALIDATION_FAILED));
 
 		// managerUuid → managerId 변환
-		Manager manager = managerRepository.findByUuid(dto.getManagerUuId())
+		Manager manager = managerRepository.findByUuid(dto.getManagerUuid())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 		Long managerId = manager.getId();
 
@@ -363,7 +412,6 @@ public class ReservationServiceImpl implements ReservationService {
 	// 	return reservationRepository.findById(reservationId)
 	// 		.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
 	// }
-
 }
 
 

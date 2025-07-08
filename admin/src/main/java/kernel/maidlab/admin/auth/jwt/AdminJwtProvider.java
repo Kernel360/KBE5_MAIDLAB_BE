@@ -136,6 +136,17 @@ public class AdminJwtProvider {
 				return AdminJwtDto.AdminValidationResult.failure("관리자 토큰이 아닙니다.");
 			}
 
+			// 리프레시 토큰의 경우 DB 저장된 토큰과 일치하는지 확인
+			if (type.equals("refresh")) {
+				String storedRefreshToken = getStoredAdminRefreshToken(adminKey);
+				if (storedRefreshToken == null) {
+					return AdminJwtDto.AdminValidationResult.failure("저장된 리프레시 토큰이 없습니다.");
+				}
+				if (!token.equals(storedRefreshToken)) {
+					return AdminJwtDto.AdminValidationResult.failure("리프레시 토큰이 일치하지 않습니다.");
+				}
+			}
+
 			return AdminJwtDto.AdminValidationResult.success(adminKey);
 
 		} catch (Exception e) {
