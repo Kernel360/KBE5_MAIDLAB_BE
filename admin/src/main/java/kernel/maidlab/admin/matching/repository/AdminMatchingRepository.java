@@ -9,7 +9,7 @@ import kernel.maidlab.common.enums.Status;
 
 public interface AdminMatchingRepository extends JpaRepository<Matching, Long> {
 
-	Page<Matching> findAllByMatchingStatus(Status status, Pageable pageable);
+	Page<Matching> findAllByMatchingStatusOrderByUpdatedAtDesc(Status status, Pageable pageable);
 
 	Matching findByReservationId(Long reservationId);
 }
