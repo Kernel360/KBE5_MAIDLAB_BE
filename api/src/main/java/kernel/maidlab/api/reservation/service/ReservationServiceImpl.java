@@ -32,16 +32,17 @@ import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.common.util.RoomSizeRuleUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -280,13 +281,6 @@ public class ReservationServiceImpl implements ReservationService {
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		reservation.pay();
-
-		// 포인트 사용
-		Point usagePointIfNeeded = reservation.createUsagePointIfNeeded(consumer, dto);
-		if (usagePointIfNeeded != null){
-			pointRepository.save(usagePointIfNeeded);
-		}
-
 		reservationRepository.save(reservation);
 
 		// 포인트 적립
@@ -418,7 +412,6 @@ public class ReservationServiceImpl implements ReservationService {
 	// 	return reservationRepository.findById(reservationId)
 	// 		.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
 	// }
-
 }
 
 
