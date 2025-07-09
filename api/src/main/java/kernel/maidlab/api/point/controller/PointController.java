@@ -3,6 +3,7 @@ package kernel.maidlab.api.point.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.point.service.PointService;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.point.request.PointByReservationRequestDto;
 import kernel.maidlab.common.dto.point.request.PointRecordRequestDto;
 import kernel.maidlab.common.dto.point.response.PageResponseDto;
 import kernel.maidlab.common.dto.point.response.PointRecordResponseDto;
@@ -34,5 +35,15 @@ public class PointController {
         PageResponseDto<PointRecordResponseDto> pointRecordList = pointService.getPointRecordList(request, pointRecordRequestDto);
 
         return ResponseDto.success(pointRecordList);
+    }
+
+    // 예약 완료된 페이지에서 사용된 포인트 조회용
+    @PostMapping("/reservation")
+    public ResponseEntity<Void> getPointByReservation(
+            HttpServletRequest request,
+            @RequestBody PointByReservationRequestDto pointByReservationRequestDto){
+
+
+        return null;
     }
 }

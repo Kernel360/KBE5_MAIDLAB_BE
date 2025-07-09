@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.event.Event;
+import kernel.maidlab.common.entity.reservation.Reservation;
 import kernel.maidlab.common.enums.PointType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,6 +28,10 @@ public class Point extends TimeBase {
     @JoinColumn(name = "event_id")
     private Event event;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
+
     @Column(nullable = false)
     private Integer amount;
 
@@ -37,21 +43,42 @@ public class Point extends TimeBase {
     private String description;
 
     public static Integer calculateEarnedPoint(int paymentAmount){
+
         int earnedPoint =  (int) Math.floor(paymentAmount * 0.01); // 결제금액의 1%
         return Math.max(earnedPoint, 0);
     }
 
-    public static Point createPointForPayment(Consumer consumer, BigDecimal totalPrice){
+    public static Point createPointForPayment(Consumer consumer, Reservation  reservation, BigDecimal totalPrice){
+
         int payAmount = totalPrice.intValue();
         Integer amount = calculateEarnedPoint(payAmount);
 
         return new Point(
                 consumer,
                 null,  // 이벤트 없음
+                reservation,
                 amount,
                 PointType.PAYMENT,
                 "결제 적립 포인트"
         );
     }
+
+    @Builder
+    public static Point createUsagePoint(Consumer consumer, Reservation reservation, Integer usageAmount){
+
+        return new Point(
+                consumer,
+                null,
+                reservation,
+                (-Math.abs(usageAmount)),
+                PointType.PAYMENT,
+                "결제 사용 포인트"
+        );
+    }
+    // 결제시 포인트 사용
+    // 생각 좀 해보자 머리가 안돌아감
+    // 포인트 차감을 할건데 굳이 과거 이력부터 지울 필요가 있는가
+    // 만약 과거 이력부터 지울 필요가 없다면? 유효 기간을 두지 않는다면?
+    // 차감되는 포인트를 새로 insert하여 관리한다.
 }
 
