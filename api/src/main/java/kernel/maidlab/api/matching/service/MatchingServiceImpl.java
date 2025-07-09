@@ -100,13 +100,35 @@ public class MatchingServiceImpl implements MatchingService {
 	@Transactional
 	public void rejectExpiredPendingMatching() {
 		LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(10);
-		int updatedCount = matchingRepository.bulkExpirePendingMatching(
-			Status.REJECTED,
-			Status.PENDING,
-			expiredTime
-		);
+		
+		// Find expired pending matchings first
+		List<Matching> expiredMatchings = matchingRepository.findByMatchingStatusAndUpdatedAtBefore(Status.PENDING, expiredTime);
+		
+		// Update each matching individually to increment count and change status
+		for (Matching matching : expiredMatchings) {
+			Integer currentCount = matching.getMatchingCount();
+			matching.setMatchingCount(currentCount != null ? currentCount + 1 : 1);
+			matching.setMatchingStatus(Status.REJECTED);
+			matchingRepository.save(matching);
+			log.info("매칭 만료 처리 - 예약 ID: {}, 매칭 시도 횟수: {}", matching.getReservationId(), matching.getMatchingCount());
+		}
 
-		// Expired matching status updates are handled silently
+		// Handle matchings that have reached maximum count (4 attempts)
+		List<Matching> maxCountMatchings = matchingRepository.findByMatchingCountGreaterThanEqualOrderByUpdatedAtDesc(4);
+		for (Matching matching : maxCountMatchings) {
+			// Cancel the reservation
+			Reservation reservation = reservationRepository.findById(matching.getReservationId())
+				.orElse(null);
+			if (reservation != null) {
+				reservation.cancel(LocalDateTime.now());
+				reservationRepository.save(reservation);
+				log.info("예약 취소 완료 - 예약 ID: {}, 매칭 시도 횟수: {}", matching.getReservationId(), matching.getMatchingCount());
+			}
+			
+			// Delete the matching
+			matchingRepository.delete(matching);
+			log.info("매칭 삭제 완료 - 매칭 ID: {}, 예약 ID: {}", matching.getId(), matching.getReservationId());
+		}
 	}
 
 	private String extractGuFromAddress(String address) {

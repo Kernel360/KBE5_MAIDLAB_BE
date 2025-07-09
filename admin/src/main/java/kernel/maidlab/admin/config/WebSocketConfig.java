@@ -20,7 +20,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(logWebSocketHandler, "/admin/logs/stream")
-                .setAllowedOrigins("*")
+                .setAllowedOrigins("https://www.maidlab.site", "http://localhost:5173", "http://localhost:8080", "http://127.0.0.1:3000")
+                .setAllowedOriginPatterns("https://www.maidlab.site", "http://localhost:*", "http://127.0.0.1:*")
                 .addInterceptors(cookieWebSocketAuthInterceptor);
     }
 }

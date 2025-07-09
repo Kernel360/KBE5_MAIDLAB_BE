@@ -59,7 +59,7 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 	@Override
 	public List<ReservationResponseDto> adminReservations(HttpServletRequest request, int page, int size) {
 		Page<Reservation> reservations;
-		Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 		reservations = adminReservationRepository.findAll(pageable);
 		return reservations.stream()
 			.map(reservation -> ReservationResponseDto.builder()

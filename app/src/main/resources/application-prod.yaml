@@ -17,12 +17,19 @@ spring:
     url: jdbc:mysql://${DB_PROD_HOST}:${DB_PROD_PORT}/${DB_PROD_DATABASE}?useSSL=false&useUnicode=true&allowPublicKeyRetrieval=true
     username: ${DB_PROD_USERNAME}
     password: ${DB_PROD_PASSWORD}
+    # 커넥션 풀 관리
+    maximum-pool-size: 20
+    minimum-idle: 5
+    connection-timeout: 20000
+    idle-timeout: 300000
+    max-lifetime: 1200000
+    leak-detection-threshold: 60000
 
 app:
   cookie:
     domain: ""
     secure: true
-    same-site: "Lax"
+    same-site: "None"
 
 aws:
   region: ap-northeast-2 #asia/seoul
@@ -59,3 +66,14 @@ management:
     export:
       prometheus:
         enabled: true
+
+server:
+  tomcat:
+    threads:
+      max: 200          # 최대 스레드 수
+      min-spare: 10     # 최소 스레드 수
+    connection-timeout: 20000
+    max-connections: 8192
+    accept-count: 100
+    mbeanregistry:
+      enabled: true
