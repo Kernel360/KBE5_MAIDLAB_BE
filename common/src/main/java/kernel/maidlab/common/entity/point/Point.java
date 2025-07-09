@@ -4,13 +4,19 @@ import jakarta.persistence.*;
 import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.event.Event;
+import kernel.maidlab.common.entity.reservation.Reservation;
 import kernel.maidlab.common.enums.PointType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "point")
 public class Point extends TimeBase {
 
@@ -22,6 +28,10 @@ public class Point extends TimeBase {
     @JoinColumn(name = "event_id")
     private Event event;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
+
     @Column(nullable = false)
     private Integer amount;
 
@@ -29,32 +39,41 @@ public class Point extends TimeBase {
     @Enumerated(EnumType.STRING)
     private PointType pointType;
 
-    /**
-     * 결제 테이블이 없으므로 String으로 관리
-     */
-    @Column(name = "payment_reference", length = 50)
-    private String paymentReference;
-
     @Column(nullable = false)
     private String description;
 
-    public void addPointFromPaymentAmount(int paymentAmount) {
-        int earnedPoint = (int) Math.floor(paymentAmount * 0.01); // 결제금액의 1%
-        if (earnedPoint > 0) {
-            this.amount += earnedPoint;
-        }
+    public static Integer calculateEarnedPoint(int paymentAmount){
+
+        int earnedPoint =  (int) Math.floor(paymentAmount * 0.01); // 결제금액의 1%
+        return Math.max(earnedPoint, 0);
     }
 
-    public void addPoint(Integer point){
-        this.amount += point;
+    public static Point createPointForPayment(Consumer consumer, Reservation  reservation, BigDecimal totalPrice){
+
+        int payAmount = totalPrice.intValue();
+        Integer amount = calculateEarnedPoint(payAmount);
+
+        return new Point(
+                consumer,
+                null,  // 이벤트 없음
+                reservation,
+                amount,
+                PointType.PAYMENT,
+                "결제 적립 포인트"
+        );
     }
 
-    public void deductPoint(Integer point){
+    @Builder
+    public static Point createUsagePoint(Consumer consumer, Reservation reservation, Integer usageAmount){
 
-        if (amount - point < 0){
-            amount = 0;
-        }
-        amount -= point;
+        return new Point(
+                consumer,
+                null,
+                reservation,
+                (-Math.abs(usageAmount)),
+                PointType.PAYMENT,
+                "결제 사용 포인트"
+        );
     }
 }
 

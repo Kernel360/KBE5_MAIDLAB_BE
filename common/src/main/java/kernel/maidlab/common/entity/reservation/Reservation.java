@@ -1,24 +1,20 @@
 package kernel.maidlab.common.entity.reservation;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
 import kernel.maidlab.common.entity.base.TimeBase;
+import kernel.maidlab.common.entity.consumer.Consumer;
+import kernel.maidlab.common.entity.point.Point;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.util.ReservationOptionUtil;
 import kernel.maidlab.common.util.RoomSizeRuleUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reservation")
@@ -65,6 +61,9 @@ public class Reservation extends TimeBase {
 	@Column(name = "total_price", nullable = false)
 	private BigDecimal totalPrice;
 
+	@Column(name = "final_payment_amount")
+	private BigDecimal finalPaymentAmount;
+
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Status status;
@@ -80,6 +79,14 @@ public class Reservation extends TimeBase {
 
 	public void pay(){
 		this.status = Status.PAID;
+	}
+
+	public Point createUsagePointIfNeeded(Consumer consumer, PaymentRequestDto dto){
+		if (dto.isUsePoint()){
+			finalPaymentAmount = totalPrice.subtract(BigDecimal.valueOf(dto.getUsageAmount()));
+			return Point.createUsagePoint(consumer, this, dto.getUsageAmount());
+		}
+		return null;
 	}
 
 	public void checkin(LocalDateTime checkinTime) {
@@ -133,9 +140,22 @@ public class Reservation extends TimeBase {
 		ServiceDetailType detailType) {
 		Integer roomSize = RoomSizeRuleUtil.resolveRoomSize(dto.getLifeCleaningRoomIdx());
 		String serializedOptions = ReservationOptionUtil.serializeOptions(dto.getServiceOptions());
-		return new Reservation(managerId, consumerId, detailType, dto.getReservationDate(), dto.getStartTime(),
-			dto.getEndTime(), dto.getAddress(), dto.getAddressDetail(), dto.getHousingType(), roomSize,
-			dto.getHousingInformation(), serializedOptions, dto.getPet(), dto.getSpecialRequest(), dto.getTotalPrice());
+		return new Reservation(
+				managerId,
+				consumerId,
+				detailType,
+				dto.getReservationDate(),
+				dto.getStartTime(),
+				dto.getEndTime(),
+				dto.getAddress(),
+				dto.getAddressDetail(),
+				dto.getHousingType(),
+				roomSize,
+				dto.getHousingInformation(),
+				serializedOptions,
+				dto.getPet(),
+				dto.getSpecialRequest(),
+				dto.getTotalPrice());
 	}
 
 }

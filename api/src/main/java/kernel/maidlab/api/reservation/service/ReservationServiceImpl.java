@@ -1,51 +1,48 @@
 package kernel.maidlab.api.reservation.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.api.consumer.repository.ConsumerRepository;
+import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.matching.repository.MatchingRepository;
+import kernel.maidlab.api.matching.service.MatchingService;
+import kernel.maidlab.api.point.repository.PointRepository;
 import kernel.maidlab.api.reservation.repository.*;
+import kernel.maidlab.api.util.AuthUtil;
+import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
+import kernel.maidlab.common.dto.reservation.request.*;
+import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
+import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
+import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
+import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
+import kernel.maidlab.common.entity.base.UserBase;
+import kernel.maidlab.common.entity.consumer.Consumer;
+import kernel.maidlab.common.entity.consumer.ManagerPreference;
+import kernel.maidlab.common.entity.manager.Manager;
+import kernel.maidlab.common.entity.matching.Matching;
+import kernel.maidlab.common.entity.point.Point;
 import kernel.maidlab.common.entity.reservation.*;
+import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.ServiceOptionType;
+import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.common.exception.custom.ReservationException;
+import kernel.maidlab.common.util.RoomSizeRuleUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
-import kernel.maidlab.common.entity.base.UserBase;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.entity.consumer.ManagerPreference;
-import kernel.maidlab.api.consumer.repository.ConsumerRepository;
-import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
-import kernel.maidlab.api.manager.repository.ManagerRepository;
-import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
-import kernel.maidlab.common.entity.matching.Matching;
-import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
-import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
-import kernel.maidlab.api.util.AuthUtil;
-import kernel.maidlab.common.enums.ServiceOptionType;
-import kernel.maidlab.common.exception.custom.ReservationException;
-import kernel.maidlab.api.matching.repository.MatchingRepository;
-import kernel.maidlab.api.matching.service.MatchingService;
-import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
-import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.enums.Status;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.util.RoomSizeRuleUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +59,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ReviewRepository reviewRepository;
 	private final SettlementRepository settlementRepository;
 	private final ReviewKeywordRepository reviewKeywordRepository;
+	private final PointRepository pointRepository;
 
 	@Transactional
 	@Override
@@ -276,10 +274,25 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	@Override
 	public void pay(PaymentRequestDto dto, HttpServletRequest request){
+
+		Consumer consumer = (Consumer) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+
 		Reservation reservation = reservationRepository.findById(dto.getReservationId())
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+
 		reservation.pay();
+
+		// 포인트 사용
+		Point usagePointIfNeeded = reservation.createUsagePointIfNeeded(consumer, dto);
+		if (usagePointIfNeeded != null){
+			pointRepository.save(usagePointIfNeeded);
+		}
+
 		reservationRepository.save(reservation);
+
+		// 포인트 적립
+		Point point = Point.createPointForPayment(consumer, reservation, reservation.getTotalPrice());
+		pointRepository.save(point);
 	}
 
 	@Transactional
