@@ -196,7 +196,6 @@ public class ReservationServiceImpl implements ReservationService {
 			case MANAGER -> ((Manager)user).getId();
 			default -> throw new ReservationException(ResponseType.THIS_USER_DOES_NOT_EXIST);
 		};
-		// 여기에 포안투룰 같이 반환 해줘야 예약 상세 화면에서 얼마나 포인트를 썼는지 알 수 있음
 
 		return reservationRepository.findDetailReservationByIdAndUser(reservationId, userId, userType);
 	}
@@ -282,6 +281,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 		reservation.pay();
 
+		// 포인트 사용
 		Point usagePointIfNeeded = reservation.createUsagePointIfNeeded(consumer, dto);
 		if (usagePointIfNeeded != null){
 			pointRepository.save(usagePointIfNeeded);
@@ -289,7 +289,6 @@ public class ReservationServiceImpl implements ReservationService {
 
 		reservationRepository.save(reservation);
 
-		// 2. 포인트 정립하기
 		// 포인트 적립
 		Point point = Point.createPointForPayment(consumer, reservation, reservation.getTotalPrice());
 		pointRepository.save(point);

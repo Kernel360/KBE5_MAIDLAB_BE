@@ -1,16 +1,5 @@
 package kernel.maidlab.api.reservation.repository;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -21,20 +10,30 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.entity.manager.QManager;
 import kernel.maidlab.common.entity.manager.QManagerRegion;
 import kernel.maidlab.common.entity.manager.QRegion;
+import kernel.maidlab.common.entity.point.QPoint;
 import kernel.maidlab.common.entity.reservation.QReservation;
 import kernel.maidlab.common.entity.reservation.QReview;
 import kernel.maidlab.common.entity.reservation.QServiceDetailType;
+import kernel.maidlab.common.enums.PointType;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.common.exception.custom.ReservationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class ReservationRepositoryCustomImpl implements ReservationRepositoryCustom {
@@ -47,6 +46,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 	QManager manager = QManager.manager;
 	QManagerRegion managerRegion = QManagerRegion.managerRegion;
 	QRegion region = QRegion.region;
+	QPoint point = QPoint.point;
 
 	@Override
 	public List<ReservationResponseDto> findAllWithReviewByConsumerId(Long consumerId) {
@@ -111,14 +111,23 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 				reservation.pet,
 				reservation.specialRequest,
 				reservation.totalPrice,
-				region.regionName
+				reservation.finalPaymentAmount,
+				region.regionName,
+				point.amount.sum()
 			)
 			.from(reservation)
 			.join(reservation.serviceDetailType, serviceDetailType)
 			.join(manager).on(manager.id.eq(reservation.managerId))
 			.leftJoin(managerRegion).on(managerRegion.manager.id.eq(manager.id))
 			.leftJoin(region).on(region.id.eq(managerRegion.regionId.id))
+			.leftJoin(point).on(point.reservation.id.eq(reservation.id).and(point.pointType.eq(PointType.PAYMENT)).and(point.amount.lt(0)))
 			.where(reservation.id.eq(reservationId).and(userCondition))
+			.groupBy(reservation.id, reservation.status, serviceDetailType.serviceType, serviceDetailType.serviceDetailType,
+				reservation.address, reservation.addressDetail, manager.uuid, manager.name, manager.profileImage,
+				manager.averageRate, manager.phoneNumber, reservation.housingType, reservation.roomSize,
+				reservation.housingInformation, reservation.reservationDate, reservation.startTime,
+				reservation.endTime, reservation.serviceAdd, reservation.pet, reservation.specialRequest,
+				reservation.totalPrice, reservation.finalPaymentAmount, region.regionName)
 			.fetch();
 
 		if (tuples.isEmpty()) {
@@ -153,6 +162,8 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 			.pet(first.get(reservation.pet))
 			.specialRequest(first.get(reservation.specialRequest))
 			.totalPrice(first.get(reservation.totalPrice))
+			.finalPaymentAmount(first.get(reservation.finalPaymentAmount))
+			.usageAmount(first.get(point.amount.sum()) != null ? Math.abs(first.get(point.amount.sum())) : 0)
 			.build();
 	}
 

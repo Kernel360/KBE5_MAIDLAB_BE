@@ -61,6 +61,9 @@ public class Reservation extends TimeBase {
 	@Column(name = "total_price", nullable = false)
 	private BigDecimal totalPrice;
 
+	@Column(name = "final_payment_amount")
+	private BigDecimal finalPaymentAmount;
+
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Status status;
@@ -80,7 +83,7 @@ public class Reservation extends TimeBase {
 
 	public Point createUsagePointIfNeeded(Consumer consumer, PaymentRequestDto dto){
 		if (dto.isUsePoint()){
-			totalPrice = totalPrice.subtract(BigDecimal.valueOf(dto.getUsageAmount()));
+			finalPaymentAmount = totalPrice.subtract(BigDecimal.valueOf(dto.getUsageAmount()));
 			return Point.createUsagePoint(consumer, this, dto.getUsageAmount());
 		}
 		return null;
@@ -137,9 +140,22 @@ public class Reservation extends TimeBase {
 		ServiceDetailType detailType) {
 		Integer roomSize = RoomSizeRuleUtil.resolveRoomSize(dto.getLifeCleaningRoomIdx());
 		String serializedOptions = ReservationOptionUtil.serializeOptions(dto.getServiceOptions());
-		return new Reservation(managerId, consumerId, detailType, dto.getReservationDate(), dto.getStartTime(),
-			dto.getEndTime(), dto.getAddress(), dto.getAddressDetail(), dto.getHousingType(), roomSize,
-			dto.getHousingInformation(), serializedOptions, dto.getPet(), dto.getSpecialRequest(), dto.getTotalPrice());
+		return new Reservation(
+				managerId,
+				consumerId,
+				detailType,
+				dto.getReservationDate(),
+				dto.getStartTime(),
+				dto.getEndTime(),
+				dto.getAddress(),
+				dto.getAddressDetail(),
+				dto.getHousingType(),
+				roomSize,
+				dto.getHousingInformation(),
+				serializedOptions,
+				dto.getPet(),
+				dto.getSpecialRequest(),
+				dto.getTotalPrice());
 	}
 
 }
