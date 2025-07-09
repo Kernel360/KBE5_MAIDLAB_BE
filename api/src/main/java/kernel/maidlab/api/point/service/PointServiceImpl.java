@@ -33,8 +33,10 @@ public class PointServiceImpl implements PointService{
     }
 
     @Override
-    public PageResponseDto<PointRecordResponseDto> getPointRecordList(HttpServletRequest request, PointRecordRequestDto requestDto) {
-
+    public PageResponseDto<PointRecordResponseDto> getPointRecordList(
+            HttpServletRequest request,
+            PointRecordRequestDto requestDto)
+    {
         Integer page = requestDto.getPageable().getPage();
         Integer size = requestDto.getPageable().getSize();
         List<PointRecordRequestDto.PageableRequest.SortRequest> sort = requestDto.getPageable().getSort();
@@ -71,6 +73,4 @@ public class PointServiceImpl implements PointService{
                 .hasNext(pointRecordsPage.hasNext())
                 .build();
     }
-
-
 }
