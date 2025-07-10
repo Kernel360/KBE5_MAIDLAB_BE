@@ -47,7 +47,12 @@ public class Point extends TimeBase {
         return Math.max(earnedPoint, 0);
     }
 
-    public static Point createPaymentPoint(Consumer consumer, Reservation reservation, Integer amount, boolean isEarned) {
+    public static Point createPaymentPoint(
+            Consumer consumer,
+            Reservation reservation,
+            Integer amount,
+            boolean isEarned)
+    {
         Integer pointAmount;
         String description;
         
@@ -69,13 +74,21 @@ public class Point extends TimeBase {
         );
     }
 
-    public static Point createEarnPointOnPayment(Consumer consumer, Reservation reservation, BigDecimal totalPrice) {
+    public static Point createEarnPointOnPayment(
+            Consumer consumer,
+            Reservation reservation,
+            BigDecimal totalPrice)
+    {
         int payAmount = totalPrice.intValue();
         Integer earnedPoint = calculateEarnedPoint(payAmount);
         return createPaymentPoint(consumer, reservation, earnedPoint, true);
     }
     
-    public static Point createUsagePoint(Consumer consumer, Reservation reservation, Integer usageAmountPoint) {
+    public static Point createUsagePoint(
+            Consumer consumer,
+            Reservation reservation,
+            Integer usageAmountPoint)
+    {
         return createPaymentPoint(consumer, reservation, usageAmountPoint, false);
     }
 }
