@@ -7,7 +7,6 @@ import kernel.maidlab.common.entity.event.Event;
 import kernel.maidlab.common.entity.reservation.Reservation;
 import kernel.maidlab.common.enums.PointType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -48,33 +47,36 @@ public class Point extends TimeBase {
         return Math.max(earnedPoint, 0);
     }
 
-    public static Point createEarnPointOnPayment(Consumer consumer, Reservation  reservation, BigDecimal totalPrice){
-
-        int payAmount = totalPrice.intValue();
-        Integer earnedPoint = calculateEarnedPoint(payAmount);
-
-        return new Point(
-                consumer,
-                null,  // 이벤트 없음
-                reservation,
-                earnedPoint,
-                PointType.PAYMENT,
-                "결제 적립 포인트"
-        );
-    }
-
-    @Builder
-    public static Point createUsagePoint(Consumer consumer, Reservation reservation, Integer usageAmountPoint){
-
+    public static Point createPaymentPoint(Consumer consumer, Reservation reservation, Integer amount, boolean isEarned) {
+        Integer pointAmount;
+        String description;
+        
+        if (isEarned) {
+            pointAmount = amount;
+            description = "결제 적립 포인트";
+        } else {
+            pointAmount = -Math.abs(amount);
+            description = "결제 사용 포인트";
+        }
+        
         return new Point(
                 consumer,
                 null,
                 reservation,
-                (-Math.abs(usageAmountPoint)),
+                pointAmount,
                 PointType.PAYMENT,
-                "결제 사용 포인트"
-
+                description
         );
+    }
+
+    public static Point createEarnPointOnPayment(Consumer consumer, Reservation reservation, BigDecimal totalPrice) {
+        int payAmount = totalPrice.intValue();
+        Integer earnedPoint = calculateEarnedPoint(payAmount);
+        return createPaymentPoint(consumer, reservation, earnedPoint, true);
+    }
+    
+    public static Point createUsagePoint(Consumer consumer, Reservation reservation, Integer usageAmountPoint) {
+        return createPaymentPoint(consumer, reservation, usageAmountPoint, false);
     }
 }
 
