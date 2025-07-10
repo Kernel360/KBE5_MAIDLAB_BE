@@ -15,6 +15,4 @@ public interface PointRepositoryCustom {
             String pointType,
             Pageable pageable
     );
-    
-    Integer findUsageAmountByReservationAndConsumer(Long reservationId, Long consumerId);
 }
