@@ -280,12 +280,16 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(dto.getReservationId())
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		reservation.pay();
-
+		// 결제시 포인트 사용
+		reservation.pay(dto.getPointToUse());
 		reservationRepository.save(reservation);
 
+		// 포인트 차감
+		Point usagePoint = Point.createUsagePoint(consumer, reservation, dto.getPointToUse());
+		pointRepository.save(usagePoint);
+
 		// 포인트 적립
-		Point point = Point.createPointForPayment(consumer, reservation, reservation.getTotalPrice());
+		Point point = Point.createEarnPointOnPayment(consumer, reservation, reservation.getTotalPrice());
 		pointRepository.save(point);
 	}
 

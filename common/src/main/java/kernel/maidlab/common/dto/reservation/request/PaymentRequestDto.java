@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 @Getter
 public class PaymentRequestDto {
     private Long reservationId;
+    private Integer pointToUse;
 }

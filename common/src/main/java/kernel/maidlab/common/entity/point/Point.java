@@ -48,29 +48,29 @@ public class Point extends TimeBase {
         return Math.max(earnedPoint, 0);
     }
 
-    public static Point createPointForPayment(Consumer consumer, Reservation  reservation, BigDecimal totalPrice){
+    public static Point createEarnPointOnPayment(Consumer consumer, Reservation  reservation, BigDecimal totalPrice){
 
         int payAmount = totalPrice.intValue();
-        Integer amount = calculateEarnedPoint(payAmount);
+        Integer earnedPoint = calculateEarnedPoint(payAmount);
 
         return new Point(
                 consumer,
                 null,  // 이벤트 없음
                 reservation,
-                amount,
+                earnedPoint,
                 PointType.PAYMENT,
                 "결제 적립 포인트"
         );
     }
 
     @Builder
-    public static Point createUsagePoint(Consumer consumer, Reservation reservation, Integer usageAmount){
+    public static Point createUsagePoint(Consumer consumer, Reservation reservation, Integer usageAmountPoint){
 
         return new Point(
                 consumer,
                 null,
                 reservation,
-                (-Math.abs(usageAmount)),
+                (-Math.abs(usageAmountPoint)),
                 PointType.PAYMENT,
                 "결제 사용 포인트"
 

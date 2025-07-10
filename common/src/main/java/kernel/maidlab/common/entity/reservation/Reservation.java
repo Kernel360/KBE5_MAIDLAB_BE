@@ -71,8 +71,9 @@ public class Reservation extends TimeBase {
 	@Column(name = "checkout_time")
 	private LocalDateTime checkoutTime;
 
-	public void pay(){
+	public void pay(Integer pointsToUse){
 		this.status = Status.PAID;
+		this.totalPrice = this.totalPrice.subtract(BigDecimal.valueOf(pointsToUse));
 	}
 
 	public void checkin(LocalDateTime checkinTime) {
