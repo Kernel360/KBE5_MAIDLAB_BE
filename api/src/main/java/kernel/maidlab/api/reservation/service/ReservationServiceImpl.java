@@ -282,12 +282,6 @@ public class ReservationServiceImpl implements ReservationService {
 
 		reservation.pay();
 
-		// 포인트 사용
-		Point usagePointIfNeeded = reservation.createUsagePointIfNeeded(consumer, dto);
-		if (usagePointIfNeeded != null){
-			pointRepository.save(usagePointIfNeeded);
-		}
-
 		reservationRepository.save(reservation);
 
 		// 포인트 적립

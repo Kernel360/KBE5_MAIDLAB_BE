@@ -15,11 +15,9 @@ import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.entity.manager.QManager;
 import kernel.maidlab.common.entity.manager.QManagerRegion;
 import kernel.maidlab.common.entity.manager.QRegion;
-import kernel.maidlab.common.entity.point.QPoint;
 import kernel.maidlab.common.entity.reservation.QReservation;
 import kernel.maidlab.common.entity.reservation.QReview;
 import kernel.maidlab.common.entity.reservation.QServiceDetailType;
-import kernel.maidlab.common.enums.PointType;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
@@ -46,7 +44,6 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 	QManager manager = QManager.manager;
 	QManagerRegion managerRegion = QManagerRegion.managerRegion;
 	QRegion region = QRegion.region;
-	QPoint point = QPoint.point;
 
 	@Override
 	public List<ReservationResponseDto> findAllWithReviewByConsumerId(Long consumerId) {
@@ -111,23 +108,14 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 				reservation.pet,
 				reservation.specialRequest,
 				reservation.totalPrice,
-				reservation.finalPaymentAmount,
-				region.regionName,
-				point.amount.sum()
+				region.regionName
 			)
 			.from(reservation)
 			.join(reservation.serviceDetailType, serviceDetailType)
 			.join(manager).on(manager.id.eq(reservation.managerId))
 			.leftJoin(managerRegion).on(managerRegion.manager.id.eq(manager.id))
 			.leftJoin(region).on(region.id.eq(managerRegion.regionId.id))
-			.leftJoin(point).on(point.reservation.id.eq(reservation.id).and(point.pointType.eq(PointType.PAYMENT)).and(point.amount.lt(0)))
 			.where(reservation.id.eq(reservationId).and(userCondition))
-			.groupBy(reservation.id, reservation.status, serviceDetailType.serviceType, serviceDetailType.serviceDetailType,
-				reservation.address, reservation.addressDetail, manager.uuid, manager.name, manager.profileImage,
-				manager.averageRate, manager.phoneNumber, reservation.housingType, reservation.roomSize,
-				reservation.housingInformation, reservation.reservationDate, reservation.startTime,
-				reservation.endTime, reservation.serviceAdd, reservation.pet, reservation.specialRequest,
-				reservation.totalPrice, reservation.finalPaymentAmount, region.regionName)
 			.fetch();
 
 		if (tuples.isEmpty()) {
@@ -162,8 +150,6 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 			.pet(first.get(reservation.pet))
 			.specialRequest(first.get(reservation.specialRequest))
 			.totalPrice(first.get(reservation.totalPrice))
-			.finalPaymentAmount(first.get(reservation.finalPaymentAmount))
-			.usageAmount(first.get(point.amount.sum()) != null ? Math.abs(first.get(point.amount.sum())) : 0)
 			.build();
 	}
 
