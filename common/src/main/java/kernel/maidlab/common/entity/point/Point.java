@@ -73,6 +73,7 @@ public class Point extends TimeBase {
                 (-Math.abs(usageAmount)),
                 PointType.PAYMENT,
                 "결제 사용 포인트"
+
         );
     }
 }
