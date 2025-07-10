@@ -43,8 +43,4 @@ public class ReservationDetailResponseDto {
 	private String specialRequest;
 
 	private BigDecimal totalPrice;
-
-	private BigDecimal finalPaymentAmount;
-
-	private Integer usageAmount;
 }
