@@ -75,6 +75,12 @@ public class Reservation extends TimeBase {
 		this.status = Status.PAID;
 	}
 
+	public void usePoints(Integer pointToUse){
+		if (pointToUse > 0){
+			this.totalPrice = this.totalPrice.subtract(BigDecimal.valueOf(pointToUse));
+		}
+	}
+
 	public void checkin(LocalDateTime checkinTime) {
 		this.checkinTime = checkinTime;
 		this.status = Status.WORKING;

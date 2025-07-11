@@ -3,6 +3,7 @@ package kernel.maidlab.api.point.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.point.service.PointService;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.point.request.PointChargeRequestDto;
 import kernel.maidlab.common.dto.point.request.PointRecordRequestDto;
 import kernel.maidlab.common.dto.point.response.PageResponseDto;
 import kernel.maidlab.common.dto.point.response.PointRecordResponseDto;
@@ -12,8 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/point")
 @RequiredArgsConstructor
+@RequestMapping("/api/point")
 public class PointController {
 
     private final PointService pointService;
@@ -34,5 +35,15 @@ public class PointController {
         PageResponseDto<PointRecordResponseDto> pointRecordList = pointService.getPointRecordList(request, pointRecordRequestDto);
 
         return ResponseDto.success(pointRecordList);
+    }
+
+    // 포인트 충전
+    @PostMapping("/charge")
+    public ResponseEntity<ResponseDto<String>> chargePoint (
+            HttpServletRequest request,
+            @RequestBody PointChargeRequestDto pointChargeRequestDto
+    ){
+        pointService.chargePoint(request, pointChargeRequestDto);
+        return ResponseDto.success("충전이 완료 되었습니다.");
     }
 }

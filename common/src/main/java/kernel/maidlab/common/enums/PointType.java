@@ -6,9 +6,10 @@ import lombok.Getter;
 public enum PointType {
 
     PAYMENT("결제"),
-    EVENT("이벤트");
+    EVENT("이벤트"),
+    CHARGE("충전");
 
-    private final String name;
+    private final String type;
 
-    PointType(String name) { this.name= name;}
+    PointType(String type) { this.type= type;}
 }

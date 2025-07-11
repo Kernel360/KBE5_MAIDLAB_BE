@@ -80,23 +80,6 @@ public class PointRepositoryCustomImpl implements PointRepositoryCustom{
         return new PageImpl<>(content, pageable, total);
     }
 
-    @Override
-    public Integer findUsageAmountByReservationAndConsumer(Long reservationId, Long consumerId) {
-        QPoint point = QPoint.point;
-        Integer usageAmount = queryFactory
-                .select(point.amount.sum())
-                .from(point)
-                .where(point.reservation.id.eq(reservationId)
-                        .and(point.consumer.id.eq(consumerId))
-                        .and(point.amount.lt(0))
-                        .and(point.pointType.eq(PointType.PAYMENT))
-                )
-                .fetchOne();
-
-        return usageAmount != null ? Math.abs(usageAmount) : 0;
-    }
-
-
     private BooleanExpression eqPointType(String pointType, QPoint point) {
         if (pointType == null || pointType.equalsIgnoreCase("ALL")) {
             return null;
