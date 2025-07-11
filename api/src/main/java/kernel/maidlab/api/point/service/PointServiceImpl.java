@@ -3,11 +3,13 @@ package kernel.maidlab.api.point.service;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.auth.jwt.JwtFilter;
 import kernel.maidlab.api.point.repository.PointRepository;
+import kernel.maidlab.common.dto.point.request.PointChargeRequestDto;
 import kernel.maidlab.common.dto.point.request.PointRecordRequestDto;
 import kernel.maidlab.common.dto.point.response.PageResponseDto;
 import kernel.maidlab.common.dto.point.response.PointRecordResponseDto;
 import kernel.maidlab.common.dto.point.response.PointResponseDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
+import kernel.maidlab.common.entity.point.Point;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -73,4 +75,21 @@ public class PointServiceImpl implements PointService{
                 .hasNext(pointRecordsPage.hasNext())
                 .build();
     }
+
+    public void chargePoint(
+            HttpServletRequest request,
+            PointChargeRequestDto pointChargeRequestDto
+    ){
+        Consumer consumer = (Consumer) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+
+        if (pointChargeRequestDto.getChargeAmount() > 0){
+            Point chargedPoint = Point.createChargePoint(
+                    consumer,
+                    pointChargeRequestDto.getChargeAmount());
+
+            pointRepository.save(chargedPoint);
+        }
+
+    }
+
 }
