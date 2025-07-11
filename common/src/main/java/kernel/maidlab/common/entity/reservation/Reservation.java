@@ -71,13 +71,16 @@ public class Reservation extends TimeBase {
 	@Column(name = "checkout_time")
 	private LocalDateTime checkoutTime;
 
+	@Column(name = "final_payment_price")
+	private BigDecimal finalPaymentPrice;
+
 	public void pay(){
 		this.status = Status.PAID;
 	}
 
 	public void usePoints(Integer pointToUse){
 		if (pointToUse > 0){
-			this.totalPrice = this.totalPrice.subtract(BigDecimal.valueOf(pointToUse));
+			this.finalPaymentPrice = this.totalPrice.subtract(BigDecimal.valueOf(pointToUse));
 		}
 	}
 
