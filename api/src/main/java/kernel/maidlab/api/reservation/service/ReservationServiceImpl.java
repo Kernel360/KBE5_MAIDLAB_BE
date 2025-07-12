@@ -32,6 +32,7 @@ import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.common.util.RoomSizeRuleUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -79,7 +80,8 @@ public class ReservationServiceImpl implements ReservationService {
 			// 매니저 선호도 테이블 관리
 			if (dto.getLikes() != null) {
 				managerPreferenceRepository.save(new ManagerPreference(consumer, manager, dto.getLikes()));
-				log.info("매니저 선호도 등록 - Consumer ID: {}, Manager ID: {}, 선호도: {}", consumer.getId(), manager.getId(), dto.getLikes());
+				log.info("매니저 선호도 등록 - Consumer ID: {}, Manager ID: {}, 선호도: {}", consumer.getId(), manager.getId(),
+					dto.getLikes());
 			}
 
 			// 매니저 평균 평점(average_rate) 관리
@@ -88,11 +90,13 @@ public class ReservationServiceImpl implements ReservationService {
 			if (managerTotalReviewedCnt == 0) {
 				manager.updateAverageRate(dto.getRating());
 			} else {
-				Float newAverageRate = (managerTotalReviewedCnt * averageRate + dto.getRating()) / (managerTotalReviewedCnt + 1);
+				Float newAverageRate =
+					(managerTotalReviewedCnt * averageRate + dto.getRating()) / (managerTotalReviewedCnt + 1);
 				manager.updateAverageRate(newAverageRate);
 			}
 			managerRepository.save(manager);
-			log.info("매니저 평균 평점 업데이트 - Manager ID: {}, 이전 평점: {}, 새 평점: {}", manager.getId(), averageRate, manager.getAverageRate());
+			log.info("매니저 평균 평점 업데이트 - Manager ID: {}, 이전 평점: {}, 새 평점: {}", manager.getId(), averageRate,
+				manager.getAverageRate());
 
 		} else if (userType == UserType.MANAGER) {
 			Consumer consumer = consumerRepository.findById(reservation.getConsumerId())
@@ -104,11 +108,13 @@ public class ReservationServiceImpl implements ReservationService {
 			if (consumerTotalReviewedCnt == 0) {
 				consumer.updateAverageRate(dto.getRating());
 			} else {
-				Float newAverageRate = (consumerTotalReviewedCnt * averageRate + dto.getRating()) / (consumerTotalReviewedCnt + 1);
+				Float newAverageRate =
+					(consumerTotalReviewedCnt * averageRate + dto.getRating()) / (consumerTotalReviewedCnt + 1);
 				consumer.updateAverageRate(newAverageRate);
 			}
 			consumerRepository.save(consumer);
-			log.info("Consumer 평균 평점 업데이트 - Consumer ID: {}, 이전 평점: {}, 새 평점: {}", consumer.getId(), averageRate, consumer.getAverageRate());
+			log.info("Consumer 평균 평점 업데이트 - Consumer ID: {}, 이전 평점: {}, 새 평점: {}", consumer.getId(), averageRate,
+				consumer.getAverageRate());
 		} else {
 			throw new ReservationException(ResponseType.INVALID_USER_TYPE);
 		}
@@ -126,6 +132,7 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 		log.info("리뷰 등록 완료 - 리뷰 ID: {}, 예약 ID: {}", savedReview.getId(), reservation.getId());
 	}
+
 	// 이전 예약 전체 조회 api
 	@Override
 	public List<ReservationResponseDto> allReservations(HttpServletRequest request) {
@@ -142,51 +149,54 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	// 고객 맞춤 예약 내역 페이징 및 상태별 필터링
-    @Override
-    public Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size, String sortBy, String sortOrder, HttpServletRequest request) {
-        Consumer consumer = authUtil.getConsumer(request);
-        Long consumerId = consumer.getId();
+	@Override
+	public Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size,
+		String sortBy, String sortOrder, HttpServletRequest request) {
+		Consumer consumer = authUtil.getConsumer(request);
+		Long consumerId = consumer.getId();
 
-        if (size > 50) {
-            size = 50;
-        }
+		if (size > 50) {
+			size = 50;
+		}
 
-        Set<String> allowedSortFields = new HashSet<>(Arrays.asList("createdAt", "reservationDate", "totalPrice", "completedAt", "startTime"));
-        if (!allowedSortFields.contains(sortBy)) {
-            sortBy = "createdAt";
-        }
+		Set<String> allowedSortFields = new HashSet<>(
+			Arrays.asList("createdAt", "reservationDate", "totalPrice", "completedAt", "startTime"));
+		if (!allowedSortFields.contains(sortBy)) {
+			sortBy = "createdAt";
+		}
 
-        Status statusEnum = null;
-        if (status != null && !status.trim().isEmpty()) {
-            try {
-                statusEnum = Status.valueOf(status.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new ReservationException(ResponseType.VALIDATION_FAILED);
-            }
-        }
+		Status statusEnum = null;
+		if (status != null && !status.trim().isEmpty()) {
+			try {
+				statusEnum = Status.valueOf(status.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				throw new ReservationException(ResponseType.VALIDATION_FAILED);
+			}
+		}
 
-        Sort.Direction direction = "ASC".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, sortBy);
-        Pageable pageable = PageRequest.of(page, size, sort);
+		Sort.Direction direction = "ASC".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
+		Sort sort = Sort.by(direction, sortBy);
+		Pageable pageable = PageRequest.of(page, size, sort);
 
-        return reservationRepository.findConsumerReservationsWithPaging(consumerId, statusEnum, pageable);
-    }
+		return reservationRepository.findConsumerReservationsWithPaging(consumerId, statusEnum, pageable);
+	}
 
-    @Override
-    public Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size, String sortOrder, HttpServletRequest request) {
-        Manager manager = authUtil.getManager(request);
-        Long managerId = manager.getId();
+	@Override
+	public Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size,
+		String sortOrder, HttpServletRequest request) {
+		Manager manager = authUtil.getManager(request);
+		Long managerId = manager.getId();
 
-        if (size > 50) {
-            size = 50;
-        }
+		if (size > 50) {
+			size = 50;
+		}
 
-        Sort.Direction direction = "ASC".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, "reservationDate");
-        Pageable pageable = PageRequest.of(page, size, sort);
+		Sort.Direction direction = "ASC".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
+		Sort sort = Sort.by(direction, "reservationDate");
+		Pageable pageable = PageRequest.of(page, size, sort);
 
-        return reservationRepository.getManagerReservationsWithPaging(managerId, status, pageable);
-    }
+		return reservationRepository.getManagerReservationsWithPaging(managerId, status, pageable);
+	}
 
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
@@ -206,13 +216,12 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public Long createReservation(ReservationRequestDto dto, HttpServletRequest request) {
 		// 매칭된 매니저 존재 확인
-		if (dto.getManagerUuid().isEmpty() || dto.getManagerUuid().isBlank()){
+		if (dto.getManagerUuid().isEmpty() || dto.getManagerUuid().isBlank()) {
 			throw new ReservationException(ResponseType.AVAILABLE_MANAGER_DOES_NOT_EXIST);
 		}
 
 		Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 		Long consumerId = consumer.getId();
-
 
 		// 결제 검증 로직(애플리케이션 상용 전 true 고정)
 		boolean payValid = true;
@@ -234,7 +243,8 @@ public class ReservationServiceImpl implements ReservationService {
 
 		Reservation reservation = Reservation.of(dto, consumerId, managerId, detailType);
 		Reservation matchingReservation = reservationRepository.save(reservation);
-		log.info("예약 생성 완료 - 예약 ID: {}, Consumer ID: {}, Manager ID: {}", matchingReservation.getId(), consumerId, managerId);
+		log.info("예약 생성 완료 - 예약 ID: {}, Consumer ID: {}, Manager ID: {}", matchingReservation.getId(), consumerId,
+			managerId);
 
 		// 예약 완료 시 manager 매칭
 		MatchingResponseDto match = MatchingResponseDto.builder()
@@ -268,17 +278,18 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 		reservationRepository.save(reservation);
 	}
+
 	@Transactional
 	@Override
-	public void pay(PaymentRequestDto dto, HttpServletRequest request){
+	public void pay(PaymentRequestDto dto, HttpServletRequest request) {
 
-		Consumer consumer = (Consumer) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 
 		Reservation reservation = reservationRepository.findById(dto.getReservationId())
-				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
+			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		// 결제시 포인트 사용
-		if (dto.isPointUsed()){
+		if (dto.isPointUsed()) {
 			reservation.usePoints(dto.getPointToUse());
 
 			// 포인트 차감
@@ -298,7 +309,8 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	private void sendReservationPaidNotification(Long managerId, Long reservationId, String consumerName) {
-		NotificationDto notification = notificationService.createReservationPaidNotification(managerId, reservationId, consumerName);
+		NotificationDto notification = notificationService.createReservationPaidNotification(managerId, reservationId,
+			consumerName);
 		notificationService.sendNotification(notification);
 	}
 
@@ -308,8 +320,7 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		Manager manager = (Manager) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-
+		Manager manager = (Manager)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 
 		if (!reservation.getManagerId().equals(manager.getId())) {
 			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
@@ -326,7 +337,8 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	private void sendReservationCheckInNotification(Long consumerId, Long reservationId, String name) {
-		NotificationDto notification = notificationService.createReservationCheckInNotification(consumerId, reservationId, name);
+		NotificationDto notification = notificationService.createReservationCheckInNotification(consumerId,
+			reservationId, name);
 		notificationService.sendNotification(notification);
 	}
 
@@ -336,7 +348,7 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		Manager manager = (Manager) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		Manager manager = (Manager)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 		Long managerId = authUtil.getManager(request).getId();
 
 		if (!reservation.getManagerId().equals(managerId)) {
@@ -358,14 +370,15 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	private void sendReservationCheckOutNotification(Long consumerId, Long reservationId, String managerName) {
-		NotificationDto notification = notificationService.createReservationCheckOutNotification(consumerId, reservationId, managerName);
+		NotificationDto notification = notificationService.createReservationCheckOutNotification(consumerId,
+			reservationId, managerName);
 		notificationService.sendNotification(notification);
 	}
 
 	@Transactional
 	@Override
 	public void cancel(Long reservationId, HttpServletRequest request) {
-		Consumer consumer = (Consumer) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 		if (!reservation.getConsumerId().equals(consumer.getId())) {
@@ -375,9 +388,10 @@ public class ReservationServiceImpl implements ReservationService {
 		if (reservation.getStatus() != Status.PENDING && reservation.getStatus() != Status.MATCHED) {
 			throw new ReservationException(ResponseType.ALREADY_WORKING_OR_COMPLETED);
 		}
+
 		reservation.cancel(LocalDateTime.now());
 		reservationRepository.save(reservation);
-		if (matchingRepository.existsById(matchingRepository.findByReservationId(reservationId).getId())) {
+		if (matchingRepository.existsByReservationId(reservationId)) {
 			matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId).getId());
 		}
 
@@ -386,7 +400,8 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	private void sendReservationCanceledNotification(Long managerId, Long reservationId, String consumerName) {
-		NotificationDto notification =  notificationService.createReservationCancelNotification(managerId, reservationId, consumerName);
+		NotificationDto notification = notificationService.createReservationCancelNotification(managerId, reservationId,
+			consumerName);
 		notificationService.sendNotification(notification);
 	}
 
@@ -436,7 +451,8 @@ public class ReservationServiceImpl implements ReservationService {
 
 			totalAmount = totalAmount.add(settlement.getAmount());
 
-			responseList.add(new SettlementResponseDto(settlement.getId(), settlement.getReservationId(), settlement.getServiceType(),
+			responseList.add(new SettlementResponseDto(settlement.getId(), settlement.getReservationId(),
+				settlement.getServiceType(),
 				detailType.getServiceDetailType(), settlement.getStatus(), settlement.getPlatformFee(),
 				settlement.getAmount()));
 
