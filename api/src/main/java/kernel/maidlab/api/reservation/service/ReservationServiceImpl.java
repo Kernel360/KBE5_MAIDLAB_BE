@@ -28,6 +28,7 @@ import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.ServiceOptionType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.common.exception.custom.PointException;
 import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.common.util.RoomSizeRuleUtil;
 import lombok.RequiredArgsConstructor;
@@ -287,10 +288,17 @@ public class ReservationServiceImpl implements ReservationService {
 
 		Reservation reservation = reservationRepository.findById(dto.getReservationId())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-
+    
 		// 결제시 포인트 사용
-		if (dto.isPointUsed()) {
-			reservation.usePoints(dto.getPointToUse());
+		if (dto.isPointUsed()){
+      
+			// 사용 가능한 포인트 검증
+			Long useAblePoint = pointRepository.getTotalPointsByConsumerId(consumer.getId());
+      if (useAblePoint < dto.getPointToUse()){
+				throw new PointException(ResponseType.INSUFFICIENT_POINT);
+			}
+		
+      reservation.usePoints(dto.getPointToUse());
 
 			// 포인트 차감
 			Point usagePoint = Point.createUsagePoint(consumer, reservation, dto.getPointToUse());
