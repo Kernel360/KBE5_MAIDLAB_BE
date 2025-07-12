@@ -1,6 +1,7 @@
 package kernel.maidlab.common.entity.base;
 
 import com.querydsl.core.annotations.QuerySupertype;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,5 +19,9 @@ public abstract class Base {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	public Long getId() {
+		return id;
+	}
 
 }

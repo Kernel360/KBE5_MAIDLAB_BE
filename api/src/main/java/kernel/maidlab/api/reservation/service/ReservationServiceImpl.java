@@ -8,20 +8,20 @@ import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
+import kernel.maidlab.api.notification.service.NotificationService;
 import kernel.maidlab.api.point.repository.PointRepository;
 import kernel.maidlab.api.reservation.repository.*;
 import kernel.maidlab.api.util.AuthUtil;
 import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
+import kernel.maidlab.common.dto.notification.NotificationDto;
 import kernel.maidlab.common.dto.reservation.request.*;
 import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
-import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.consumer.ManagerPreference;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.entity.matching.Matching;
 import kernel.maidlab.common.entity.point.Point;
 import kernel.maidlab.common.entity.reservation.*;
 import kernel.maidlab.common.enums.ResponseType;
@@ -61,6 +61,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private final SettlementRepository settlementRepository;
 	private final ReviewKeywordRepository reviewKeywordRepository;
 	private final PointRepository pointRepository;
+	private final NotificationService notificationService;
 
 	@Transactional
 	@Override
@@ -191,8 +192,8 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
 
-		UserBase user = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 		Long userId = switch (userType) {
 			case CONSUMER -> ((Consumer)user).getId();
 			case MANAGER -> ((Manager)user).getId();
@@ -237,16 +238,13 @@ public class ReservationServiceImpl implements ReservationService {
 		log.info("예약 생성 완료 - 예약 ID: {}, Consumer ID: {}, Manager ID: {}", matchingReservation.getId(), consumerId, managerId);
 
 		// 예약 완료 시 manager 매칭
-		Matching match = Matching.of(MatchingResponseDto.builder()
+		MatchingResponseDto match = MatchingResponseDto.builder()
 			.reservationId(matchingReservation.getId())
 			.managerId(matchingReservation.getManagerId())
 			.matchingStatus(Status.PENDING)
-			.build());
-		Matching savedMatching = matchingRepository.save(match);
-		log.info("매칭 생성 완료 - 매칭 ID: {}, 예약 ID: {}", savedMatching.getId(), matchingReservation.getId());
-
+			.build();
+		matchingService.createMatching(match);
 		return reservation.getId();
-
 	}
 
 	@Transactional
@@ -263,9 +261,8 @@ public class ReservationServiceImpl implements ReservationService {
 		boolean isApproved = dto.getStatus(); // approved : true, rejected : false
 		if (isApproved) {
 			reservation.managerRespondApproved(managerId);
-
+			matchingService.changeStatus(reservationId, Status.APPROVED);
 			matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId).getId());
-			// TODO : 수요자에게 알림 보내기 (예약 성공)
 		} else {
 			reservation.managerRespondRejected(managerId);
 			matchingService.changeStatus(reservationId, Status.REJECTED);
@@ -303,6 +300,14 @@ public class ReservationServiceImpl implements ReservationService {
 		// 포인트 적립
 		Point point = Point.createEarnPointOnPayment(consumer, reservation, reservation.getTotalPrice());
 		pointRepository.save(point);
+
+		sendReservationPaidNotification(reservation.getManagerId(), reservation.getId(), consumer.getName());
+
+	}
+
+	private void sendReservationPaidNotification(Long managerId, Long reservationId, String consumerName) {
+		NotificationDto notification = notificationService.createReservationPaidNotification(managerId, reservationId, consumerName);
+		notificationService.sendNotification(notification);
 	}
 
 	@Transactional
@@ -311,9 +316,10 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		Long managerId = authUtil.getManager(request).getId();
+		Manager manager = (Manager) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 
-		if (!reservation.getManagerId().equals(managerId)) {
+
+		if (!reservation.getManagerId().equals(manager.getId())) {
 			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
 		}
 		// 이미 체크인 되어 있는 경우
@@ -321,8 +327,15 @@ public class ReservationServiceImpl implements ReservationService {
 			throw new ReservationException(ResponseType.ALREADY_CHECKED_IN);
 		}
 
+		sendReservationCheckInNotification(reservation.getConsumerId(), reservationId, manager.getName());
+
 		reservation.checkin(dto.getCheckTime());
 		reservationRepository.save(reservation);
+	}
+
+	private void sendReservationCheckInNotification(Long consumerId, Long reservationId, String name) {
+		NotificationDto notification = notificationService.createReservationCheckInNotification(consumerId, reservationId, name);
+		notificationService.sendNotification(notification);
 	}
 
 	@Transactional
@@ -331,6 +344,7 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
+		Manager manager = (Manager) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 		Long managerId = authUtil.getManager(request).getId();
 
 		if (!reservation.getManagerId().equals(managerId)) {
@@ -347,16 +361,22 @@ public class ReservationServiceImpl implements ReservationService {
 
 		// 정산 테이블 생성
 		settlementRepository.save(Settlement.of(reservation));
+
+		sendReservationCheckOutNotification(reservation.getConsumerId(), reservationId, manager.getName());
+	}
+
+	private void sendReservationCheckOutNotification(Long consumerId, Long reservationId, String managerName) {
+		NotificationDto notification = notificationService.createReservationCheckOutNotification(consumerId, reservationId, managerName);
+		notificationService.sendNotification(notification);
 	}
 
 	@Transactional
 	@Override
 	public void cancel(Long reservationId, HttpServletRequest request) {
-
-		Long consumerId = authUtil.getConsumer(request).getId();
+		Consumer consumer = (Consumer) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		if (!reservation.getConsumerId().equals(consumerId)) {
+		if (!reservation.getConsumerId().equals(consumer.getId())) {
 			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
 		}
 
@@ -368,6 +388,14 @@ public class ReservationServiceImpl implements ReservationService {
 		if (matchingRepository.existsById(matchingRepository.findByReservationId(reservationId).getId())) {
 			matchingRepository.deleteById(matchingRepository.findByReservationId(reservationId).getId());
 		}
+
+		sendReservationCanceledNotification(reservation.getManagerId(), reservationId, consumer.getName());
+
+	}
+
+	private void sendReservationCanceledNotification(Long managerId, Long reservationId, String consumerName) {
+		NotificationDto notification =  notificationService.createReservationCancelNotification(managerId, reservationId, consumerName);
+		notificationService.sendNotification(notification);
 	}
 
 	@Override

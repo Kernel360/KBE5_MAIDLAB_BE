@@ -3,7 +3,7 @@ spring:
     activate:
       on-profile: prod              # ← active=dev 일 때만 적용
   jpa:
-    show-sql: true
+    show-sql: false
     properties:
       dialect: org.hibernate.dialect.MySQL8Dialect
     hibernate:

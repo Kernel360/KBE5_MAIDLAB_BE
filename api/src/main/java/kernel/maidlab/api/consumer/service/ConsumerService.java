@@ -129,5 +129,11 @@ public class ConsumerService {
 	public Consumer getConsumer(HttpServletRequest req){
 		return (Consumer)req.getAttribute(JwtFilter.CURRENT_USER_KEY);
 	}
+	
+	@Transactional(readOnly = true)
+	public Consumer findById(Long consumerId) {
+		return consumerRepository.findById(consumerId)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 소비자입니다. ID: " + consumerId));
+	}
 
 }

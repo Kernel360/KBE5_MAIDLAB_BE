@@ -6,7 +6,6 @@ import kernel.maidlab.common.dto.consumer.request.ConsumerProfileRequestDto;
 import kernel.maidlab.common.dto.consumer.request.ConsumerProfileUpdateRequestDto;
 import kernel.maidlab.common.entity.base.Base;
 import kernel.maidlab.common.entity.base.TimeBase;
-import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.SocialType;
 import lombok.AccessLevel;
@@ -27,7 +26,7 @@ import java.util.UUID;
 	@Index(name = "idx_consumer_phone_number", columnList = "phone_number", unique = true)})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Consumer extends TimeBase implements UserBase {
+public class Consumer extends TimeBase {
 
 	@Column(name = "uuid", nullable = false, unique = true)
 	private String uuid;
@@ -90,6 +89,8 @@ public class Consumer extends TimeBase implements UserBase {
 		this.totalReviewedCnt = 0L;
 		this.isDeleted = false;
 	}
+
+
 
 	public static Consumer createConsumer(String phoneNumber, String password, String name, Gender gender,
 		LocalDate birth) {

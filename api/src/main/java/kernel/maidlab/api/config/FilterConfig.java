@@ -24,7 +24,8 @@ public class FilterConfig {
 				"/api/board/*",
 				"/api/matching/*",
 				"/api/reservations/*",
-				"/api/point/*"); // 인증이 필요한 경로만 필터링
+				"/api/point/*",
+				"/api/notifications/*"); // 인증이 필요한 경로만 필터링
 		registration.setName("jwtFilter");
 		registration.setOrder(1);
 

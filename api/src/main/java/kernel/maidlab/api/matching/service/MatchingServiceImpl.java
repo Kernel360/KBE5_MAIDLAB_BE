@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,9 +14,9 @@ import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.jwt.JwtFilter;
 import kernel.maidlab.api.consumer.service.ConsumerService;
 import kernel.maidlab.api.manager.service.ManagerService;
+import kernel.maidlab.api.notification.service.NotificationService;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
 import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
-import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
@@ -26,6 +25,7 @@ import kernel.maidlab.common.exception.BaseException;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
+import kernel.maidlab.common.dto.notification.NotificationDto;
 import kernel.maidlab.common.entity.matching.Matching;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.common.enums.ResponseType;
@@ -41,6 +41,7 @@ public class MatchingServiceImpl implements MatchingService {
 	private final ManagerService managerService;
 	private final ReservationRepository reservationRepository;
 	private final ConsumerService consumerService;
+	private final NotificationService notificationService;
 
 	@Override
 	public List<AvailableManagerResponseDto> findAvailableManagers(MatchingRequestDto dto) {
@@ -56,8 +57,14 @@ public class MatchingServiceImpl implements MatchingService {
 		if (matchingRepository.existsByReservationId(matching.getReservationId())) {
 			throw new BaseException(ResponseType.DUPLICATE_RESERVATION_ID);
 		}
+		log.info("test");
+
 		Matching savedMatching = matchingRepository.save(matching);
 		log.info("매칭 생성 완료 - 매칭 ID: {}, 예약 ID: {}", savedMatching.getId(), dto.getReservationId());
+
+		// 매니저에게 매칭 신청 알림 전송
+		sendMatchingNotification(savedMatching);
+
 	}
 
 	@Transactional
@@ -66,24 +73,24 @@ public class MatchingServiceImpl implements MatchingService {
 		Matching matching = matchingRepository.findByReservationId(reservationId);
 		Status previousStatus = matching.getMatchingStatus();
 		matching.setMatchingStatus(status);
+		sendStatusNotification(matching, status);
 		log.info("매칭 상태 변경 완료 - 예약 ID: {}, 이전 상태: {} -> 새 상태: {}", reservationId, previousStatus, status);
 	}
 
 	@Override
 	public List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size) {
 
-		UserBase me = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		Manager manager = (Manager)me;
+		Manager manager = (Manager)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 
 		Pageable pageable = PageRequest.of(page, size);
 
 		return matchingRepository.findByManagerIdAndMatchingStatus(manager.getId(), Status.PENDING,
 			pageable).stream().map(matching -> {
-					Long reservationId = matching.getReservationId();
-					Reservation reservation = reservationRepository.findById(reservationId)
-						.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
-					return new RequestMatchingListResponseDto(reservation);
-			}).toList();
+			Long reservationId = matching.getReservationId();
+			Reservation reservation = reservationRepository.findById(reservationId)
+				.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
+			return new RequestMatchingListResponseDto(reservation);
+		}).toList();
 	}
 
 	@Override
@@ -100,10 +107,11 @@ public class MatchingServiceImpl implements MatchingService {
 	@Transactional
 	public void rejectExpiredPendingMatching() {
 		LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(10);
-		
+
 		// Find expired pending matchings first
-		List<Matching> expiredMatchings = matchingRepository.findByMatchingStatusAndUpdatedAtBefore(Status.PENDING, expiredTime);
-		
+		List<Matching> expiredMatchings = matchingRepository.findByMatchingStatusAndUpdatedAtBefore(Status.PENDING,
+			expiredTime);
+
 		// Update each matching individually to increment count and change status
 		for (Matching matching : expiredMatchings) {
 			Integer currentCount = matching.getMatchingCount();
@@ -114,7 +122,8 @@ public class MatchingServiceImpl implements MatchingService {
 		}
 
 		// Handle matchings that have reached maximum count (4 attempts)
-		List<Matching> maxCountMatchings = matchingRepository.findByMatchingCountGreaterThanEqualOrderByUpdatedAtDesc(4);
+		List<Matching> maxCountMatchings = matchingRepository.findByMatchingCountGreaterThanEqualOrderByUpdatedAtDesc(
+			4);
 		for (Matching matching : maxCountMatchings) {
 			// Cancel the reservation
 			Reservation reservation = reservationRepository.findById(matching.getReservationId())
@@ -122,9 +131,10 @@ public class MatchingServiceImpl implements MatchingService {
 			if (reservation != null) {
 				reservation.cancel(LocalDateTime.now());
 				reservationRepository.save(reservation);
-				log.info("예약 취소 완료 - 예약 ID: {}, 매칭 시도 횟수: {}", matching.getReservationId(), matching.getMatchingCount());
+				log.info("예약 취소 완료 - 예약 ID: {}, 매칭 시도 횟수: {}", matching.getReservationId(),
+					matching.getMatchingCount());
 			}
-			
+
 			// Delete the matching
 			matchingRepository.delete(matching);
 			log.info("매칭 삭제 완료 - 매칭 ID: {}, 예약 ID: {}", matching.getId(), matching.getReservationId());
@@ -145,6 +155,72 @@ public class MatchingServiceImpl implements MatchingService {
 				.filter(s -> s.endsWith("시"))
 				.findFirst()
 				.orElseThrow(() -> new BaseException(ResponseType.WRONG_ADDRESS));
+	}
+
+	//매칭 신청 알림 전송
+	private void sendMatchingNotification(Matching matching) {
+		try {
+			// 예약 정보 조회
+			Reservation reservation = reservationRepository.findById(matching.getReservationId())
+				.orElseThrow(
+					() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + matching.getReservationId()));
+
+			// 소비자 정보 조회
+			Consumer consumer = consumerService.findById(reservation.getConsumerId());
+
+			// 서비스 타입 정보
+			String serviceType = reservation.getServiceDetailType().getServiceDetailType();
+
+			// 알림생성
+			NotificationDto notification = notificationService.createMatchingNotification(
+				matching.getManagerId(),
+				reservation.getId(),
+				consumer.getName(),
+				serviceType
+			);
+			log.info("매칭 알림 생성 완료 - 매니저 ID: {}, 예약 ID: {}",
+				notification.getReceiverId(), notification.getRelatedId());
+
+			// DB 저장 및 실시간 전송
+			notificationService.sendNotification(notification);
+
+		} catch (Exception e) {
+			log.error("매칭 알림 전송 실패 - 매칭 ID: {}, 매니저 ID: {}",
+				matching.getId(), matching.getManagerId(), e);
+			// 알림 전송 실패는 매칭 생성을 롤백하지 않음
+		}
+	}
+
+	//매칭 승인/거절 알림 전송
+	private void sendStatusNotification(Matching matching, Status status) {
+		try {
+			// 예약 정보 조회
+			Reservation reservation = reservationRepository.findById(matching.getReservationId())
+				.orElseThrow(
+					() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + matching.getReservationId()));
+
+			// 소비자 정보 조회
+			Consumer consumer = consumerService.findById(reservation.getConsumerId());
+
+			// 서비스 타입 정보
+			String serviceType = reservation.getServiceDetailType().getServiceDetailType();
+
+			// 새로운 알림 시스템 사용
+			NotificationDto notification = notificationService.createMatchingStatusNotification(
+				consumer.getId(),
+				matching.getManagerId(),
+				consumer.getName(),
+				status
+			);
+
+			// DB 저장 및 실시간 전송
+			notificationService.sendNotification(notification);
+
+		} catch (Exception e) {
+			log.error("매칭 알림 전송 실패 - 매칭 ID: {}, 매니저 ID: {}",
+				matching.getId(), matching.getManagerId(), e);
+			// 알림 전송 실패는 매칭 생성을 롤백하지 않음
+		}
 	}
 
 }

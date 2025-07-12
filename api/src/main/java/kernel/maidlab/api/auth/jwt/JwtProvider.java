@@ -121,10 +121,16 @@ public class JwtProvider {
 
 	// 토큰 추출
 	public String extractToken(HttpServletRequest request) {
+		// 1. 헤더에서 토큰 추출
 		String authHeader = request.getHeader(jwtProperties.getHeader());
-
 		if (authHeader != null && authHeader.startsWith(jwtProperties.getPrefix())) {
 			return authHeader.substring(jwtProperties.getPrefix().length());
+		}
+
+		// 2. 쿼리 파라미터에서 토큰 추출 (SSE 연결용)
+		String token = request.getParameter("token");
+		if (token != null) {
+			return token;
 		}
 
 		return null;

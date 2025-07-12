@@ -1,0 +1,135 @@
+package kernel.maidlab.common.dto.notification;
+
+import java.time.LocalDateTime;
+
+import kernel.maidlab.common.entity.notification.Notification;
+import kernel.maidlab.common.enums.NotificationType;
+import kernel.maidlab.common.enums.UserType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class NotificationDto {
+
+	private Long id;
+	// private Long senderId;
+	// private UserType senderType;
+	private Long receiverId;
+	private UserType receiverType;
+	private NotificationType notificationType;
+	// private String title;
+	private String message;
+	private Long relatedId;
+	private Boolean isRead;
+	private LocalDateTime createdAt;
+
+	// 기존 호환성을 위한 메서드들
+	public Long getUserId() {
+		return receiverId;
+	}
+
+	public UserType getUserType() {
+		return receiverType;
+	}
+
+	public void setUserId(Long userId) {
+		this.receiverId = userId;
+	}
+
+	public void setUserType(UserType userType) {
+		this.receiverType = userType;
+	}
+
+	public static NotificationDto of(Long receiverId, UserType receiverType,
+		NotificationType notificationType,
+		String message, Long relatedId) {
+		return NotificationDto.builder()
+			// .senderId(senderId)
+			// .senderType(senderType)
+			.receiverId(receiverId)
+			.receiverType(receiverType)
+			.notificationType(notificationType)
+			// .title(title)
+			.message(message)
+			//.data(data)
+			.relatedId(relatedId)
+			.isRead(false)
+			.createdAt(LocalDateTime.now())
+			.build();
+	}
+
+	// // 기존 호환성을 위한 간단한 of 메서드
+	// public static NotificationDto of(Long userId, UserType userType,
+	//                                NotificationType notificationType,
+	//                                String title, String message,
+	//                                String data, Long relatedId) {
+	//     return NotificationDto.builder()
+	//             .senderId(null) // 시스템 알림
+	//             .senderType(null)
+	//             .receiverId(userId)
+	//             .receiverType(userType)
+	//             .notificationType(notificationType)
+	//             .title(title)
+	//             .message(message)
+	//             .data(data)
+	//             .relatedId(relatedId)
+	//             .isRead(false)
+	//             .createdAt(LocalDateTime.now())
+	//             .build();
+	// }
+
+	public static NotificationDto fromEntity(Notification notification) {
+		return NotificationDto.builder()
+			.id(notification.getId())
+			// .senderId(notification.getSenderId())
+			// .senderType(notification.getSenderType())
+			.receiverId(notification.getReceiverId())
+			.receiverType(notification.getReceiverType())
+			.notificationType(notification.getNotificationType())
+			// .title(notification.getTitle())
+			.message(notification.getMessage())
+			//.data(notification.getData())
+			.relatedId(notification.getRelatedId())
+			.isRead(notification.getIsRead())
+			.createdAt(notification.getCreatedAt())
+			.build();
+	}
+
+	public Notification toEntity() {
+		return Notification.builder()
+			// .senderId(senderId)
+			// .senderType(senderType)
+			.receiverId(receiverId)
+			.receiverType(receiverType)
+			.notificationType(notificationType)
+			// .title(title)
+			.message(message)
+			//.data(data)
+			.relatedId(relatedId)
+			.isRead(isRead)
+			.build();
+	}
+
+	public static NotificationDto forSend(Notification notification) {
+		return NotificationDto.builder()
+			.id(notification.getId())
+			// .senderId(null)
+			// .senderType(notification.getSenderType())
+			.receiverId(notification.getReceiverId())
+			.receiverType(notification.getReceiverType())
+			.notificationType(notification.getNotificationType())
+			// .title(title)
+			.message(notification.getMessage())
+			//.data(data)
+			.relatedId(notification.getRelatedId())
+			.isRead(notification.getIsRead())
+			.createdAt(notification.getCreatedAt())
+			.build();
+	}
+
+}
