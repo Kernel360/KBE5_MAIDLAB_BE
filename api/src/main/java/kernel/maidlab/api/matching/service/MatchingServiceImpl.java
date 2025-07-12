@@ -17,7 +17,6 @@ import kernel.maidlab.api.consumer.service.ConsumerService;
 import kernel.maidlab.api.manager.service.ManagerService;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
 import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
-import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
@@ -72,8 +71,7 @@ public class MatchingServiceImpl implements MatchingService {
 	@Override
 	public List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size) {
 
-		UserBase me = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		Manager manager = (Manager)me;
+		Manager manager = (Manager)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 
 		Pageable pageable = PageRequest.of(page, size);
 

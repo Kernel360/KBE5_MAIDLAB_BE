@@ -17,7 +17,6 @@ import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseD
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
-import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.consumer.ManagerPreference;
 import kernel.maidlab.common.entity.manager.Manager;
@@ -190,8 +189,8 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
 
-		UserBase user = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
 		Long userId = switch (userType) {
 			case CONSUMER -> ((Consumer)user).getId();
 			case MANAGER -> ((Manager)user).getId();
