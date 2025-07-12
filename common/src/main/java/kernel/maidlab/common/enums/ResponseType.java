@@ -37,7 +37,10 @@ public enum ResponseType {
 	AVAILABLE_MANAGER_DOES_NOT_EXIST("NM", "Available manager does not exist.", HttpStatus.NOT_FOUND),
 
 	// 500
-	DATABASE_ERROR("DBE", "Database error.", HttpStatus.INTERNAL_SERVER_ERROR);
+	DATABASE_ERROR("DBE", "Database error.", HttpStatus.INTERNAL_SERVER_ERROR),
+
+	// 포인트 관련 에러
+	INSUFFICIENT_POINT("VF", "사용 가능한 포인트가 부족합니다.", HttpStatus.BAD_REQUEST);
 
 	private final String code;
 	private final String message;

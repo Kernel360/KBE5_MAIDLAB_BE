@@ -108,6 +108,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 				reservation.pet,
 				reservation.specialRequest,
 				reservation.totalPrice,
+				reservation.finalPaymentPrice,
 				region.regionName
 			)
 			.from(reservation)
@@ -150,6 +151,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 			.pet(first.get(reservation.pet))
 			.specialRequest(first.get(reservation.specialRequest))
 			.totalPrice(first.get(reservation.totalPrice))
+			.finalPaymentPrice(first.get(reservation.finalPaymentPrice))
 			.build();
 	}
 
