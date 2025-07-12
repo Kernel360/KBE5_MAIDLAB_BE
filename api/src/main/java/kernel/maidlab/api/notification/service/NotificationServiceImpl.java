@@ -17,7 +17,6 @@ import kernel.maidlab.api.notification.repository.NotificationRepository;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.api.notification.util.NotificationConnectionKey;
-import kernel.maidlab.common.dto.notification.MatchingNotificationDto;
 import kernel.maidlab.common.dto.notification.NotificationDto;
 import kernel.maidlab.common.entity.notification.Notification;
 import kernel.maidlab.common.enums.NotificationType;
@@ -37,9 +36,6 @@ public class NotificationServiceImpl implements NotificationService {
 
 	// 사용자별 SSE 연결 관리 (userId + userType 조합으로 구분)
 	private final ConcurrentHashMap<NotificationConnectionKey, SseEmitter> connections = new ConcurrentHashMap<>();
-
-	// 사용자별 읽지 않은 알림 저장 (메모리 캐시 - 기존 호환성 유지)
-	private final ConcurrentHashMap<Long, List<MatchingNotificationDto>> notifications = new ConcurrentHashMap<>();
 
 	private UserType getCurrentUserType(HttpServletRequest request) {
 		return (UserType) request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
