@@ -308,4 +308,9 @@ public class ManagerServiceImpl implements ManagerService {
 		return managerRepository.previousManagers(consumer);
 	}
 
+	@Override
+	public Manager findById(Long managerId) {
+		return managerRepository.findById(managerId).orElse(null);
+	}
+
 }
