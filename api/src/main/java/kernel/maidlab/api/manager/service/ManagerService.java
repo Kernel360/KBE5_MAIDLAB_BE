@@ -35,4 +35,6 @@ public interface ManagerService {
 	List<AvailableManagerResponseDto> findAvailableManagers(String gu, LocalDateTime StartTime, LocalDateTime EndTime);
 
 	List<AvailableManagerResponseDto> previousManagers(Consumer consumer);
+
+	kernel.maidlab.common.entity.manager.Manager getManager(String userId);
 }

@@ -4,6 +4,8 @@ import kernel.maidlab.common.dto.manager.request.*;
 import kernel.maidlab.common.dto.manager.response.*;
 import kernel.maidlab.api.manager.service.ManagerService;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
+import kernel.maidlab.common.enums.UserType;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class ManagerController implements ManagerApi {
 
 	@Override
 	@PostMapping("/profile")
+	@AuthRequired(roles = {UserType.MANAGER})
 	public ResponseEntity<ResponseDto<Void>> createProfile(@Validated @RequestBody ProfileRequestDto req,
 		HttpServletRequest httpReq) {
 		return managerService.createProfile(req, httpReq);
@@ -30,18 +33,21 @@ public class ManagerController implements ManagerApi {
 
 	@Override
 	@GetMapping("/mypage")
+	@AuthRequired(roles = {UserType.MANAGER})
 	public ResponseEntity<ResponseDto<MypageResponseDto>> getMypage(HttpServletRequest req) {
 		return managerService.getMypage(req);
 	}
 
 	@Override
 	@GetMapping("/profile")
+	@AuthRequired(roles = {UserType.MANAGER})
 	public ResponseEntity<ResponseDto<ProfileResponseDto>> getProfile(HttpServletRequest req) {
 		return managerService.getProfile(req);
 	}
 
 	@Override
 	@PutMapping("/profile")
+	@AuthRequired(roles = {UserType.MANAGER})
 	public ResponseEntity<ResponseDto<Void>> updateProfile(@Validated @RequestBody ProfileUpdateRequestDto req,
 		HttpServletRequest httpReq) {
 		return managerService.updateProfile(req, httpReq);
@@ -49,6 +55,7 @@ public class ManagerController implements ManagerApi {
 
 	@Override
 	@GetMapping("/myReviews")
+	@AuthRequired(roles = {UserType.MANAGER})
 	public ResponseEntity<ResponseDto<ReviewListResponseDto>> getMyReviews(HttpServletRequest req) {
 		return managerService.getMyReviews(req);
 	}

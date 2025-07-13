@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.admin.auth.entity.Admin;
-import kernel.maidlab.admin.auth.jwt.AdminJwtFilter;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
 import kernel.maidlab.common.dto.event.object.EventListItem;
 import kernel.maidlab.common.dto.event.request.EventRequestDto;
@@ -75,7 +75,7 @@ public class EventServiceImpl implements EventService {
 	// 이벤트 생성
 	@Override
 	public ResponseEntity<ResponseDto<Void>> createEvent(EventRequestDto eventRequestDto, HttpServletRequest req) {
-		String adminKey = (String) req.getAttribute(AdminJwtFilter.CURRENT_ADMIN_KEY_VALUE);
+		String adminKey = AuthenticationHelper.getCurrentUserId();
 
 		Admin admin = adminRepository.findByAdminKeyAndIsDeletedFalse(adminKey)
 			.orElseThrow(() -> {
@@ -98,7 +98,7 @@ public class EventServiceImpl implements EventService {
 	// 이벤트 수정
 	@Override
 	public ResponseEntity<ResponseDto<Void>> updateEvent(Long eventId, EventRequestDto eventRequestDto, HttpServletRequest req) {
-		String adminKey = (String) req.getAttribute(AdminJwtFilter.CURRENT_ADMIN_KEY_VALUE);
+		String adminKey = AuthenticationHelper.getCurrentUserId();
 
 		Admin admin = adminRepository.findByAdminKeyAndIsDeletedFalse(adminKey)
 			.orElseThrow(() -> {
@@ -123,7 +123,7 @@ public class EventServiceImpl implements EventService {
 	// 이벤트 삭제 (물리 삭제)
 	@Override
 	public ResponseEntity<ResponseDto<Void>> deleteEvent(Long eventId, HttpServletRequest req) {
-		String adminKey = (String) req.getAttribute(AdminJwtFilter.CURRENT_ADMIN_KEY_VALUE);
+		String adminKey = AuthenticationHelper.getCurrentUserId();
 
 		Admin admin = adminRepository.findByAdminKeyAndIsDeletedFalse(adminKey)
 			.orElseThrow(() -> {

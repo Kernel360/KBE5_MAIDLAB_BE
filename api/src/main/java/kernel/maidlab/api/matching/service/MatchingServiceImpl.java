@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.api.consumer.service.ConsumerService;
 import kernel.maidlab.api.manager.service.ManagerService;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
@@ -30,6 +30,7 @@ import kernel.maidlab.common.entity.matching.Matching;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.api.util.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +42,7 @@ public class MatchingServiceImpl implements MatchingService {
 	private final ManagerService managerService;
 	private final ReservationRepository reservationRepository;
 	private final ConsumerService consumerService;
+	private final UserValidator userValidator;
 
 	@Override
 	public List<AvailableManagerResponseDto> findAvailableManagers(MatchingRequestDto dto) {
@@ -72,7 +74,9 @@ public class MatchingServiceImpl implements MatchingService {
 	@Override
 	public List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size) {
 
-		UserBase me = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String userId = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		UserBase me = userValidator.findByUuid(userId, userType);
 		Manager manager = (Manager)me;
 
 		Pageable pageable = PageRequest.of(page, size);
@@ -88,7 +92,7 @@ public class MatchingServiceImpl implements MatchingService {
 
 	@Override
 	public List<LikedManagerResponseDto> preferenceManager(HttpServletRequest request) {
-		return consumerService.getLikedManagerList(request);
+		return consumerService.getLikedManagerList();
 	}
 
 	@Override

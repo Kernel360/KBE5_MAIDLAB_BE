@@ -6,8 +6,11 @@ import kernel.maidlab.common.dto.consumer.request.ConsumerProfileUpdateRequestDt
 import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
 import kernel.maidlab.api.consumer.service.ConsumerService;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.aop.aspect.auth.AuthenticationAspect;
+import kernel.maidlab.core.security.CustomUserDetails;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,61 +27,68 @@ public class ConsumerController {
 	private final ConsumerService consumerService;
 
 	@GetMapping("/mypage")
-	public ResponseEntity<ResponseDto<ConsumerMyPageDto>> getMyPage(HttpServletRequest req) {
-		ConsumerMyPageDto myPageDto = consumerService.getConsumerMyPage(req);
+	@AuthRequired(roles = {UserType.CONSUMER})
+	public ResponseEntity<ResponseDto<ConsumerMyPageDto>> getMyPage() {
+		CustomUserDetails currentUser = AuthenticationAspect.getCurrentUser();
+		ConsumerMyPageDto myPageDto = consumerService.getConsumerMyPage(currentUser.getUserId());
 		return ResponseDto.success(myPageDto);
 	}
 
 	@GetMapping("/profile")
-	public ResponseEntity<ResponseDto<ConsumerProfileResponseDto>> getProfile(HttpServletRequest req) {
-		ConsumerProfileResponseDto responseDto = consumerService.getConsumerProfile(req);
+	@AuthRequired(roles = {UserType.CONSUMER})
+	public ResponseEntity<ResponseDto<ConsumerProfileResponseDto>> getProfile() {
+		CustomUserDetails currentUser = AuthenticationAspect.getCurrentUser();
+		ConsumerProfileResponseDto responseDto = consumerService.getConsumerProfile(currentUser.getUserId());
 		return ResponseDto.success(responseDto);
 	}
 
 	@PostMapping("/profile")
+	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<Void>> createProfile(
-		@Validated @RequestBody ConsumerProfileRequestDto consumerProfileRequestDto,
-		HttpServletRequest req) {
-		consumerService.createConsumerProfile(consumerProfileRequestDto, req);
+		@Validated @RequestBody ConsumerProfileRequestDto consumerProfileRequestDto) {
+		CustomUserDetails currentUser = AuthenticationAspect.getCurrentUser();
+		consumerService.createConsumerProfile(consumerProfileRequestDto, currentUser.getUserId());
 		return ResponseDto.success();
 	}
 
 	@PatchMapping("/profile")
+	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<Void>> updateProfile(
-			@Validated @RequestBody ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto,
-			HttpServletRequest req
-	){
-		consumerService.updateConsumerProfile(consumerProfileUpdateRequestDto, req);
+		@Validated @RequestBody ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto) {
+		CustomUserDetails currentUser = AuthenticationAspect.getCurrentUser();
+		consumerService.updateConsumerProfile(consumerProfileUpdateRequestDto, currentUser.getUserId());
 		return ResponseDto.success();
 	}
 
 
 	@GetMapping("/likes")
-	public ResponseEntity<ResponseDto<Object>> getLikes(HttpServletRequest req) {
-		var likedManagers = consumerService.getLikedManagerList(req);
+	@AuthRequired(roles = {UserType.CONSUMER})
+	public ResponseEntity<ResponseDto<Object>> getLikes() {
+		var likedManagers = consumerService.getLikedManagerList();
 		return ResponseDto.success(likedManagers);
 	}
 
 	@GetMapping("/blacklists")
-	public ResponseEntity<ResponseDto<Object>> getBlackListedManagerList(HttpServletRequest req) {
-		var blacklistedManagers = consumerService.getBlackListedManagerList(req);
+	@AuthRequired(roles = {UserType.CONSUMER})
+	public ResponseEntity<ResponseDto<Object>> getBlackListedManagerList() {
+		var blacklistedManagers = consumerService.getBlackListedManagerList();
 		return ResponseDto.success(blacklistedManagers);
 	}
 
 	@PostMapping("/preference/{managerUuid}")
+	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<Void>> setManagerPreference(
 		@PathVariable String managerUuid,
-		@RequestParam boolean preference,
-		HttpServletRequest req) {
-		consumerService.saveLikedOrBlackListedManager(req, managerUuid, preference);
+		@RequestParam boolean preference) {
+		consumerService.saveLikedOrBlackListedManager(managerUuid, preference);
 		return ResponseDto.success();
 	}
 
 	@DeleteMapping("/preference/{managerUuid}")
+	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<String>> deleteManagerPreference(
-			@PathVariable String managerUuid,
-			HttpServletRequest req) {
-		consumerService.deleteLikedAOrBlackListManager(managerUuid, req);
+			@PathVariable String managerUuid) {
+		consumerService.deleteLikedAOrBlackListManager(managerUuid);
 		return ResponseDto.success("삭제 완료");
 	}
 }

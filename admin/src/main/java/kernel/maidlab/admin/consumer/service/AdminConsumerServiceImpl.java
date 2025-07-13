@@ -6,11 +6,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.admin.consumer.controller.AdminConsumerController;
 import kernel.maidlab.admin.consumer.repository.AdminConsumerRepository;
 import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
-import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import lombok.RequiredArgsConstructor;
 
@@ -53,7 +50,7 @@ public class AdminConsumerServiceImpl implements AdminConsumerService{
 	}
 
 	@Override
-	public Long getCount(HttpServletRequest request) {
+	public Long getCount() {
 		return adminConsumerRepository.countByIsDeletedFalse();
 	}
 }

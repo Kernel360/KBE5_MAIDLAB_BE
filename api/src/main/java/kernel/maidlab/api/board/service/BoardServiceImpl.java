@@ -5,7 +5,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.entity.board.BoardImage;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.api.consumer.repository.ConsumerRepository;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.dto.board.BoardQueryDto;
 import kernel.maidlab.common.dto.board.ImageDto;
@@ -16,7 +19,7 @@ import kernel.maidlab.common.dto.board.response.BoardResponseDto;
 import kernel.maidlab.common.entity.board.Board;
 import kernel.maidlab.api.board.repository.BoardRepository;
 import kernel.maidlab.api.board.repository.ImageRepository;
-import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.api.util.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,13 +40,18 @@ public class BoardServiceImpl implements BoardService {
 
 	private final BoardRepository boardRepository;
 	private final ImageRepository imageRepository;
+	private final ConsumerRepository consumerRepository;
+	private final ManagerRepository managerRepository;
+	private final UserValidator userValidator;
 
 	// 게시판 글 생성
 	public void createBoard(
 		HttpServletRequest request,
 		BoardRequestDto boardRequestDto) {
 
-		UserBase user = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String userId = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		UserBase user = userValidator.findByUuid(userId, userType);
 
 		Board board = Board.createBoard(user, boardRequestDto);
 		Board savedBoard = boardRepository.save(board);
@@ -61,8 +69,9 @@ public class BoardServiceImpl implements BoardService {
 	@Transactional(readOnly = true)
 	public List<BoardResponseDto> getConsumerBoardList(HttpServletRequest request) {
 
-		UserBase user = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+		String userId = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		UserBase user = userValidator.findByUuid(userId, userType);
 
 		List<BoardQueryDto> boardQueryDtoList = getBoardQueryDtoList(user, userType);
 
@@ -78,7 +87,9 @@ public class BoardServiceImpl implements BoardService {
 		Long boardId
 	) throws AccessDeniedException {
 
-		UserBase user = (UserBase)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String userId = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		UserBase user = userValidator.findByUuid(userId, userType);
 
 		Board board = boardRepository.findByIdAndIsDeletedFalse(boardId)
 			.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시물 입니다."));
@@ -169,14 +180,10 @@ public class BoardServiceImpl implements BoardService {
 	// 유저 찾기
 	public UserBase getUser(HttpServletRequest request) {
 
-		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-
-		return switch (userType.getName()) {
-			case "회원" -> (Consumer)user;
-			case "매니저" -> (Manager)user;
-			default -> throw new IllegalArgumentException("유효하지 않은 사용자 유형 입니다.");
-		};
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		String userId = AuthenticationHelper.getCurrentUserId();
+		
+		return userValidator.findByUuid(userId, userType);
 	}
 
 	// 이미지 수정 로직

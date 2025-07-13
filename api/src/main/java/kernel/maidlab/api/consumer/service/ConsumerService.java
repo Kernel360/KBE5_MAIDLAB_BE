@@ -1,7 +1,6 @@
 package kernel.maidlab.api.consumer.service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepositoryCustom;
@@ -34,25 +33,23 @@ public class ConsumerService {
 	private final ManagerRepository managerRepository;
 
 	@Transactional(readOnly = true)
-	public ConsumerMyPageDto getConsumerMyPage(HttpServletRequest req){
-
-		Consumer findedConsumer = getConsumer(req);
+	public ConsumerMyPageDto getConsumerMyPage(String userId){
+		Consumer findedConsumer = getConsumer(userId);
 		return ConsumerMyPageDto.getInstance(findedConsumer);
 	}
 
 
 	@Transactional(readOnly = true)
-	public ConsumerProfileResponseDto getConsumerProfile(HttpServletRequest req) {
-
-		Consumer consumer = getConsumer(req);
+	public ConsumerProfileResponseDto getConsumerProfile(String userId) {
+		Consumer consumer = getConsumer(userId);
 		return ConsumerProfileResponseDto.getInstance(consumer);
 	}
 
 	public void createConsumerProfile(
 			ConsumerProfileRequestDto consumerProfileRequestDto,
-			HttpServletRequest req)
+			String userId)
 	{
-		Consumer consumer = getConsumer(req);
+		Consumer consumer = getConsumer(userId);
 
 		String profileImage = consumerProfileRequestDto.getProfileImage();
 		String address = consumerProfileRequestDto.getAddress();
@@ -64,9 +61,8 @@ public class ConsumerService {
 
 	public void updateConsumerProfile(
 			ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto,
-			HttpServletRequest req){
-
-		Consumer consumer = getConsumer(req);
+			String userId){
+		Consumer consumer = getConsumer(userId);
 		consumer.updateProfile(consumerProfileUpdateRequestDto);
 		consumerRepository.save(consumer);
 	}
@@ -74,9 +70,9 @@ public class ConsumerService {
 
 	// 찜한 매니저 조회
 	@Transactional(readOnly = true)
-	public List<LikedManagerResponseDto> getLikedManagerList(HttpServletRequest req) {
-
-		Consumer consumer = getConsumer(req);
+	public List<LikedManagerResponseDto> getLikedManagerList() {
+		String userId = AuthenticationHelper.getCurrentUserId();
+		Consumer consumer = getConsumer(userId);
 
 		List<Manager> likedManagerList = managerPreferenceRepositoryCustom
 				.findManagersByPreference(consumer.getId(), true);
@@ -86,9 +82,9 @@ public class ConsumerService {
 
 	// 블랙 리스트 매니저 조회
 	@Transactional(readOnly = true)
-	public List<BlackListedManagerResponseDto> getBlackListedManagerList(HttpServletRequest req) {
-
-		Consumer consumer = getConsumer(req);
+	public List<BlackListedManagerResponseDto> getBlackListedManagerList() {
+		String userId = AuthenticationHelper.getCurrentUserId();
+		Consumer consumer = getConsumer(userId);
 
 		List<Manager> BlacklistedManagerList = managerPreferenceRepositoryCustom
 				.findManagersByPreference(consumer.getId(), false);
@@ -98,11 +94,10 @@ public class ConsumerService {
 
 	// 찜/블랙리스트 매니저 등록
 	public void saveLikedOrBlackListedManager(
-			HttpServletRequest req,
 			String managerUuid,
 			boolean preference) {
-
-		Consumer consumer = getConsumer(req);
+		String userId = AuthenticationHelper.getCurrentUserId();
+		Consumer consumer = getConsumer(userId);
 
 		Manager manager = managerRepository.findByUuid(managerUuid).
 			orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저 입니다."));
@@ -112,10 +107,9 @@ public class ConsumerService {
 	}
 
 	public long deleteLikedAOrBlackListManager(
-			String managerUuid,
-			HttpServletRequest req) {
-
-		Consumer consumer = getConsumer(req);
+			String managerUuid) {
+		String userId = AuthenticationHelper.getCurrentUserId();
+		Consumer consumer = getConsumer(userId);
 
 		Manager manager = managerRepository.findByUuid(managerUuid)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저입니다."));
@@ -126,8 +120,8 @@ public class ConsumerService {
 					manager.getId());
 	}
 
-	public Consumer getConsumer(HttpServletRequest req){
-		return (Consumer)req.getAttribute(JwtFilter.CURRENT_USER_KEY);
+	public Consumer getConsumer(String userId){
+		return consumerRepository.findByUuid(userId).orElse(null);
 	}
 
 }
