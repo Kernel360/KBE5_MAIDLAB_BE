@@ -291,14 +291,15 @@ public class ReservationServiceImpl implements ReservationService {
     
 		// 결제시 포인트 사용
 		if (dto.isPointUsed()){
-      
+
 			// 사용 가능한 포인트 검증
 			Long useAblePoint = pointRepository.getTotalPointsByConsumerId(consumer.getId());
-      if (useAblePoint < dto.getPointToUse()){
+			if (useAblePoint < dto.getPointToUse()){
 				throw new PointException(ResponseType.INSUFFICIENT_POINT);
 			}
-		
-      reservation.usePoints(dto.getPointToUse());
+
+			BigDecimal finalTotalPrice = usePoints(dto.getPointToUse(), reservation);
+			reservation.applyFinalPaymentPrice(finalTotalPrice);
 
 			// 포인트 차감
 			Point usagePoint = Point.createUsagePoint(consumer, reservation, dto.getPointToUse());
@@ -466,6 +467,16 @@ public class ReservationServiceImpl implements ReservationService {
 
 		}
 		return new WeeklySettlementResponseDto(totalAmount, responseList);
+	}
+
+	public BigDecimal usePoints(Integer pointToUse, Reservation reservation){
+
+		if (pointToUse < 0){
+			throw new PointException(ResponseType.VALIDATION_FAILED);
+		}
+		BigDecimal pointValue = BigDecimal.valueOf(pointToUse);
+		BigDecimal newPrice = reservation.getTotalPrice().subtract(pointValue);
+		return newPrice.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : newPrice;
 	}
 
 	// @Override
