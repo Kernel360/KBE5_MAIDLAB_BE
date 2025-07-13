@@ -1,6 +1,8 @@
 package kernel.maidlab.api.point.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
+import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.api.point.service.PointService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.point.request.PointChargeRequestDto;
@@ -21,6 +23,7 @@ public class PointController {
 
     // 수요자 현재 포인트 조회
     @GetMapping
+    @AuthRequired(roles = {UserType.CONSUMER})
     public ResponseEntity<ResponseDto<PointResponseDto>> getPoint(HttpServletRequest request){
         PointResponseDto point = pointService.getPoint(request);
         return ResponseDto.success(point);
@@ -28,6 +31,7 @@ public class PointController {
 
     // 수요자 포인트 이력 조회
     @PostMapping("/record")
+    @AuthRequired(roles = {UserType.CONSUMER})
     public ResponseEntity<ResponseDto<PageResponseDto<PointRecordResponseDto>>> getPointRecord(
             HttpServletRequest request,
             @RequestBody PointRecordRequestDto pointRecordRequestDto){

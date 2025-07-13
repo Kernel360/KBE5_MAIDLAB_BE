@@ -2,7 +2,8 @@ package kernel.maidlab.api.board.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-
+import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
+import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.common.dto.board.request.BoardRequestDto;
 import kernel.maidlab.common.dto.board.request.BoardUpdateRequestDto;
 import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
@@ -26,6 +27,7 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping
+    @AuthRequired(roles = {UserType.CONSUMER, UserType.MANAGER})
     public ResponseEntity<ResponseDto<String>> createBoard(
             HttpServletRequest request,
             @RequestBody BoardRequestDto boardRequestDto
@@ -35,6 +37,7 @@ public class BoardController {
     }
 
     @GetMapping
+    @AuthRequired(roles = {UserType.CONSUMER, UserType.MANAGER})
     public ResponseEntity<ResponseDto<List<BoardResponseDto>>> getConsumerBoardList(HttpServletRequest request){
 
         List<BoardResponseDto> consumerBoardList = boardService.getConsumerBoardList(request);
@@ -42,6 +45,7 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
+    @AuthRequired(roles = {UserType.CONSUMER, UserType.MANAGER})
     public ResponseEntity<ResponseDto<BoardDetailResponseDto>> getConsumerBoard(
             HttpServletRequest request,
             @PathVariable("boardId")Long boardId) throws AccessDeniedException {
@@ -51,6 +55,7 @@ public class BoardController {
     }
 
     @PatchMapping("/{boardId}")
+    @AuthRequired(roles = {UserType.CONSUMER, UserType.MANAGER})
     public ResponseEntity<ResponseDto<Object>> updateBoard(
             HttpServletRequest request,
             @PathVariable("boardId")Long boardId,
@@ -61,6 +66,7 @@ public class BoardController {
     }
 
     @DeleteMapping("/{boardId}")
+    @AuthRequired(roles = {UserType.CONSUMER, UserType.MANAGER})
     public ResponseEntity<ResponseDto<Object>> deleteBoard(
             HttpServletRequest request,
             @PathVariable("boardId") Long boardId

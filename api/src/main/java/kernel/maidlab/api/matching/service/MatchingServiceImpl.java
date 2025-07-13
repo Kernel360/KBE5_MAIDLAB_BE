@@ -11,13 +11,15 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.api.consumer.service.ConsumerService;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.manager.service.ManagerService;
 import kernel.maidlab.api.notification.service.NotificationService;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
 import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
+import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
@@ -31,6 +33,7 @@ import kernel.maidlab.common.entity.matching.Matching;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.api.util.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +47,7 @@ public class MatchingServiceImpl implements MatchingService {
 	private final ConsumerService consumerService;
 	private final NotificationService notificationService;
 	private final ManagerRepository managerRepository;
+	private final UserValidator userValidator;
 
 	@Override
 	public List<AvailableManagerResponseDto> findAvailableManagers(MatchingRequestDto dto) {
@@ -82,7 +86,10 @@ public class MatchingServiceImpl implements MatchingService {
 	@Override
 	public List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size) {
 
-		Manager manager = (Manager)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String userId = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		UserBase me = userValidator.findByUuid(userId, userType);
+		Manager manager = (Manager)me;
 
 		Pageable pageable = PageRequest.of(page, size);
 

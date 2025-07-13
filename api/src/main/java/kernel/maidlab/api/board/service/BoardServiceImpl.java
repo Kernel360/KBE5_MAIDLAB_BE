@@ -5,7 +5,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.entity.board.BoardImage;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.api.consumer.repository.ConsumerRepository;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.common.entity.base.UserBase;
 import kernel.maidlab.common.dto.board.BoardQueryDto;
 import kernel.maidlab.common.dto.board.ImageDto;
 import kernel.maidlab.common.dto.board.request.BoardRequestDto;
@@ -15,7 +19,7 @@ import kernel.maidlab.common.dto.board.response.BoardResponseDto;
 import kernel.maidlab.common.entity.board.Board;
 import kernel.maidlab.api.board.repository.BoardRepository;
 import kernel.maidlab.api.board.repository.ImageRepository;
-import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.api.util.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,19 +40,20 @@ public class BoardServiceImpl implements BoardService {
 
 	private final BoardRepository boardRepository;
 	private final ImageRepository imageRepository;
+	private final ConsumerRepository consumerRepository;
+	private final ManagerRepository managerRepository;
+	private final UserValidator userValidator;
 
 	// 게시판 글 생성
 	public void createBoard(
 		HttpServletRequest request,
 		BoardRequestDto boardRequestDto) {
 
-		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String userId = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		UserBase user = userValidator.findByUuid(userId, userType);
 
-		Board board = switch (userType) {
-			case CONSUMER -> Board.createBoard((Consumer)user, boardRequestDto);
-			case MANAGER -> Board.createBoard((Manager)user, boardRequestDto);
-		};
+		Board board = Board.createBoard(user, boardRequestDto);
 		Board savedBoard = boardRepository.save(board);
 
 		boardRequestDto.getImages()
@@ -64,8 +69,9 @@ public class BoardServiceImpl implements BoardService {
 	@Transactional(readOnly = true)
 	public List<BoardResponseDto> getConsumerBoardList(HttpServletRequest request) {
 
-		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String userId = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		UserBase user = userValidator.findByUuid(userId, userType);
 
 		List<BoardQueryDto> boardQueryDtoList = getBoardQueryDtoList(user, userType);
 
@@ -81,18 +87,15 @@ public class BoardServiceImpl implements BoardService {
 		Long boardId
 	) throws AccessDeniedException {
 
-		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String userId = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		UserBase user = userValidator.findByUuid(userId, userType);
 
 		Board board = boardRepository.findByIdAndIsDeletedFalse(boardId)
 			.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시물 입니다."));
 
 		// 토큰으로 찾은 수요자id와 PathVariable로 넘어온 게시판id로 찾은 consumerId와 비교
-		boolean hasAccess = switch (userType) {
-			case CONSUMER -> board.isAccessibleBy((Consumer)user);
-			case MANAGER -> board.isAccessibleBy((Manager)user);
-		};
-		if (!hasAccess) {
+		if (!board.isAccessibleBy(user)) {
 			throw new AccessDeniedException("해당 게시글에 접근할 권한이 없습니다.");
 		}
 
@@ -118,9 +121,8 @@ public class BoardServiceImpl implements BoardService {
 			.orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
 
 		// 사용자 검증
-		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		if (!isUserBoardWriter(board, user, userType)) {
+		UserBase user = getUser(request);
+		if (!isUserBoardWriter(board, user)) {
 			throw new RuntimeException("수정 권한이 없습니다.");
 		}
 
@@ -151,31 +153,37 @@ public class BoardServiceImpl implements BoardService {
 	 *서비스 외의 로직
 	 */
 	// 사용자 접근 검증
-	public boolean isUserBoardWriter(Board board, Object user, UserType userType) {
-		return switch (userType) {
-			case CONSUMER -> {
-				Consumer consumer = (Consumer)user;
-				yield board.getConsumer() != null && board.getConsumer().getId().equals(consumer.getId());
-			}
-			case MANAGER -> {
-				Manager manager = (Manager)user;
-				yield board.getManager() != null && board.getManager().getId().equals(manager.getId());
-			}
-		};
+	public boolean isUserBoardWriter(Board board, UserBase user) {
+		if (user instanceof Consumer consumer) {
+			return board.getConsumer() != null && board.getConsumer().getId().equals(consumer.getId());
+		} else if (user instanceof Manager manager) {
+			return board.getManager() != null && board.getManager().getId().equals(manager.getId());
+		}
+		return false;
 	}
 
 	// user타입에 따른 board 조회
-	public List<BoardQueryDto> getBoardQueryDtoList(Object user, UserType userType) {
-		return switch (userType) {
-			case CONSUMER -> {
-				Consumer consumer = (Consumer)user;
-				yield boardRepository.findAllByUserIdIsDeletedFalse(consumer.getId(), userType);
-			}
-			case MANAGER -> {
-				Manager manager = (Manager)user;
-				yield boardRepository.findAllByUserIdIsDeletedFalse(manager.getId(), userType);
-			}
-		};
+	public List<BoardQueryDto> getBoardQueryDtoList(UserBase user, UserType userType) {
+
+		if (userType == UserType.CONSUMER) {
+			Consumer consumer = (Consumer)user;
+			return boardRepository.findAllByUserIdIsDeletedFalse(consumer.getId(), userType);
+
+		} else if (userType == UserType.MANAGER) {
+			Manager manager = (Manager)user;
+			return boardRepository.findAllByUserIdIsDeletedFalse(manager.getId(), userType);
+
+		}
+		throw new IllegalArgumentException("유효하지 않은 사용자 타입입니다: " + userType);
+	}
+
+	// 유저 찾기
+	public UserBase getUser(HttpServletRequest request) {
+
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		String userId = AuthenticationHelper.getCurrentUserId();
+
+		return userValidator.findByUuid(userId, userType);
 	}
 
 	// 이미지 수정 로직

@@ -1,7 +1,9 @@
 package kernel.maidlab.api.point.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.point.repository.PointRepository;
 import kernel.maidlab.common.dto.point.request.PointChargeRequestDto;
 import kernel.maidlab.common.dto.point.request.PointRecordRequestDto;
@@ -10,6 +12,7 @@ import kernel.maidlab.common.dto.point.response.PointRecordResponseDto;
 import kernel.maidlab.common.dto.point.response.PointResponseDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.point.Point;
+import kernel.maidlab.api.util.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,11 +28,13 @@ import java.util.List;
 public class PointServiceImpl implements PointService{
 
     private final PointRepository pointRepository;
+    private final UserValidator userValidator;
 
     @Override
     public PointResponseDto getPoint(HttpServletRequest request) {
 
-        Consumer consumer = (Consumer) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+        String userId = AuthenticationHelper.getCurrentUserId();
+        Consumer consumer = (Consumer) userValidator.findByUuid(userId, UserType.CONSUMER);
         Long totalPointsByConsumerId = pointRepository.getTotalPointsByConsumerId(consumer.getId());
         return PointResponseDto.from(totalPointsByConsumerId);
     }
@@ -58,7 +63,8 @@ public class PointServiceImpl implements PointService{
                 )
         );
 
-        Consumer consumer = (Consumer) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+        String userId = AuthenticationHelper.getCurrentUserId();
+        Consumer consumer = (Consumer) userValidator.findByUuid(userId, UserType.CONSUMER);
 
         LocalDate startOfMonth = LocalDate.now().plusMonths(requestDto.getMonthOffset()).withDayOfMonth(1);
         LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());

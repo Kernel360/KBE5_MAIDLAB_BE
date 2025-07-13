@@ -4,7 +4,7 @@ import kernel.maidlab.common.enums.Gender;
 
 import java.time.LocalDate;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,10 +14,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SocialSignUpRequestDto {
 
-	@NotBlank
+	@NotNull
 	private LocalDate birth;
 
-	@NotBlank
+	@NotNull
 	private Gender gender;
 
 }

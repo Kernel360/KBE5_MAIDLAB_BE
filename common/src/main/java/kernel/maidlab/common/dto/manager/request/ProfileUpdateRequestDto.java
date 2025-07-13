@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import kernel.maidlab.common.dto.manager.object.RegionListItem;
 import kernel.maidlab.common.dto.manager.object.ScheduleListItem;
 import kernel.maidlab.common.dto.manager.object.ServiceListItem;
@@ -28,10 +29,10 @@ public class ProfileUpdateRequestDto {
 
 	private List<ServiceListItem> serviceTypes;
 
-	@NotBlank
+	@NotNull
 	private List<RegionListItem> regions;
 
-	@NotBlank
+	@NotNull
 	private List<ScheduleListItem> availableTimes;
 
 	private String introduceText;

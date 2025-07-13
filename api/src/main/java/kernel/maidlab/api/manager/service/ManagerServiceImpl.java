@@ -1,20 +1,18 @@
 package kernel.maidlab.api.manager.service;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 // import jakarta.transaction.Transactional;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.dto.auth.JwtDto;
-import kernel.maidlab.api.auth.jwt.JwtProvider;
+import kernel.maidlab.api.auth.service.JwtTokenService;
 import kernel.maidlab.common.entity.manager.ManagerDocument;
 import kernel.maidlab.common.entity.manager.ManagerRegion;
 import kernel.maidlab.common.entity.manager.ManagerSchedule;
@@ -54,27 +52,23 @@ public class ManagerServiceImpl implements ManagerService {
 	private final ManagerDocumentRepository managerDocumentRepository;
 	private final RegionRepository regionRepository;
 	private final ReviewRepository reviewRepository;
-	private final JwtProvider jwtProvider;
+	private final JwtTokenService jwtTokenService;
 
-	private Manager getManagerFromToken(HttpServletRequest req) {
-		String accessToken = jwtProvider.extractToken(req);
-		if (accessToken == null) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
+	private Manager getCurrentManager() {
+		String userUuid = AuthenticationHelper.getCurrentUserId();
+		return managerRepository.findByUuid(userUuid)
+			.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
+	}
 
-		JwtDto.ValidationResult validationResult = jwtProvider.validateAccessToken(accessToken);
-		if (!validationResult.isValid() || validationResult.getUserType() != UserType.MANAGER) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		return managerRepository.findByUuid(validationResult.getUuid())
+	public Manager getManager(String userId) {
+		return managerRepository.findByUuid(userId)
 			.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
 	}
 
 	// 최초 기본 프로필 생성
 	@Override
 	public ResponseEntity<ResponseDto<Void>> createProfile(ProfileRequestDto req, HttpServletRequest httpReq) {
-		Manager manager = getManagerFromToken(httpReq);
+		Manager manager = getCurrentManager();
 
 		if (req.getProfileImage() != null) {
 			manager.updateProfileImage(req.getProfileImage());
@@ -147,7 +141,7 @@ public class ManagerServiceImpl implements ManagerService {
 	@Transactional(readOnly = true)
 	public ResponseEntity<ResponseDto<MypageResponseDto>> getMypage(HttpServletRequest req) {
 
-		Manager manager = getManagerFromToken(req);
+		Manager manager = getCurrentManager();
 
 		Boolean isVerified = Status.APPROVED.equals(manager.getIsVerified());
 
@@ -167,7 +161,7 @@ public class ManagerServiceImpl implements ManagerService {
 	@Override
 	@Transactional(readOnly = true)
 	public ResponseEntity<ResponseDto<ProfileResponseDto>> getProfile(HttpServletRequest req) {
-		Manager manager = getManagerFromToken(req);
+		Manager manager = getCurrentManager();
 
 		List<ServiceType> services = managerServiceTypeRepository.findServiceTypesByManagerId(manager.getId());
 
@@ -207,7 +201,7 @@ public class ManagerServiceImpl implements ManagerService {
 	// 프로필 수정
 	@Override
 	public ResponseEntity<ResponseDto<Void>> updateProfile(ProfileUpdateRequestDto req, HttpServletRequest httpReq) {
-		Manager manager = getManagerFromToken(httpReq);
+		Manager manager = getCurrentManager();
 
 		manager.updateBasicInfo(req.getName(), req.getBirth(), req.getGender());
 
@@ -273,7 +267,7 @@ public class ManagerServiceImpl implements ManagerService {
 	@Override
 	@Transactional(readOnly = true)
 	public ResponseEntity<ResponseDto<ReviewListResponseDto>> getMyReviews(HttpServletRequest req) {
-		Manager manager = getManagerFromToken(req);
+		Manager manager = getCurrentManager();
 
 		List<Object[]> reviewData = reviewRepository.findManagerReviewDetails(manager.getId());
 
