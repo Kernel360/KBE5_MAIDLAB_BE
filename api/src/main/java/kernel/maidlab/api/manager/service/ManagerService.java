@@ -14,8 +14,6 @@ import kernel.maidlab.common.dto.ResponseDto;
 import org.springframework.data.domain.Page;
 
 import jakarta.transaction.Transactional;
-import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
-import kernel.maidlab.common.dto.manager.ManagerResponseDto;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.enums.Status;

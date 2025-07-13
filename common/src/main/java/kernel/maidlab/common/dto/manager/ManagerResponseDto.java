@@ -6,11 +6,11 @@ import java.util.List;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.Region;
 import kernel.maidlab.common.enums.Status;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@Builder
+@AllArgsConstructor
 public class ManagerResponseDto {
 	private String uuid;
 	private String phoneNumber;
