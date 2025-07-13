@@ -5,7 +5,6 @@ import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.enums.NotificationType;
 import kernel.maidlab.common.enums.UserType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +13,6 @@ import lombok.Setter;
 @Table(name = "notifications")
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Notification extends TimeBase {
@@ -48,7 +46,6 @@ public class Notification extends TimeBase {
     // private String data; // JSON 형태의 추가 데이터
 
     @Column(name = "is_read", nullable = false)
-    @Builder.Default
     private Boolean isRead = false;
 
     @Column(name = "related_id")
@@ -60,15 +57,13 @@ public class Notification extends TimeBase {
 
     public static Notification of(Long receiverId, UserType receiverType, NotificationType notificationType,
                                 String message,  Long relatedId) {
-        return Notification.builder()
-                .receiverId(receiverId)
-                .receiverType(receiverType)
-                .notificationType(notificationType)
-                // .title(title)
-                .message(message)
-                // .data(data)
-                .relatedId(relatedId)
-                .isRead(false)
-                .build();
+        return new Notification(
+                receiverId,
+                receiverType,
+                notificationType,
+                message,
+                false, // isRead
+                relatedId
+        );
     }
 }

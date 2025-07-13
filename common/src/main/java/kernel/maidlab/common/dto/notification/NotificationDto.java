@@ -92,18 +92,14 @@ public class NotificationDto {
 	}
 
 	public Notification toEntity() {
-		return Notification.builder()
-			// .senderId(senderId)
-			// .senderType(senderType)
-			.receiverId(receiverId)
-			.receiverType(receiverType)
-			.notificationType(notificationType)
-			// .title(title)
-			.message(message)
-			//.data(data)
-			.relatedId(relatedId)
-			.isRead(isRead)
-			.build();
+		return new Notification(
+			receiverId,
+			receiverType,
+			notificationType,
+			message,
+			isRead,
+			relatedId
+		);
 	}
 
 	public static NotificationDto forSend(Notification notification) {
