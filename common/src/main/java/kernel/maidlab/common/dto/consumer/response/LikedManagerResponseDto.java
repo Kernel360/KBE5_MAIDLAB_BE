@@ -20,7 +20,7 @@ public class LikedManagerResponseDto {
     private String introduceText;
     private List<Region> region;
 
-    public static List<LikedManagerResponseDto> getLikedManagerResponseDtoList(List<Manager> likedManagerList){
+    public static List<LikedManagerResponseDto> from(List<Manager> likedManagerList){
 
         return likedManagerList.stream()
                 .map(m -> new LikedManagerResponseDto(

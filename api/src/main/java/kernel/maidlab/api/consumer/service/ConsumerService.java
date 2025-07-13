@@ -37,7 +37,7 @@ public class ConsumerService {
 	public ConsumerMyPageDto getConsumerMyPage(HttpServletRequest req){
 
 		Consumer findedConsumer = getConsumer(req);
-		return ConsumerMyPageDto.getInstance(findedConsumer);
+		return ConsumerMyPageDto.from(findedConsumer);
 	}
 
 
@@ -45,7 +45,7 @@ public class ConsumerService {
 	public ConsumerProfileResponseDto getConsumerProfile(HttpServletRequest req) {
 
 		Consumer consumer = getConsumer(req);
-		return ConsumerProfileResponseDto.getInstance(consumer);
+		return ConsumerProfileResponseDto.from(consumer);
 	}
 
 	public void createConsumerProfile(
@@ -81,7 +81,7 @@ public class ConsumerService {
 		List<Manager> likedManagerList = managerPreferenceRepositoryCustom
 				.findManagersByPreference(consumer.getId(), true);
 
-		return LikedManagerResponseDto.getLikedManagerResponseDtoList(likedManagerList);
+		return LikedManagerResponseDto.from(likedManagerList);
 	}
 
 	// 블랙 리스트 매니저 조회
@@ -93,7 +93,7 @@ public class ConsumerService {
 		List<Manager> BlacklistedManagerList = managerPreferenceRepositoryCustom
 				.findManagersByPreference(consumer.getId(), false);
 
-		return BlackListedManagerResponseDto.getManagerResponseDtoList(BlacklistedManagerList);
+		return BlackListedManagerResponseDto.from(BlacklistedManagerList);
 	}
 
 	// 찜/블랙리스트 매니저 등록

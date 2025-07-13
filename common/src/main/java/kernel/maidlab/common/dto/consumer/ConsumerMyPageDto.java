@@ -14,7 +14,7 @@ public class ConsumerMyPageDto {
     private String profileImage;
     private SocialType socialType;
 
-    public static ConsumerMyPageDto getInstance(Consumer consumer){
+    public static ConsumerMyPageDto from(Consumer consumer){
 
         return new ConsumerMyPageDto(
                 consumer.getName(),

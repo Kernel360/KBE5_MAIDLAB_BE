@@ -1,16 +1,13 @@
 package kernel.maidlab.common.dto.consumer.response;
 
 import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.enums.Gender;
-import kernel.maidlab.common.enums.Region;
 import kernel.maidlab.common.enums.SocialType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Builder
@@ -28,7 +25,7 @@ public class AdminConsumerProfileResponseDto {
     private Boolean isDeleted;
     private SocialType socialType;
 
-    public static AdminConsumerProfileResponseDto getInstance(Consumer consumer){
+    public static AdminConsumerProfileResponseDto from(Consumer consumer){
 
         return new AdminConsumerProfileResponseDto(
                 consumer.getProfileImage(),
