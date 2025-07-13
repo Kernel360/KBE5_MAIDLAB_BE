@@ -6,12 +6,10 @@ import kernel.maidlab.common.entity.notification.Notification;
 import kernel.maidlab.common.enums.NotificationType;
 import kernel.maidlab.common.enums.UserType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationDto {
@@ -48,19 +46,16 @@ public class NotificationDto {
 	public static NotificationDto of(Long receiverId, UserType receiverType,
 		NotificationType notificationType,
 		String message, Long relatedId) {
-		return NotificationDto.builder()
-			// .senderId(senderId)
-			// .senderType(senderType)
-			.receiverId(receiverId)
-			.receiverType(receiverType)
-			.notificationType(notificationType)
-			// .title(title)
-			.message(message)
-			//.data(data)
-			.relatedId(relatedId)
-			.isRead(false)
-			.createdAt(LocalDateTime.now())
-			.build();
+		return new NotificationDto(
+			null, // id
+			receiverId,
+			receiverType,
+			notificationType,
+			message,
+			relatedId,
+			false, // isRead
+			LocalDateTime.now() // createdAt
+		);
 	}
 
 	// // 기존 호환성을 위한 간단한 of 메서드
@@ -84,20 +79,16 @@ public class NotificationDto {
 	// }
 
 	public static NotificationDto fromEntity(Notification notification) {
-		return NotificationDto.builder()
-			.id(notification.getId())
-			// .senderId(notification.getSenderId())
-			// .senderType(notification.getSenderType())
-			.receiverId(notification.getReceiverId())
-			.receiverType(notification.getReceiverType())
-			.notificationType(notification.getNotificationType())
-			// .title(notification.getTitle())
-			.message(notification.getMessage())
-			//.data(notification.getData())
-			.relatedId(notification.getRelatedId())
-			.isRead(notification.getIsRead())
-			.createdAt(notification.getCreatedAt())
-			.build();
+		return new NotificationDto(
+			notification.getId(),
+			notification.getReceiverId(),
+			notification.getReceiverType(),
+			notification.getNotificationType(),
+			notification.getMessage(),
+			notification.getRelatedId(),
+			notification.getIsRead(),
+			notification.getCreatedAt()
+		);
 	}
 
 	public Notification toEntity() {
@@ -116,20 +107,16 @@ public class NotificationDto {
 	}
 
 	public static NotificationDto forSend(Notification notification) {
-		return NotificationDto.builder()
-			.id(notification.getId())
-			// .senderId(null)
-			// .senderType(notification.getSenderType())
-			.receiverId(notification.getReceiverId())
-			.receiverType(notification.getReceiverType())
-			.notificationType(notification.getNotificationType())
-			// .title(title)
-			.message(notification.getMessage())
-			//.data(data)
-			.relatedId(notification.getRelatedId())
-			.isRead(notification.getIsRead())
-			.createdAt(notification.getCreatedAt())
-			.build();
+		return new NotificationDto(
+			notification.getId(),
+			notification.getReceiverId(),
+			notification.getReceiverType(),
+			notification.getNotificationType(),
+			notification.getMessage(),
+			notification.getRelatedId(),
+			notification.getIsRead(),
+			notification.getCreatedAt()
+		);
 	}
 
 }
