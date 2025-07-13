@@ -27,13 +27,13 @@ public class AdminMatchingServiceImpl implements AdminMatchingService {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "updatedAt"));
 		Page<Matching> matchings = adminMatchingRepository.findAll(pageable);
 		return matchings.stream()
-			.map(matching -> MatchingResponseDto.builder()
-				.reservationId(matching.getReservationId())
-				.managerId(matching.getManagerId())
-				.matchingStatus(matching.getMatchingStatus())
-				.matchingCount(matching.getMatchingCount())
-				.updatedAt(matching.getUpdatedAt())
-				.build())
+			.map(matching -> new MatchingResponseDto(
+				matching.getReservationId(),
+				matching.getManagerId(),
+				matching.getMatchingStatus(),
+				matching.getMatchingCount(),
+				matching.getUpdatedAt()
+			))
 			.toList();
 	}
 
@@ -43,13 +43,13 @@ public class AdminMatchingServiceImpl implements AdminMatchingService {
 		Pageable pageable = PageRequest.of(page, size);
 		matchings = adminMatchingRepository.findAllByMatchingStatusOrderByUpdatedAtDesc(status, pageable);
 		return matchings.stream()
-			.map(matching -> MatchingResponseDto.builder()
-				.reservationId(matching.getReservationId())
-				.managerId(matching.getManagerId())
-				.matchingStatus(matching.getMatchingStatus())
-				.matchingCount(matching.getMatchingCount())
-				.updatedAt(matching.getUpdatedAt())
-				.build())
+			.map(matching -> new MatchingResponseDto(
+				matching.getReservationId(),
+				matching.getManagerId(),
+				matching.getMatchingStatus(),
+				matching.getMatchingCount(),
+				matching.getUpdatedAt()
+			))
 			.toList();
 	}
 

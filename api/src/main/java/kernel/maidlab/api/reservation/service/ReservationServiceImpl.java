@@ -238,11 +238,11 @@ public class ReservationServiceImpl implements ReservationService {
 		log.info("예약 생성 완료 - 예약 ID: {}, Consumer ID: {}, Manager ID: {}", matchingReservation.getId(), consumerId, managerId);
 
 		// 예약 완료 시 manager 매칭
-		MatchingResponseDto match = MatchingResponseDto.builder()
-			.reservationId(matchingReservation.getId())
-			.managerId(matchingReservation.getManagerId())
-			.matchingStatus(Status.PENDING)
-			.build();
+		MatchingResponseDto match = new MatchingResponseDto(
+			matchingReservation.getManagerId(),
+			matchingReservation.getId(),
+			Status.PENDING
+		);
 		matchingService.createMatching(match);
 		return reservation.getId();
 	}
