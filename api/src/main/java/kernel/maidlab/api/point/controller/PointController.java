@@ -32,8 +32,8 @@ public class PointController {
             HttpServletRequest request,
             @RequestBody PointRecordRequestDto pointRecordRequestDto){
 
-        PageResponseDto<PointRecordResponseDto> pointRecordList = pointService.getPointRecordList(request, pointRecordRequestDto);
-
+        PageResponseDto<PointRecordResponseDto> pointRecordList =
+                pointService.getPointRecordList(request, pointRecordRequestDto);
         return ResponseDto.success(pointRecordList);
     }
 
