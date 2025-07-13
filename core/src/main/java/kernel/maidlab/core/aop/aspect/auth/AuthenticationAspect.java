@@ -1,0 +1,144 @@
+package kernel.maidlab.core.aop.aspect.auth;
+
+import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
+import kernel.maidlab.core.aop.annotation.auth.AdminRequired;
+import kernel.maidlab.core.security.CustomUserDetails;
+import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.exception.custom.AuthException;
+import lombok.extern.slf4j.Slf4j;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+
+@Slf4j
+@Aspect
+@Component
+public class AuthenticationAspect {
+
+	// @AuthRequired 어노테이션 권한 확인
+	@Around("@annotation(authRequired)")
+	public Object authenticateUser(ProceedingJoinPoint joinPoint, AuthRequired authRequired) throws Throwable {
+
+		String methodName = joinPoint.getSignature().getName();
+		String className = joinPoint.getTarget().getClass().getSimpleName();
+
+		log.debug("인증 체크 시작 - {}#{}", className, methodName);
+
+		try {
+			if (!authRequired.requireToken()) {
+				log.debug("토큰 검증 불필요 - {}#{}", className, methodName);
+				return joinPoint.proceed();
+			}
+
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+			if (authentication == null || !authentication.isAuthenticated()) {
+				log.warn("인증되지 않은 사용자 접근 시도 - {}#{}", className, methodName);
+				throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+			}
+
+			if (authentication.getPrincipal().equals("anonymousUser")) {
+				log.warn("익명 사용자 접근 시도 - {}#{}", className, methodName);
+				throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+			}
+
+			if (!(authentication.getPrincipal() instanceof CustomUserDetails)) {
+				log.error("잘못된 인증 객체 타입 - {}#{}", className, methodName);
+				throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+			}
+
+			CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
+
+			if (authRequired.roles().length > 0) {
+				boolean hasRole = userDetails.hasAnyRole(authRequired.roles());
+
+				if (!hasRole) {
+					log.warn("권한 부족 - 사용자: {}, 필요 권한: {}, 실제 권한: {} - {}#{}",
+						userDetails.getUsername(),
+						Arrays.toString(authRequired.roles()),
+						userDetails.getUserType(),
+						className, methodName);
+
+					throw new AuthException(ResponseType.DO_NOT_HAVE_PERMISSION);
+				}
+			}
+
+			log.debug("인증 체크 성공 - 사용자: {}, 권한: {} - {}#{}",
+				userDetails.getUsername(),
+				userDetails.getUserType(),
+				className, methodName);
+
+			return joinPoint.proceed();
+
+		} catch (AuthException e) {
+			throw e;
+		} catch (Exception e) {
+			log.error("인증 체크 중 예상치 못한 오류 발생 - {}#{}", className, methodName, e);
+			throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+		}
+	}
+
+	// @AdminRequired 어노테이션 권한 확인
+	@Around("@annotation(adminRequired)")
+	public Object authorizeAdmin(ProceedingJoinPoint joinPoint, AdminRequired adminRequired) throws Throwable {
+
+		String methodName = joinPoint.getSignature().getName();
+		String className = joinPoint.getTarget().getClass().getSimpleName();
+
+		log.debug("관리자 권한 체크 시작 - {}#{}", className, methodName);
+
+		try {
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+			if (authentication == null || !authentication.isAuthenticated()) {
+				log.warn("인증되지 않은 사용자의 관리자 권한 접근 시도 - {}#{}", className, methodName);
+				throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+			}
+
+			if (!(authentication.getPrincipal() instanceof CustomUserDetails)) {
+				log.error("잘못된 인증 객체 타입 - {}#{}", className, methodName);
+				throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+			}
+
+			CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
+
+			if (!userDetails.isAdmin()) {
+				log.warn("관리자 권한 부족 - 사용자: {}, 권한: {} - {}#{}",
+					userDetails.getUsername(),
+					userDetails.getUserType(),
+					className, methodName);
+
+				throw new AuthException(ResponseType.DO_NOT_HAVE_PERMISSION);
+			}
+
+			log.debug("관리자 권한 체크 성공 - 사용자: {} - {}#{}",
+				userDetails.getUsername(),
+				className, methodName);
+
+			return joinPoint.proceed();
+
+		} catch (AuthException e) {
+			throw e;
+		} catch (Exception e) {
+			log.error("관리자 권한 체크 중 예상치 못한 오류 발생 - {}#{}", className, methodName, e);
+			throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+		}
+	}
+
+	// 인증된 사용자 정보 반환
+	public static CustomUserDetails getCurrentUser() {
+		return AuthenticationHelper.getCurrentUser();
+	}
+
+	// 관리자 여부 확인
+	public static boolean isAdmin() {
+		return AuthenticationHelper.isAdmin();
+	}
+}

@@ -24,6 +24,7 @@ ext {
 dependencies {
     implementation project(':common')
     implementation project(':api')
+    implementation project(':core')
 
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
@@ -60,6 +61,16 @@ dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
+}
+
+// Admin 모듈은 라이브러리이므로 bootJar 비활성화
+jar {
+    enabled = true
+    archiveClassifier = ''
+}
+
+bootJar {
+    enabled = false
 }
 
 tasks.named('test') {

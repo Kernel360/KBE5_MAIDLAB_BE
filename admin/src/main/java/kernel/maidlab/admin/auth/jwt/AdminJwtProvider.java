@@ -3,7 +3,7 @@ package kernel.maidlab.admin.auth.jwt;
 import kernel.maidlab.common.dto.auth.AdminJwtDto;
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.api.auth.jwt.JwtProperties;
+import kernel.maidlab.core.security.jwt.JwtProperties;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

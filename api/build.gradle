@@ -33,10 +33,14 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+    //Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
     //FeignClient
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
     implementation project(':common')
+    implementation project(':core')
 
     implementation 'org.mindrot:jbcrypt:0.4'
 
@@ -66,6 +70,16 @@ dependencies {
 
 }
 
+
+// API 모듈은 라이브러리이므로 bootJar 비활성화
+jar {
+    enabled = true
+    archiveClassifier = ''
+}
+
+bootJar {
+    enabled = false
+}
 
 tasks.named('test') {
     useJUnitPlatform()
