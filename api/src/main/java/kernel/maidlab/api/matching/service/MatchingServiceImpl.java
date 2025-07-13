@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.api.auth.jwt.JwtFilter;
 import kernel.maidlab.api.consumer.service.ConsumerService;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.manager.service.ManagerService;
 import kernel.maidlab.api.notification.service.NotificationService;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
@@ -42,6 +43,7 @@ public class MatchingServiceImpl implements MatchingService {
 	private final ReservationRepository reservationRepository;
 	private final ConsumerService consumerService;
 	private final NotificationService notificationService;
+	private final ManagerRepository managerRepository;
 
 	@Override
 	public List<AvailableManagerResponseDto> findAvailableManagers(MatchingRequestDto dto) {
@@ -199,17 +201,17 @@ public class MatchingServiceImpl implements MatchingService {
 				.orElseThrow(
 					() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + matching.getReservationId()));
 
-			// 소비자 정보 조회
+			// 소비자, 매니저 정보 조회
 			Consumer consumer = consumerService.findById(reservation.getConsumerId());
-
+			Manager manager = managerService.findById(reservation.getManagerId());
 			// 서비스 타입 정보
 			String serviceType = reservation.getServiceDetailType().getServiceDetailType();
 
 			// 새로운 알림 시스템 사용
 			NotificationDto notification = notificationService.createMatchingStatusNotification(
 				consumer.getId(),
-				matching.getManagerId(),
-				consumer.getName(),
+				matching.getId(),
+				manager.getName(),
 				status
 			);
 
