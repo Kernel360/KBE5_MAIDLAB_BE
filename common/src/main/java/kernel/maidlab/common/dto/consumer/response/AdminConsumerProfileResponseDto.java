@@ -6,14 +6,12 @@ import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.Region;
 import kernel.maidlab.common.enums.SocialType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
-@Builder
 @AllArgsConstructor
 public class AdminConsumerProfileResponseDto {
 

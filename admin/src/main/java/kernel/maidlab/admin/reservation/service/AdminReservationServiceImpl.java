@@ -84,40 +84,7 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 		Optional<Consumer> consumer = adminConsumerRepository.findById(reservation.getConsumerId());
 
 
-		return AdminReservationDetailResponseDto.builder()
-			.id(reservationId)
-			.checkinTime(reservation.getCheckinTime())
-			.checkoutTime(reservation.getCheckoutTime())
-			.canceledAt(reservation.getCanceledAt())
-			.createdAt(reservation.getCreatedAt())
-			.updatedAt(reservation.getUpdatedAt())
-			.status(reservation.getStatus())
-			.serviceType(reservation.getServiceDetailType().getServiceType().toString())
-			.serviceDetailType(reservation.getServiceDetailType().getServiceDetailType())
-			.address(reservation.getAddress())
-			.addressDetail(reservation.getAddressDetail())
-			.housingType(reservation.getHousingType())
-			.roomSize(reservation.getRoomSize())
-			.housingInformation(reservation.getHousingInformation())
-			.reservationDate(reservation.getReservationDate())
-			.startTime(reservation.getStartTime())
-			.endTime(reservation.getEndTime())
-			.serviceAdd(reservation.getServiceAdd())
-			.pet(reservation.getPet())
-			.specialRequest(reservation.getSpecialRequest())
-			.totalPrice(reservation.getTotalPrice())
-			.managerId(reservation.getManagerId())
-			.consumerId(reservation.getConsumerId())
-
-			.managerPhoneNumber(manager.get().getPhoneNumber())
-			.managerName(manager.get().getName())
-			.managerRate(manager.get().getAverageRate())
-			.managerProfileImage(manager.get().getProfileImage())
-
-			.consumerPhoneNumber(manager.get().getPhoneNumber())
-			.consumerName(consumer.get().getName())
-			.consumerProfileImage(consumer.get().getProfileImage())
-			.build();
+		return AdminReservationDetailResponseDto.getInstance(reservationId, reservation, manager.get(), consumer.get());
 	}
 	@Override
 	public List<ReservationResponseDto> dailyReservations(LocalDate date, int page, int size) {
