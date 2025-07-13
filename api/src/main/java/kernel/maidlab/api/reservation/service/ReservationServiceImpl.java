@@ -2,10 +2,20 @@ package kernel.maidlab.api.reservation.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.common.entity.consumer.Consumer;
+import kernel.maidlab.common.entity.manager.Manager;
+import kernel.maidlab.common.entity.consumer.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
+import kernel.maidlab.common.entity.matching.Matching;
+import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
+import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
+import kernel.maidlab.common.enums.ServiceOptionType;
+import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.api.notification.service.NotificationService;
@@ -31,6 +41,7 @@ import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.common.exception.custom.PointException;
 import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.common.util.RoomSizeRuleUtil;
+import kernel.maidlab.api.util.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,20 +65,21 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ServiceDetailTypeRepository serviceDetailTypeRepository;
 	private final MatchingRepository matchingRepository;
 	private final ManagerRepository managerRepository;
-	private final AuthUtil authUtil;
 	private final MatchingService matchingService;
 	private final ManagerPreferenceRepository managerPreferenceRepository;
 	private final ConsumerRepository consumerRepository;
 	private final ReviewRepository reviewRepository;
 	private final SettlementRepository settlementRepository;
 	private final ReviewKeywordRepository reviewKeywordRepository;
+	private final UserValidator userValidator;
 	private final PointRepository pointRepository;
 	private final NotificationService notificationService;
 
 	@Transactional
 	@Override
 	public void registerReview(ReviewRegisterRequestDto dto, HttpServletRequest request) {
-		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		String userId = AuthenticationHelper.getCurrentUserId();
 
 		Boolean isConsumerToManager = userType == UserType.CONSUMER;
 
@@ -75,7 +87,7 @@ public class ReservationServiceImpl implements ReservationService {
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		if (userType == UserType.CONSUMER) {
-			Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+			Consumer consumer = (Consumer) userValidator.findByUuid(userId, userType);
 			Manager manager = managerRepository.findById(reservation.getManagerId())
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 			// 매니저 선호도 테이블 관리
@@ -137,24 +149,23 @@ public class ReservationServiceImpl implements ReservationService {
 	// 이전 예약 전체 조회 api
 	@Override
 	public List<ReservationResponseDto> allReservations(HttpServletRequest request) {
-		UserType userType = authUtil.getUserType(request);
+		UserType userType = AuthenticationHelper.getCurrentUserType();
 
 		if (userType == UserType.CONSUMER) {
-			Long consumerId = authUtil.getConsumer(request).getId();
+			Long consumerId = getCurrentConsumer().getId();
 			return reservationRepository.findAllWithReviewByConsumerId(consumerId);
 		} else {
-			Long managerId = authUtil.getManager(request).getId();
+			Long managerId = getCurrentManager().getId();
 			return reservationRepository.findAllWithReviewByManagerId(managerId);
 
 		}
 	}
 
 	// 고객 맞춤 예약 내역 페이징 및 상태별 필터링
-	@Override
-	public Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size,
-		String sortBy, String sortOrder, HttpServletRequest request) {
-		Consumer consumer = authUtil.getConsumer(request);
-		Long consumerId = consumer.getId();
+    @Override
+    public Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size, String sortBy, String sortOrder, HttpServletRequest request) {
+        Consumer consumer = getCurrentConsumer();
+        Long consumerId = consumer.getId();
 
 		if (size > 50) {
 			size = 50;
@@ -182,11 +193,10 @@ public class ReservationServiceImpl implements ReservationService {
 		return reservationRepository.findConsumerReservationsWithPaging(consumerId, statusEnum, pageable);
 	}
 
-	@Override
-	public Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size,
-		String sortOrder, HttpServletRequest request) {
-		Manager manager = authUtil.getManager(request);
-		Long managerId = manager.getId();
+    @Override
+    public Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size, String sortOrder, HttpServletRequest request) {
+        Manager manager = getCurrentManager();
+        Long managerId = manager.getId();
 
 		if (size > 50) {
 			size = 50;
@@ -201,14 +211,8 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
-
-		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		Long userId = switch (userType) {
-			case CONSUMER -> ((Consumer)user).getId();
-			case MANAGER -> ((Manager)user).getId();
-			default -> throw new ReservationException(ResponseType.THIS_USER_DOES_NOT_EXIST);
-		};
+		Long userId = getCurrentUserEntityId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
 
 		return reservationRepository.findDetailReservationByIdAndUser(reservationId, userId, userType);
 	}
@@ -221,7 +225,8 @@ public class ReservationServiceImpl implements ReservationService {
 			throw new ReservationException(ResponseType.AVAILABLE_MANAGER_DOES_NOT_EXIST);
 		}
 
-		Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String consumerUuid = AuthenticationHelper.getCurrentUserId();
+		Consumer consumer = (Consumer) userValidator.findByUuid(consumerUuid, UserType.CONSUMER);
 		Long consumerId = consumer.getId();
 
 		// 결제 검증 로직(애플리케이션 상용 전 true 고정)
@@ -264,7 +269,7 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		Long managerId = authUtil.getManager(request).getId();
+		Long managerId = getCurrentManager().getId();
 		if (!reservation.getStatus().equals(Status.PENDING)) {
 			throw new ReservationException(ResponseType.VALIDATION_FAILED);
 		}
@@ -288,7 +293,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 		Reservation reservation = reservationRepository.findById(dto.getReservationId())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-    
+
 		// 결제시 포인트 사용
 		if (dto.isPointUsed()){
 
@@ -329,7 +334,7 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		Manager manager = (Manager)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		Long managerId = getCurrentManager().getId();
 
 		if (!reservation.getManagerId().equals(manager.getId())) {
 			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
@@ -357,8 +362,7 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		Manager manager = (Manager)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		Long managerId = authUtil.getManager(request).getId();
+		Long managerId = getCurrentManager().getId();
 
 		if (!reservation.getManagerId().equals(managerId)) {
 			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
@@ -387,7 +391,8 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	@Override
 	public void cancel(Long reservationId, HttpServletRequest request) {
-		Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+
+		Long consumerId = getCurrentConsumer().getId();
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 		if (!reservation.getConsumerId().equals(consumer.getId())) {
@@ -445,7 +450,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	public WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate) {
-		Long managerId = authUtil.getManager(request).getId();
+		Long managerId = getCurrentManager().getId();
 		LocalDateTime start = startDate.atStartOfDay();
 		LocalDateTime end = start.plusDays(7).with(LocalTime.MIN);
 
@@ -484,6 +489,24 @@ public class ReservationServiceImpl implements ReservationService {
 	// 	return reservationRepository.findById(reservationId)
 	// 		.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
 	// }
+
+	private Long getCurrentUserEntityId() {
+		String userUuid = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+
+		Object user = userValidator.findByUuid(userUuid, userType);
+		return userValidator.getUserId(user);
+	}
+
+	private Consumer getCurrentConsumer() {
+		String userUuid = AuthenticationHelper.getCurrentUserId();
+		return (Consumer) userValidator.findByUuid(userUuid, UserType.CONSUMER);
+	}
+
+	private Manager getCurrentManager() {
+		String userUuid = AuthenticationHelper.getCurrentUserId();
+		return (Manager) userValidator.findByUuid(userUuid, UserType.MANAGER);
+	}
 }
 
 
