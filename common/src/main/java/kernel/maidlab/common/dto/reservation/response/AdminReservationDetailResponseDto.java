@@ -17,7 +17,6 @@ public class AdminReservationDetailResponseDto {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-
 	private String address;
 	private String addressDetail;
 
@@ -27,8 +26,6 @@ public class AdminReservationDetailResponseDto {
 
 	private LocalDateTime checkinTime;
 	private LocalDateTime checkoutTime;
-
-
 
 	private String housingInformation;
 	private String housingType;
@@ -58,7 +55,8 @@ public class AdminReservationDetailResponseDto {
 	private String consumerName;
 	private String consumerProfileImage;
 
-	public static AdminReservationDetailResponseDto getInstance(Long reservationId, Reservation reservation, Manager manager, Consumer consumer) {
+	public static AdminReservationDetailResponseDto getInstance(Long reservationId, Reservation reservation,
+		Manager manager, Consumer consumer) {
 		return new AdminReservationDetailResponseDto(
 			reservationId,
 			reservation.getCreatedAt(),

@@ -1,7 +1,6 @@
 package kernel.maidlab.admin.reservation.repository;
 
 import static kernel.maidlab.common.entity.reservation.QReservation.*;
-import static kernel.maidlab.common.entity.reservation.QReview.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,9 +19,9 @@ public class AdminReservationRepositoryCustomImpl implements AdminReservationRep
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public Long countByReservationDate(LocalDate today){
+	public Long countByReservationDate(LocalDate today) {
 		return queryFactory
-		.select(reservation.count())
+			.select(reservation.count())
 			.from(reservation)
 			.where(
 				reservation.reservationDate.goe(today.atStartOfDay()),

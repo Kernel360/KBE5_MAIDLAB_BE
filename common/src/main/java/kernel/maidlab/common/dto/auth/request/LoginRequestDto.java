@@ -1,8 +1,8 @@
 package kernel.maidlab.common.dto.auth.request;
 
-import kernel.maidlab.common.enums.UserType;
-
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import kernel.maidlab.common.enums.UserType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginRequestDto {
 
-	@NotBlank
+	@NotNull
 	private UserType userType;
 
 	@NotBlank

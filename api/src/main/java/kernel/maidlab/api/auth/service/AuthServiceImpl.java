@@ -1,14 +1,23 @@
 package kernel.maidlab.api.auth.service;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-
-import kernel.maidlab.api.auth.social.*;
+import kernel.maidlab.api.auth.social.GoogleOAuthService;
+import kernel.maidlab.api.auth.social.GoogleResourceApi;
+import kernel.maidlab.api.auth.social.GoogleResourceDto;
+import kernel.maidlab.api.auth.social.GoogleTokenDto;
+import kernel.maidlab.api.consumer.repository.ConsumerRepository;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.util.UserValidator;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.auth.JwtDto;
 import kernel.maidlab.common.dto.auth.request.ChangePwRequestDto;
 import kernel.maidlab.common.dto.auth.request.LoginRequestDto;
@@ -19,17 +28,13 @@ import kernel.maidlab.common.dto.auth.response.LoginResponseDto;
 import kernel.maidlab.common.dto.auth.response.SocialLoginResponseDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.api.auth.jwt.*;
-import kernel.maidlab.api.consumer.repository.ConsumerRepository;
-import kernel.maidlab.api.manager.repository.ManagerRepository;
-import kernel.maidlab.common.exception.BaseException;
-import kernel.maidlab.api.util.PasswordUtil;
-import kernel.maidlab.common.util.CookieUtil;
-import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.SocialType;
 import kernel.maidlab.common.enums.UserType;
-
+import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.common.util.CookieUtil;
+import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.core.security.jwt.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,12 +46,13 @@ public class AuthServiceImpl implements AuthService {
 
 	private final ConsumerRepository consumerRepository;
 	private final ManagerRepository managerRepository;
-	private final JwtProvider jwtProvider;
+	private final JwtTokenService jwtTokenService;
 	private final JwtProperties jwtProperties;
-	private final PasswordUtil passwordUtil;
+	private final PasswordEncoder passwordEncoder;
 	private final CookieUtil cookieUtil;
 	private final GoogleResourceApi googleResourceApi;
 	private final GoogleOAuthService googleOAuthService;
+	private final UserValidator userValidator;
 
 	@Value("${oauth2.google.client-id}")
 	private String googleClientId;
@@ -57,27 +63,12 @@ public class AuthServiceImpl implements AuthService {
 	@Value("${oauth2.google.redirect-uri}")
 	private String googleRedirectUri;
 
-	// 휴대폰 중복검사
-	private void phoneNumberDuplication(String phoneNumber, UserType userType) {
-		if (userType == UserType.CONSUMER) {
-			if (consumerRepository.findByPhoneNumber(phoneNumber).isPresent()) {
-				log.warn("Consumer 휴대폰 번호 중복: {}", phoneNumber);
-				throw new BaseException(ResponseType.DUPLICATE_TEL_NUMBER);
-			}
-		} else {
-			if (managerRepository.findByPhoneNumber(phoneNumber).isPresent()) {
-				log.warn("Manager 휴대폰 번호 중복: {}", phoneNumber);
-				throw new BaseException(ResponseType.DUPLICATE_TEL_NUMBER);
-			}
-		}
-	}
-
 	// 휴대폰 회원가입
 	@Override
 	public ResponseEntity<ResponseDto<Void>> signUp(SignUpRequestDto req) {
-		phoneNumberDuplication(req.getPhoneNumber(), req.getUserType());
+		userValidator.validatePhoneNumberDuplication(req.getPhoneNumber(), req.getUserType());
 
-		String encodedPassword = passwordUtil.encryptPassword(req.getPassword());
+		String encodedPassword = passwordEncoder.encode(req.getPassword());
 
 		if (req.getUserType() == UserType.CONSUMER) {
 			Consumer consumer = Consumer.createConsumer(
@@ -107,65 +98,21 @@ public class AuthServiceImpl implements AuthService {
 	// 휴대폰 로그인
 	@Override
 	public ResponseEntity<ResponseDto<LoginResponseDto>> login(LoginRequestDto req, HttpServletResponse res) {
-		if (req.getUserType() == UserType.CONSUMER) {
-			return loginConsumer(req, res);
-		} else {
-			return loginManager(req, res);
-		}
-	}
+		Object user = userValidator.validateLoginCredentials(req.getPhoneNumber(), req.getPassword(),
+			req.getUserType());
 
-	private ResponseEntity<ResponseDto<LoginResponseDto>> loginConsumer(LoginRequestDto req, HttpServletResponse res) {
-		Consumer consumer = consumerRepository.findByPhoneNumber(req.getPhoneNumber())
-			.orElseThrow(() -> new BaseException(ResponseType.LOGIN_FAILED));
-
-		if (consumer.getIsDeleted()) {
-			log.warn("탈퇴한 Consumer 계정 로그인 시도 - ID: {}", consumer.getId());
-			throw new BaseException(ResponseType.ACCOUNT_DELETED);
-		}
-
-		if (!passwordUtil.checkPassword(req.getPassword(), consumer.getPassword())) {
-			log.warn("Consumer 로그인 실패 - 잘못된 비밀번호, ID: {}", consumer.getId());
-			throw new BaseException(ResponseType.LOGIN_FAILED);
-		}
-
-		JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(consumer.getUuid(), UserType.CONSUMER);
+		String userUuid = userValidator.getUserUuid(user);
+		JwtDto.TokenPair tokenPair = jwtTokenService.generateTokenPair(userUuid, req.getUserType());
 		long expirationTime = jwtProperties.getExpiration().getAccess();
 
 		cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
 
-		boolean profileCompleted = consumer.hasCompleteProfile();
-		log.info("Consumer 로그인 성공 - ID: {},이름: {}, 프로필 완성 여부: {},", consumer.getId(), consumer.getName(),profileCompleted);
+		boolean profileCompleted = userValidator.hasCompleteProfile(user);
+		Long userId = userValidator.getUserId(user);
+		String userName = userValidator.getUserName(user);
 
-		LoginResponseDto responseDto = new LoginResponseDto(
-			tokenPair.getAccessToken(),
-			expirationTime,
-			profileCompleted
-		);
-
-		return ResponseDto.success(responseDto);
-	}
-
-	private ResponseEntity<ResponseDto<LoginResponseDto>> loginManager(LoginRequestDto req, HttpServletResponse res) {
-		Manager manager = managerRepository.findByPhoneNumber(req.getPhoneNumber())
-			.orElseThrow(() -> new BaseException(ResponseType.LOGIN_FAILED));
-
-		if (manager.getIsDeleted()) {
-			log.warn("탈퇴한 Manager 계정 로그인 시도 - ID: {}", manager.getId());
-			throw new BaseException(ResponseType.ACCOUNT_DELETED);
-		}
-
-		if (!passwordUtil.checkPassword(req.getPassword(), manager.getPassword())) {
-			log.warn("Manager 로그인 실패 - 잘못된 비밀번호, ID: {}", manager.getId());
-			throw new BaseException(ResponseType.LOGIN_FAILED);
-		}
-
-		JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(manager.getUuid(), UserType.MANAGER);
-		long expirationTime = jwtProperties.getExpiration().getAccess();
-
-		cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
-
-		boolean profileCompleted = manager.hasCompleteProfile();
-		log.info("Manager 로그인 성공 - ID: {}, 프로필 완성 여부: {}", manager.getId(), profileCompleted);
+		log.info("{} 로그인 성공 - ID: {}, 이름: {}, 프로필 완성 여부: {}",
+			req.getUserType().getName(), userId, userName, profileCompleted);
 
 		LoginResponseDto responseDto = new LoginResponseDto(
 			tokenPair.getAccessToken(),
@@ -188,20 +135,57 @@ public class AuthServiceImpl implements AuthService {
 			throw new BaseException(ResponseType.VALIDATION_FAILED);
 		}
 
-		String accessToken = getGoogleAccessToken(req.getCode(), request);  // request 전달
+		String accessToken = getGoogleAccessToken(req.getCode(), request);
 		GoogleResourceDto googleUser = getGoogleUserResource(accessToken);
 		log.info("Google 사용자 정보 조회 성공 - ID: {}, 이름: {}", googleUser.getId(), googleUser.getName());
 
-		if (req.getUserType() == UserType.CONSUMER) {
-			return socialLoginConsumer(googleUser, res);
-		} else {
-			return socialLoginManager(googleUser, res);
+		return processSocialLogin(googleUser, req.getUserType(), res);
+	}
+
+	private ResponseEntity<ResponseDto<SocialLoginResponseDto>> processSocialLogin(
+		GoogleResourceDto googleUser, UserType userType, HttpServletResponse res) {
+
+		Optional<Object> userOpt = userValidator.findBySocialId(googleUser.getId(), userType);
+
+		if (userOpt.isEmpty()) {
+			// 신규 사용자 - 임시 토큰 발급
+			String tempToken = jwtTokenService.generateTempToken(googleUser.getId(), googleUser.getName(), userType);
+			long expirationTime = jwtProperties.getExpiration().getAccess();
+
+			SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
+				true, tempToken, expirationTime, false
+			);
+
+			return ResponseDto.success(responseDto);
 		}
+
+		Object user = userOpt.get();
+
+		// 탈퇴한 계정 체크
+		if (userType == UserType.CONSUMER && ((Consumer)user).getIsDeleted()) {
+			throw new BaseException(ResponseType.ACCOUNT_DELETED);
+		}
+		if (userType == UserType.MANAGER && ((Manager)user).getIsDeleted()) {
+			throw new BaseException(ResponseType.ACCOUNT_DELETED);
+		}
+
+		String userUuid = userValidator.getUserUuid(user);
+		boolean profileCompleted = userValidator.hasCompleteProfile(user);
+
+		JwtDto.TokenPair tokenPair = jwtTokenService.generateTokenPair(userUuid, userType);
+		long expirationTime = jwtProperties.getExpiration().getAccess();
+
+		cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
+
+		SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
+			false, tokenPair.getAccessToken(), expirationTime, profileCompleted
+		);
+
+		return ResponseDto.success(responseDto);
 	}
 
 	private String getGoogleAccessToken(String authorizationCode, HttpServletRequest request) {
 		try {
-			// 요청 헤더에서 origin 추출
 			String origin = request.getHeader("Origin");
 			if (origin == null) {
 				origin = request.getHeader("Referer");
@@ -214,10 +198,7 @@ public class AuthServiceImpl implements AuthService {
 				origin + "/google-callback" : googleRedirectUri;
 
 			GoogleTokenDto tokenDto = googleOAuthService.getGoogleToken(
-				authorizationCode,
-				googleClientId,
-				googleClientSecret,
-				dynamicRedirectUri
+				authorizationCode, googleClientId, googleClientSecret, dynamicRedirectUri
 			);
 
 			if (tokenDto == null || tokenDto.getAccessToken() == null) {
@@ -246,134 +227,11 @@ public class AuthServiceImpl implements AuthService {
 		}
 	}
 
-	private ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLoginConsumer(GoogleResourceDto googleUser,
-		HttpServletResponse res) {
-		Consumer consumer = consumerRepository.findByPhoneNumber(googleUser.getId()).orElse(null);
-
-		if (consumer == null) {
-			String tempToken = jwtProvider.generateTempToken(googleUser.getId(), googleUser.getName(),
-				UserType.CONSUMER);
-			long expirationTime = jwtProperties.getExpiration().getAccess();
-
-			SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
-				true,
-				tempToken,
-				expirationTime,
-				false
-			);
-
-			return ResponseDto.success(responseDto);
-		} else {
-			if (consumer.getIsDeleted()) {
-				throw new BaseException(ResponseType.ACCOUNT_DELETED);
-			}
-
-			if (!consumer.hasCompleteProfile()) {
-				JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(consumer.getUuid(), UserType.CONSUMER);
-				long expirationTime = jwtProperties.getExpiration().getAccess();
-
-				cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
-
-				SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
-					false,
-					tokenPair.getAccessToken(),
-					expirationTime,
-					false
-				);
-
-				return ResponseDto.success(responseDto);
-			}
-
-			JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(consumer.getUuid(), UserType.CONSUMER);
-			long expirationTime = jwtProperties.getExpiration().getAccess();
-
-			cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
-
-			SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
-				false,
-				tokenPair.getAccessToken(),
-				expirationTime,
-				true
-			);
-
-			return ResponseDto.success(responseDto);
-		}
-	}
-
-	private ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLoginManager(GoogleResourceDto googleUser,
-		HttpServletResponse res) {
-		Manager manager = managerRepository.findByPhoneNumber(googleUser.getId()).orElse(null);
-
-		if (manager == null) {
-			String tempToken = jwtProvider.generateTempToken(googleUser.getId(), googleUser.getName(),
-				UserType.MANAGER);
-			long expirationTime = jwtProperties.getExpiration().getAccess();
-
-			SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
-				true,
-				tempToken,
-				expirationTime,
-				false
-			);
-
-			return ResponseDto.success(responseDto);
-		} else {
-			if (manager.getIsDeleted()) {
-				throw new BaseException(ResponseType.ACCOUNT_DELETED);
-			}
-
-			if (!manager.hasCompleteProfile()) {
-				JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(manager.getUuid(), UserType.MANAGER);
-				long expirationTime = jwtProperties.getExpiration().getAccess();
-
-				cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
-
-				SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
-					false,
-					tokenPair.getAccessToken(),
-					expirationTime,
-					false
-				);
-
-				return ResponseDto.success(responseDto);
-			}
-
-			JwtDto.TokenPair tokenPair = jwtProvider.generateTokenPair(manager.getUuid(), UserType.MANAGER);
-			long expirationTime = jwtProperties.getExpiration().getAccess();
-
-			cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
-
-			SocialLoginResponseDto responseDto = new SocialLoginResponseDto(
-				false,
-				tokenPair.getAccessToken(),
-				expirationTime,
-				true
-			);
-
-			return ResponseDto.success(responseDto);
-		}
-	}
-
 	// 소셜 회원가입
-	private JwtDto.TempTokenInfo extractGoogleInfo(HttpServletRequest req) {
-		String tempToken = jwtProvider.extractToken(req);
-
-		if (tempToken == null) {
-			throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);
-		}
-
-		JwtDto.TempTokenInfo tempTokenInfo = jwtProvider.validateTempToken(tempToken);
-
-		if (!tempTokenInfo.isValid()) {
-			throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);
-		}
-
-		return tempTokenInfo;
-	}
-
 	@Override
 	public ResponseEntity<ResponseDto<Void>> socialSignUp(SocialSignUpRequestDto req, HttpServletRequest req2) {
 		JwtDto.TempTokenInfo googleInfo = extractGoogleInfo(req2);
+
 		if (googleInfo.getUserType() == UserType.CONSUMER) {
 			Consumer consumer = Consumer.createSocialConsumer(
 				googleInfo.getGoogleId(),
@@ -399,10 +257,26 @@ public class AuthServiceImpl implements AuthService {
 		return ResponseDto.success(null);
 	}
 
+	private JwtDto.TempTokenInfo extractGoogleInfo(HttpServletRequest req) {
+		String tempToken = jwtTokenService.extractToken(req);
+
+		if (tempToken == null) {
+			throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);
+		}
+
+		JwtDto.TempTokenInfo tempTokenInfo = jwtTokenService.validateTempToken(tempToken);
+
+		if (!tempTokenInfo.isValid()) {
+			throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);
+		}
+
+		return tempTokenInfo;
+	}
+
 	// 토큰 갱신
 	@Override
 	public ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(String refreshToken, HttpServletResponse res) {
-		JwtDto.RefreshResult result = jwtProvider.refreshTokens(refreshToken);
+		JwtDto.RefreshResult result = jwtTokenService.refreshTokens(refreshToken);
 
 		if (!result.isSuccess()) {
 			log.warn("토큰 갱신 실패 - 유효하지 않은 리프레시 토큰");
@@ -425,47 +299,35 @@ public class AuthServiceImpl implements AuthService {
 	// 비밀번호 재설정
 	@Override
 	public ResponseEntity<ResponseDto<Void>> changePw(ChangePwRequestDto changePwRequestDto, HttpServletRequest req) {
-		String uuid = (String)req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
-		UserType userType = (UserType)req.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-		String encodedNewPassword = passwordUtil.encryptPassword(changePwRequestDto.getPassword());
+		String uuid = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		String encodedNewPassword = passwordEncoder.encode(changePwRequestDto.getPassword());
+
+		Object user = userValidator.findByUuid(uuid, userType);
+		userValidator.validateSocialAccountPasswordChange(user, userType);
 
 		if (userType == UserType.CONSUMER) {
-			Consumer consumer = consumerRepository.findByUuid(uuid)
-				.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
-
-			if (consumer.getSocialType() != null) {
-				log.warn("소셜 계정 비밀번호 변경 시도 - ID: {}, 소셜 타입: {}", consumer.getId(), consumer.getSocialType());
-				throw new BaseException(ResponseType.VALIDATION_FAILED);
-			}
-
+			Consumer consumer = (Consumer)user;
 			consumer.updatePassword(encodedNewPassword);
 			consumerRepository.save(consumer);
 			log.info("Consumer 비밀번호 변경 완료 - ID: {}", consumer.getId());
 		} else {
-			Manager manager = managerRepository.findByUuid(uuid)
-				.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
-
-			if (manager.getSocialType() != null) {
-				log.warn("소셜 계정 비밀번호 변경 시도 - ID: {}, 소셜 타입: {}", manager.getId(), manager.getSocialType());
-				throw new BaseException(ResponseType.VALIDATION_FAILED);
-			}
-
+			Manager manager = (Manager)user;
 			manager.updatePassword(encodedNewPassword);
 			managerRepository.save(manager);
 			log.info("Manager 비밀번호 변경 완료 - ID: {}", manager.getId());
 		}
 
-		jwtProvider.removeRefreshToken(uuid, userType);
-
+		jwtTokenService.removeRefreshToken(uuid, userType);
 		return ResponseDto.success();
 	}
 
 	// 로그아웃
 	@Override
 	public ResponseEntity<ResponseDto<Void>> logout(HttpServletRequest req, HttpServletResponse res) {
-		String uuid = (String)req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
-		UserType userType = (UserType)req.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-		jwtProvider.removeRefreshToken(uuid, userType);
+		String uuid = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		jwtTokenService.removeRefreshToken(uuid, userType);
 		cookieUtil.clearRefreshTokenCookie(res);
 
 		return ResponseDto.success(null);
@@ -474,27 +336,25 @@ public class AuthServiceImpl implements AuthService {
 	// 회원탈퇴
 	@Override
 	public ResponseEntity<ResponseDto<Void>> withdraw(HttpServletRequest req, HttpServletResponse res) {
-		String uuid = (String)req.getAttribute(JwtFilter.CURRENT_USER_UUID_KEY);
-		UserType userType = (UserType)req.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-		if (userType == UserType.CONSUMER) {
-			Consumer consumer = consumerRepository.findByUuid(uuid)
-				.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
+		String uuid = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
 
+		Object user = userValidator.findByUuid(uuid, userType);
+		Long userId = userValidator.getUserId(user);
+
+		if (userType == UserType.CONSUMER) {
+			Consumer consumer = (Consumer)user;
 			consumer.deleteAccount();
 			consumerRepository.save(consumer);
-			log.info("Consumer 회원탈퇴 완료 - ID: {}", consumer.getId());
-
+			log.info("Consumer 회원탈퇴 완료 - ID: {}", userId);
 		} else {
-			Manager manager = managerRepository.findByUuid(uuid)
-				.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
-
+			Manager manager = (Manager)user;
 			manager.deleteAccount();
 			managerRepository.save(manager);
-			log.info("Manager 회원탈퇴 완료 - ID: {}", manager.getId());
-
+			log.info("Manager 회원탈퇴 완료 - ID: {}", userId);
 		}
 
-		jwtProvider.removeRefreshToken(uuid, userType);
+		jwtTokenService.removeRefreshToken(uuid, userType);
 		cookieUtil.clearRefreshTokenCookie(res);
 
 		return ResponseDto.success(null);

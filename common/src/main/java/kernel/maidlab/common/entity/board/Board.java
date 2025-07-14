@@ -1,17 +1,25 @@
 package kernel.maidlab.common.entity.board;
 
-import jakarta.persistence.*;
+import java.util.Collections;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import kernel.maidlab.common.dto.board.request.BoardRequestDto;
+import kernel.maidlab.common.dto.board.request.BoardUpdateRequestDto;
 import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.dto.board.request.BoardRequestDto;
-import kernel.maidlab.common.dto.board.request.BoardUpdateRequestDto;
 import kernel.maidlab.common.enums.BoardType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Collections;
-import java.util.List;
 
 @Getter
 @Entity
@@ -92,6 +100,14 @@ public class Board extends TimeBase {
 		);
 	}
 
+	public static Board createBoard(Object user, BoardRequestDto boardRequestDto) {
+		return switch (user) {
+			case Consumer consumer -> createBoard(consumer, boardRequestDto);
+			case Manager manager -> createBoard(manager, boardRequestDto);
+			default -> throw new IllegalArgumentException("지원하지 않는 사용자 타입입니다.");
+		};
+	}
+
 	public List<BoardImage> getBoardImages() {
 		return boardImages != null ? boardImages : Collections.emptyList();
 	}
@@ -112,5 +128,13 @@ public class Board extends TimeBase {
 
 	public boolean isAccessibleBy(Manager manager) {
 		return this.manager != null && this.manager.getId().equals(manager.getId());
+	}
+
+	public boolean isAccessibleBy(Object user) {
+		return switch (user) {
+			case Consumer consumer -> isAccessibleBy(consumer);
+			case Manager manager -> isAccessibleBy(manager);
+			default -> false;
+		};
 	}
 }

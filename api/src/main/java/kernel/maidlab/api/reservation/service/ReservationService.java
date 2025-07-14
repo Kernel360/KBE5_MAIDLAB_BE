@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
 import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
+import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
@@ -39,7 +39,9 @@ public interface ReservationService {
 
 	WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate);
 
-	Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size, String sortBy, String sortOrder, HttpServletRequest request);
+	Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size, String sortBy,
+		String sortOrder, HttpServletRequest request);
 
-	Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size, String sortOrder, HttpServletRequest request);
+	Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size, String sortOrder,
+		HttpServletRequest request);
 }

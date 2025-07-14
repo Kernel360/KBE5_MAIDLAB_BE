@@ -6,7 +6,6 @@ import kernel.maidlab.common.dto.aws.PresignedFileResponseDto;
 
 public interface S3Service {
 
-
 	// 백엔드에서 직접 파일 보내는 함수
 	// public String uploadFile(String key, MultipartFile file) throws IOException {
 	// 	String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();

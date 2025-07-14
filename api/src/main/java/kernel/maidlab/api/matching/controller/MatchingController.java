@@ -13,17 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.api.consumer.service.ConsumerService;
-import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
-import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.exception.BaseException;
-import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
-import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
-import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
+import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
+import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
+import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
+import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
+import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class MatchingController implements MatchingApi {
 
-	// private final AuthUtil authUtil;
 	private final MatchingService matchingService;
 	private final ConsumerService consumerService;
 	// private final MatchingRepository matchingRepository;
@@ -42,6 +43,7 @@ public class MatchingController implements MatchingApi {
 
 	@GetMapping
 	@Override
+	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<List<RequestMatchingListResponseDto>>> getMatching(HttpServletRequest request,
 		@RequestParam int page, @RequestParam int size) {
 		List<RequestMatchingListResponseDto> response = matchingService.myMatching(request, page, size);
@@ -50,7 +52,9 @@ public class MatchingController implements MatchingApi {
 
 	@PostMapping("/matchmanager")
 	@Override
-	public ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> matchManagers(@RequestBody MatchingRequestDto dto) {
+	@AuthRequired(roles = {UserType.CONSUMER})
+	public ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> matchManagers(
+		@RequestBody MatchingRequestDto dto) {
 		List<AvailableManagerResponseDto> AvailableManagers = matchingService.findAvailableManagers(dto);
 
 		// 후보군 작성을 위한 redis 설정으로 일단 일시중지
@@ -71,6 +75,7 @@ public class MatchingController implements MatchingApi {
 
 	@GetMapping("/preferencemanager")
 	@Override
+	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<List<LikedManagerResponseDto>>> preferenceManager(HttpServletRequest request) {
 		List<LikedManagerResponseDto> response = matchingService.preferenceManager(request);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
@@ -78,20 +83,21 @@ public class MatchingController implements MatchingApi {
 
 	@GetMapping("/previousmanager")
 	@Override
+	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> previousManager(HttpServletRequest request) {
-		Consumer consumer = consumerService.getConsumer(request);
+		Consumer consumer = consumerService.getConsumer();
 		List<AvailableManagerResponseDto> response = matchingService.previousManager(consumer);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
 
 	@PostMapping("/matchstart")
 	@Override
+	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<String>> matchStart(@RequestParam Long reservation_id,
 		@RequestParam Long manager_id) {
 		MatchingResponseDto matchingResponseDto = new MatchingResponseDto(manager_id, reservation_id, Status.PENDING);
 		matchingService.createMatching(matchingResponseDto);
 		return ResponseDto.success(ResponseType.SUCCESS, matchingResponseDto.toString());
 	}
-
 
 }

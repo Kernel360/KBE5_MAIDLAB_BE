@@ -16,42 +16,57 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class LogController {
 
-    private final LogMonitoringService logMonitoringService;
+	private final LogMonitoringService logMonitoringService;
 
-    @GetMapping("/full")
-    public ResponseEntity<ResponseDto<String>> getFullLog() {
-        String logContent = logMonitoringService.getFullLogContent();
-        return ResponseDto.success(logContent);
-    }
+	@GetMapping("/full")
+	public ResponseEntity<ResponseDto<String>> getFullLog() {
+		String logContent = logMonitoringService.getFullLogContent();
+		return ResponseDto.success(logContent);
+	}
 
-    @GetMapping("/tail")
-    public ResponseEntity<ResponseDto<String>> getTailLog(
-            @RequestParam(defaultValue = "100") int lines) {
-        String logContent = logMonitoringService.getTailLogContent(lines);
-        return ResponseDto.success(logContent);
-    }
+	@GetMapping("/tail")
+	public ResponseEntity<ResponseDto<String>> getTailLog(
+		@RequestParam(defaultValue = "100") int lines) {
+		String logContent = logMonitoringService.getTailLogContent(lines);
+		return ResponseDto.success(logContent);
+	}
 
-    @GetMapping("/info")
-    public ResponseEntity<ResponseDto<LogInfo>> getLogInfo() {
-        LogInfo info = new LogInfo();
-        info.setWebSocketEndpoint("/admin/logs/stream");
-        info.setCommands(new String[]{"get_full_log", "get_tail_log"});
-        info.setDescription("Connect to WebSocket for real-time log monitoring");
-        return ResponseDto.success(info);
-    }
+	@GetMapping("/info")
+	public ResponseEntity<ResponseDto<LogInfo>> getLogInfo() {
+		LogInfo info = new LogInfo();
+		info.setWebSocketEndpoint("/admin/logs/stream");
+		info.setCommands(new String[] {"get_full_log", "get_tail_log"});
+		info.setDescription("Connect to WebSocket for real-time log monitoring");
+		return ResponseDto.success(info);
+	}
 
-    public static class LogInfo {
-        private String webSocketEndpoint;
-        private String[] commands;
-        private String description;
+	public static class LogInfo {
+		private String webSocketEndpoint;
+		private String[] commands;
+		private String description;
 
-        public String getWebSocketEndpoint() { return webSocketEndpoint; }
-        public void setWebSocketEndpoint(String webSocketEndpoint) { this.webSocketEndpoint = webSocketEndpoint; }
+		public String getWebSocketEndpoint() {
+			return webSocketEndpoint;
+		}
 
-        public String[] getCommands() { return commands; }
-        public void setCommands(String[] commands) { this.commands = commands; }
+		public void setWebSocketEndpoint(String webSocketEndpoint) {
+			this.webSocketEndpoint = webSocketEndpoint;
+		}
 
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
-    }
+		public String[] getCommands() {
+			return commands;
+		}
+
+		public void setCommands(String[] commands) {
+			this.commands = commands;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+	}
 }

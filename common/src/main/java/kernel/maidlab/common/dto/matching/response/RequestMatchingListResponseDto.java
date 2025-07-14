@@ -1,6 +1,7 @@
 package kernel.maidlab.common.dto.matching.response;
 
 import java.math.BigDecimal;
+
 import kernel.maidlab.common.entity.reservation.Reservation;
 import lombok.Data;
 

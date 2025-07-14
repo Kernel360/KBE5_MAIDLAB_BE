@@ -9,11 +9,11 @@ import kernel.maidlab.common.dto.point.response.PointResponseDto;
 
 public interface PointService {
 
-    PointResponseDto getPoint(HttpServletRequest request);
+	PointResponseDto getPoint(HttpServletRequest request);
 
-    PageResponseDto<PointRecordResponseDto> getPointRecordList(HttpServletRequest request,
-                                                               PointRecordRequestDto pointRecordRequestDto);
+	PageResponseDto<PointRecordResponseDto> getPointRecordList(HttpServletRequest request,
+		PointRecordRequestDto pointRecordRequestDto);
 
-    void chargePoint(HttpServletRequest request,
-                     PointChargeRequestDto pointChargeRequestDto);
+	void chargePoint(HttpServletRequest request,
+		PointChargeRequestDto pointChargeRequestDto);
 }

@@ -4,7 +4,6 @@ import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.auth.request.ChangePwRequestDto;
 import kernel.maidlab.common.dto.auth.request.LoginRequestDto;
@@ -18,7 +17,8 @@ public interface AuthService {
 
 	ResponseEntity<ResponseDto<LoginResponseDto>> login(LoginRequestDto loginRequestDto, HttpServletResponse res);
 
-	ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLogin(SocialLoginRequestDto socialLoginRequestDto, HttpServletRequest request,
+	ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLogin(SocialLoginRequestDto socialLoginRequestDto,
+		HttpServletRequest request,
 		HttpServletResponse res);
 
 	ResponseEntity<ResponseDto<Void>> signUp(SignUpRequestDto signUpRequestDto);

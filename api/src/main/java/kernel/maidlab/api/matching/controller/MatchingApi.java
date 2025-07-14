@@ -12,11 +12,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
-import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
-import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
-import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
+import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
+import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
+import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
 
 @Tag(name = "Matching", description = "매칭 관련 API")
 public interface MatchingApi {
@@ -44,6 +44,7 @@ public interface MatchingApi {
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류")})
 	@GetMapping("/preferencemanager")
 	ResponseEntity<ResponseDto<List<LikedManagerResponseDto>>> preferenceManager(HttpServletRequest request);
+
 	@Operation(summary = "이전 매니저 조회", description = "이전에 서비스를 받았던 매니저를 조회합니다.")
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "조회 성공"),
 		@ApiResponse(responseCode = "400", description = "선호 매니저가 없습니다."),

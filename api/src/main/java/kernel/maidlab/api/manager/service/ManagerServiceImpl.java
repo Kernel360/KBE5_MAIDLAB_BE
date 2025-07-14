@@ -1,45 +1,50 @@
 package kernel.maidlab.api.manager.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
-
-// import jakarta.transaction.Transactional;
+import kernel.maidlab.api.auth.service.JwtTokenService;
+import kernel.maidlab.api.manager.repository.ManagerDocumentRepository;
+import kernel.maidlab.api.manager.repository.ManagerRegionRepository;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.manager.repository.ManagerScheduleRepository;
+import kernel.maidlab.api.manager.repository.ManagerServiceTypeRepository;
+import kernel.maidlab.api.manager.repository.RegionRepository;
+import kernel.maidlab.api.reservation.repository.ReviewRepository;
+import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.manager.object.DocumentListItem;
+import kernel.maidlab.common.dto.manager.object.RegionListItem;
+import kernel.maidlab.common.dto.manager.object.ReviewListItem;
+import kernel.maidlab.common.dto.manager.object.ScheduleListItem;
+import kernel.maidlab.common.dto.manager.object.ServiceListItem;
+import kernel.maidlab.common.dto.manager.request.ProfileRequestDto;
+import kernel.maidlab.common.dto.manager.request.ProfileUpdateRequestDto;
+import kernel.maidlab.common.dto.manager.response.MypageResponseDto;
+import kernel.maidlab.common.dto.manager.response.ProfileResponseDto;
+import kernel.maidlab.common.dto.manager.response.ReviewListResponseDto;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.dto.auth.JwtDto;
-import kernel.maidlab.api.auth.jwt.JwtProvider;
 import kernel.maidlab.common.entity.manager.ManagerDocument;
 import kernel.maidlab.common.entity.manager.ManagerRegion;
 import kernel.maidlab.common.entity.manager.ManagerSchedule;
 import kernel.maidlab.common.entity.manager.ManagerServiceType;
 import kernel.maidlab.common.entity.manager.Region;
-import kernel.maidlab.common.exception.BaseException;
-import kernel.maidlab.common.dto.manager.request.*;
-import kernel.maidlab.common.dto.manager.response.*;
-import kernel.maidlab.common.dto.manager.object.*;
-import kernel.maidlab.api.manager.repository.*;
-import kernel.maidlab.api.reservation.repository.ReviewRepository;
-import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.ServiceType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
-
+import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import kernel.maidlab.api.manager.repository.ManagerRepository;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -54,27 +59,23 @@ public class ManagerServiceImpl implements ManagerService {
 	private final ManagerDocumentRepository managerDocumentRepository;
 	private final RegionRepository regionRepository;
 	private final ReviewRepository reviewRepository;
-	private final JwtProvider jwtProvider;
+	private final JwtTokenService jwtTokenService;
 
-	private Manager getManagerFromToken(HttpServletRequest req) {
-		String accessToken = jwtProvider.extractToken(req);
-		if (accessToken == null) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
+	private Manager getCurrentManager() {
+		String userUuid = AuthenticationHelper.getCurrentUserId();
+		return managerRepository.findByUuid(userUuid)
+			.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
+	}
 
-		JwtDto.ValidationResult validationResult = jwtProvider.validateAccessToken(accessToken);
-		if (!validationResult.isValid() || validationResult.getUserType() != UserType.MANAGER) {
-			throw new BaseException(ResponseType.AUTHORIZATION_FAILED);
-		}
-
-		return managerRepository.findByUuid(validationResult.getUuid())
+	public Manager getManager(String userId) {
+		return managerRepository.findByUuid(userId)
 			.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
 	}
 
 	// 최초 기본 프로필 생성
 	@Override
 	public ResponseEntity<ResponseDto<Void>> createProfile(ProfileRequestDto req, HttpServletRequest httpReq) {
-		Manager manager = getManagerFromToken(httpReq);
+		Manager manager = getCurrentManager();
 
 		if (req.getProfileImage() != null) {
 			manager.updateProfileImage(req.getProfileImage());
@@ -147,7 +148,7 @@ public class ManagerServiceImpl implements ManagerService {
 	@Transactional(readOnly = true)
 	public ResponseEntity<ResponseDto<MypageResponseDto>> getMypage(HttpServletRequest req) {
 
-		Manager manager = getManagerFromToken(req);
+		Manager manager = getCurrentManager();
 
 		Boolean isVerified = Status.APPROVED.equals(manager.getIsVerified());
 
@@ -167,7 +168,7 @@ public class ManagerServiceImpl implements ManagerService {
 	@Override
 	@Transactional(readOnly = true)
 	public ResponseEntity<ResponseDto<ProfileResponseDto>> getProfile(HttpServletRequest req) {
-		Manager manager = getManagerFromToken(req);
+		Manager manager = getCurrentManager();
 
 		List<ServiceType> services = managerServiceTypeRepository.findServiceTypesByManagerId(manager.getId());
 
@@ -207,7 +208,7 @@ public class ManagerServiceImpl implements ManagerService {
 	// 프로필 수정
 	@Override
 	public ResponseEntity<ResponseDto<Void>> updateProfile(ProfileUpdateRequestDto req, HttpServletRequest httpReq) {
-		Manager manager = getManagerFromToken(httpReq);
+		Manager manager = getCurrentManager();
 
 		manager.updateBasicInfo(req.getName(), req.getBirth(), req.getGender());
 
@@ -232,7 +233,8 @@ public class ManagerServiceImpl implements ManagerService {
 						serviceTypeEnum);
 					managerServiceTypeRepository.save(managerServiceType);
 				} catch (IllegalArgumentException e) {
-					log.warn("잘못된 서비스 타입 수정 시도 - 매니저 ID: {}, 서비스 타입: {}", manager.getId(), serviceItem.getServiceType());
+					log.warn("잘못된 서비스 타입 수정 시도 - 매니저 ID: {}, 서비스 타입: {}", manager.getId(),
+						serviceItem.getServiceType());
 					throw new BaseException(ResponseType.VALIDATION_FAILED);
 				}
 			}
@@ -273,7 +275,7 @@ public class ManagerServiceImpl implements ManagerService {
 	@Override
 	@Transactional(readOnly = true)
 	public ResponseEntity<ResponseDto<ReviewListResponseDto>> getMyReviews(HttpServletRequest req) {
-		Manager manager = getManagerFromToken(req);
+		Manager manager = getCurrentManager();
 
 		List<Object[]> reviewData = reviewRepository.findManagerReviewDetails(manager.getId());
 
@@ -302,7 +304,7 @@ public class ManagerServiceImpl implements ManagerService {
 	}
 
 	@Override
-	public List<AvailableManagerResponseDto> previousManagers(Consumer consumer){
+	public List<AvailableManagerResponseDto> previousManagers(Consumer consumer) {
 		return managerRepository.previousManagers(consumer);
 	}
 

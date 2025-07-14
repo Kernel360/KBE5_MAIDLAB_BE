@@ -12,16 +12,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
 import kernel.maidlab.api.notification.repository.NotificationRepository;
+import kernel.maidlab.api.notification.util.NotificationConnectionKey;
+import kernel.maidlab.api.util.UserValidator;
+import kernel.maidlab.common.dto.notification.NotificationDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.api.notification.util.NotificationConnectionKey;
-import kernel.maidlab.common.dto.notification.NotificationDto;
 import kernel.maidlab.common.entity.notification.Notification;
 import kernel.maidlab.common.enums.NotificationType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,21 +34,24 @@ public class NotificationServiceImpl implements NotificationService {
 	private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60; // 1시간
 
 	private final NotificationRepository notificationRepository;
+	private final UserValidator userValidator;
 
 	// 사용자별 SSE 연결 관리 (userId + userType 조합으로 구분)
 	private final ConcurrentHashMap<NotificationConnectionKey, SseEmitter> connections = new ConcurrentHashMap<>();
 
 	private UserType getCurrentUserType(HttpServletRequest request) {
-		return (UserType) request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+		return AuthenticationHelper.getCurrentUserType();
 	}
 
 	private Long getCurrentUserId(HttpServletRequest request) {
 		UserType type = getCurrentUserType(request);
-		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		
+		String userId = AuthenticationHelper.getCurrentUserId();
+		Object user = userValidator.findByUuid(userId, type);
+
 		return switch (type) {
-			case MANAGER -> ((Manager) user).getId();
-			case CONSUMER -> ((Consumer) user).getId();
+			case MANAGER -> ((Manager)user).getId();
+			case CONSUMER -> ((Consumer)user).getId();
+			default -> throw new IllegalArgumentException("지원하지 않는 사용자 타입: " + type);
 		};
 	}
 
@@ -309,6 +313,7 @@ public class NotificationServiceImpl implements NotificationService {
 			reservationId
 		);
 	}
+
 	@Override
 	public NotificationDto createReservationCheckOutNotification(Long consumerId, Long reservationId,
 		String managerName) {

@@ -11,26 +11,28 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
 import kernel.maidlab.api.consumer.service.ConsumerService;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.manager.service.ManagerService;
+import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.notification.service.NotificationService;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
+import kernel.maidlab.api.util.UserValidator;
 import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
-import kernel.maidlab.common.entity.reservation.Reservation;
-import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
-import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
+import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
 import kernel.maidlab.common.dto.notification.NotificationDto;
+import kernel.maidlab.common.entity.consumer.Consumer;
+import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.entity.matching.Matching;
-import kernel.maidlab.api.matching.repository.MatchingRepository;
+import kernel.maidlab.common.entity.reservation.Reservation;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +46,7 @@ public class MatchingServiceImpl implements MatchingService {
 	private final ConsumerService consumerService;
 	private final NotificationService notificationService;
 	private final ManagerRepository managerRepository;
+	private final UserValidator userValidator;
 
 	@Override
 	public List<AvailableManagerResponseDto> findAvailableManagers(MatchingRequestDto dto) {
@@ -82,11 +85,13 @@ public class MatchingServiceImpl implements MatchingService {
 	@Override
 	public List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size) {
 
-		Manager manager = (Manager)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String userId = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		Manager me = userValidator.findByUuid(userId, userType);
 
 		Pageable pageable = PageRequest.of(page, size);
 
-		return matchingRepository.findByManagerIdAndMatchingStatus(manager.getId(), Status.PENDING,
+		return matchingRepository.findByManagerIdAndMatchingStatus(me.getId(), Status.PENDING,
 			pageable).stream().map(matching -> {
 			Long reservationId = matching.getReservationId();
 			Reservation reservation = reservationRepository.findById(reservationId)
@@ -97,7 +102,7 @@ public class MatchingServiceImpl implements MatchingService {
 
 	@Override
 	public List<LikedManagerResponseDto> preferenceManager(HttpServletRequest request) {
-		return consumerService.getLikedManagerList(request);
+		return consumerService.getLikedManagerList();
 	}
 
 	@Override

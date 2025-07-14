@@ -13,13 +13,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.consumer.ConsumerMyPageDto;
 import kernel.maidlab.common.dto.consumer.request.ConsumerProfileRequestDto;
 import kernel.maidlab.common.dto.consumer.request.PreferenceRequestDto;
 import kernel.maidlab.common.dto.consumer.response.BlackListedManagerResponseDto;
 import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
 import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
-import kernel.maidlab.common.dto.ResponseDto;
 import lombok.Generated;
 
 @Tag(name = "Consumer", description = "소비자(Consumer) 관련 API")

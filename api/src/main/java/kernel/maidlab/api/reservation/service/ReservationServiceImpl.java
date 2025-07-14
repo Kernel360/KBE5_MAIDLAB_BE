@@ -1,8 +1,24 @@
 package kernel.maidlab.api.reservation.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
@@ -10,11 +26,19 @@ import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.api.notification.service.NotificationService;
 import kernel.maidlab.api.point.repository.PointRepository;
-import kernel.maidlab.api.reservation.repository.*;
-import kernel.maidlab.api.util.AuthUtil;
+import kernel.maidlab.api.reservation.repository.ReservationRepository;
+import kernel.maidlab.api.reservation.repository.ReviewKeywordRepository;
+import kernel.maidlab.api.reservation.repository.ReviewRepository;
+import kernel.maidlab.api.reservation.repository.ServiceDetailTypeRepository;
+import kernel.maidlab.api.reservation.repository.SettlementRepository;
+import kernel.maidlab.api.util.UserValidator;
 import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.common.dto.notification.NotificationDto;
-import kernel.maidlab.common.dto.reservation.request.*;
+import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
+import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
+import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
+import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
+import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
@@ -23,7 +47,11 @@ import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.consumer.ManagerPreference;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.entity.point.Point;
-import kernel.maidlab.common.entity.reservation.*;
+import kernel.maidlab.common.entity.reservation.Reservation;
+import kernel.maidlab.common.entity.reservation.Review;
+import kernel.maidlab.common.entity.reservation.ReviewKeyword;
+import kernel.maidlab.common.entity.reservation.ServiceDetailType;
+import kernel.maidlab.common.entity.reservation.Settlement;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.ServiceOptionType;
 import kernel.maidlab.common.enums.Status;
@@ -31,20 +59,9 @@ import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.common.exception.custom.PointException;
 import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.common.util.RoomSizeRuleUtil;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -54,20 +71,21 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ServiceDetailTypeRepository serviceDetailTypeRepository;
 	private final MatchingRepository matchingRepository;
 	private final ManagerRepository managerRepository;
-	private final AuthUtil authUtil;
 	private final MatchingService matchingService;
 	private final ManagerPreferenceRepository managerPreferenceRepository;
 	private final ConsumerRepository consumerRepository;
 	private final ReviewRepository reviewRepository;
 	private final SettlementRepository settlementRepository;
 	private final ReviewKeywordRepository reviewKeywordRepository;
+	private final UserValidator userValidator;
 	private final PointRepository pointRepository;
 	private final NotificationService notificationService;
 
 	@Transactional
 	@Override
 	public void registerReview(ReviewRegisterRequestDto dto, HttpServletRequest request) {
-		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+		String userId = AuthenticationHelper.getCurrentUserId();
 
 		Boolean isConsumerToManager = userType == UserType.CONSUMER;
 
@@ -75,7 +93,7 @@ public class ReservationServiceImpl implements ReservationService {
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		if (userType == UserType.CONSUMER) {
-			Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+			Consumer consumer = (Consumer)userValidator.findByUuid(userId, userType);
 			Manager manager = managerRepository.findById(reservation.getManagerId())
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 			// 매니저 선호도 테이블 관리
@@ -137,13 +155,13 @@ public class ReservationServiceImpl implements ReservationService {
 	// 이전 예약 전체 조회 api
 	@Override
 	public List<ReservationResponseDto> allReservations(HttpServletRequest request) {
-		UserType userType = authUtil.getUserType(request);
+		UserType userType = AuthenticationHelper.getCurrentUserType();
 
 		if (userType == UserType.CONSUMER) {
-			Long consumerId = authUtil.getConsumer(request).getId();
+			Long consumerId = getCurrentConsumer().getId();
 			return reservationRepository.findAllWithReviewByConsumerId(consumerId);
 		} else {
-			Long managerId = authUtil.getManager(request).getId();
+			Long managerId = getCurrentManager().getId();
 			return reservationRepository.findAllWithReviewByManagerId(managerId);
 
 		}
@@ -153,7 +171,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size,
 		String sortBy, String sortOrder, HttpServletRequest request) {
-		Consumer consumer = authUtil.getConsumer(request);
+		Consumer consumer = getCurrentConsumer();
 		Long consumerId = consumer.getId();
 
 		if (size > 50) {
@@ -185,7 +203,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size,
 		String sortOrder, HttpServletRequest request) {
-		Manager manager = authUtil.getManager(request);
+		Manager manager = getCurrentManager();
 		Long managerId = manager.getId();
 
 		if (size > 50) {
@@ -201,14 +219,8 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	public ReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
-
-		UserType userType = (UserType)request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-		Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		Long userId = switch (userType) {
-			case CONSUMER -> ((Consumer)user).getId();
-			case MANAGER -> ((Manager)user).getId();
-			default -> throw new ReservationException(ResponseType.THIS_USER_DOES_NOT_EXIST);
-		};
+		Long userId = getCurrentUserEntityId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
 
 		return reservationRepository.findDetailReservationByIdAndUser(reservationId, userId, userType);
 	}
@@ -221,7 +233,8 @@ public class ReservationServiceImpl implements ReservationService {
 			throw new ReservationException(ResponseType.AVAILABLE_MANAGER_DOES_NOT_EXIST);
 		}
 
-		Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String consumerUuid = AuthenticationHelper.getCurrentUserId();
+		Consumer consumer = (Consumer)userValidator.findByUuid(consumerUuid, UserType.CONSUMER);
 		Long consumerId = consumer.getId();
 
 		// 결제 검증 로직(애플리케이션 상용 전 true 고정)
@@ -264,7 +277,7 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		Long managerId = authUtil.getManager(request).getId();
+		Long managerId = getCurrentManager().getId();
 		if (!reservation.getStatus().equals(Status.PENDING)) {
 			throw new ReservationException(ResponseType.VALIDATION_FAILED);
 		}
@@ -284,17 +297,18 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public void pay(PaymentRequestDto dto, HttpServletRequest request) {
 
-		Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String userId = AuthenticationHelper.getCurrentUserId();
+		Consumer consumer = userValidator.findByUuid(userId, UserType.CONSUMER);
 
 		Reservation reservation = reservationRepository.findById(dto.getReservationId())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-    
+
 		// 결제시 포인트 사용
-		if (dto.isPointUsed()){
+		if (dto.isPointUsed()) {
 
 			// 사용 가능한 포인트 검증
 			Long useAblePoint = pointRepository.getTotalPointsByConsumerId(consumer.getId());
-			if (useAblePoint < dto.getPointToUse()){
+			if (useAblePoint < dto.getPointToUse()) {
 				throw new PointException(ResponseType.INSUFFICIENT_POINT);
 			}
 
@@ -329,9 +343,10 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		Manager manager = (Manager)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		Manager manager = getCurrentManager();
+		Long managerId = manager.getId();
 
-		if (!reservation.getManagerId().equals(manager.getId())) {
+		if (!reservation.getManagerId().equals(managerId)) {
 			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
 		}
 		// 이미 체크인 되어 있는 경우
@@ -357,8 +372,8 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		Manager manager = (Manager)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
-		Long managerId = authUtil.getManager(request).getId();
+		Manager manager = getCurrentManager();
+		Long managerId = manager.getId();
 
 		if (!reservation.getManagerId().equals(managerId)) {
 			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
@@ -387,10 +402,12 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	@Override
 	public void cancel(Long reservationId, HttpServletRequest request) {
-		Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+
+		Consumer consumer = getCurrentConsumer();
+		Long consumerId = consumer.getId();
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		if (!reservation.getConsumerId().equals(consumer.getId())) {
+		if (!reservation.getConsumerId().equals(consumerId)) {
 			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
 		}
 
@@ -445,7 +462,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	public WeeklySettlementResponseDto getWeeklySettlements(HttpServletRequest request, LocalDate startDate) {
-		Long managerId = authUtil.getManager(request).getId();
+		Long managerId = getCurrentManager().getId();
 		LocalDateTime start = startDate.atStartOfDay();
 		LocalDateTime end = start.plusDays(7).with(LocalTime.MIN);
 
@@ -469,9 +486,9 @@ public class ReservationServiceImpl implements ReservationService {
 		return new WeeklySettlementResponseDto(totalAmount, responseList);
 	}
 
-	public BigDecimal usePoints(Integer pointToUse, Reservation reservation){
+	public BigDecimal usePoints(Integer pointToUse, Reservation reservation) {
 
-		if (pointToUse < 0){
+		if (pointToUse < 0) {
 			throw new PointException(ResponseType.VALIDATION_FAILED);
 		}
 		BigDecimal pointValue = BigDecimal.valueOf(pointToUse);
@@ -484,6 +501,24 @@ public class ReservationServiceImpl implements ReservationService {
 	// 	return reservationRepository.findById(reservationId)
 	// 		.orElseThrow(() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + reservationId));
 	// }
+
+	private Long getCurrentUserEntityId() {
+		String userUuid = AuthenticationHelper.getCurrentUserId();
+		UserType userType = AuthenticationHelper.getCurrentUserType();
+
+		Object user = userValidator.findByUuid(userUuid, userType);
+		return userValidator.getUserId(user);
+	}
+
+	private Consumer getCurrentConsumer() {
+		String userUuid = AuthenticationHelper.getCurrentUserId();
+		return (Consumer)userValidator.findByUuid(userUuid, UserType.CONSUMER);
+	}
+
+	private Manager getCurrentManager() {
+		String userUuid = AuthenticationHelper.getCurrentUserId();
+		return (Manager)userValidator.findByUuid(userUuid, UserType.MANAGER);
+	}
 }
 
 

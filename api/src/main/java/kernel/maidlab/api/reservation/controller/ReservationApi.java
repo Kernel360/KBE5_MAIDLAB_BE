@@ -19,15 +19,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
+import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
 import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
-import kernel.maidlab.common.dto.ResponseDto;
 import lombok.Generated;
 
 @Tag(name = "Reservation", description = "예약(Reservation) 관련 API")
@@ -62,7 +62,7 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "403", description = "Do not have permission (NP)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
 	})
-	ResponseEntity<ResponseDto<String>> create(@RequestBody ReservationRequestDto dto,HttpServletRequest request);
+	ResponseEntity<ResponseDto<String>> create(@RequestBody ReservationRequestDto dto, HttpServletRequest request);
 
 	@Operation(summary = "결제 금액 확인", description = "총 결제 금액 검증 API.", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses(value = {
@@ -161,9 +161,9 @@ public interface ReservationApi {
 		HttpServletRequest request);
 
 	ResponseEntity<ResponseDto<org.springframework.data.domain.Page<ReservationResponseDto>>> getManagerReservationsWithPaging(
-			@RequestParam(required = false) String status,
-			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "5") int size,
-			@RequestParam(defaultValue = "DESC") String sortOrder,
-			HttpServletRequest request);
+		@RequestParam(required = false) String status,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "5") int size,
+		@RequestParam(defaultValue = "DESC") String sortOrder,
+		HttpServletRequest request);
 }

@@ -12,9 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
-import kernel.maidlab.common.dto.manager.ManagerResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
 import kernel.maidlab.common.enums.Status;
 

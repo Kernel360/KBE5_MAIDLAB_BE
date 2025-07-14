@@ -6,7 +6,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
-import kernel.maidlab.common.entity.base.Base;
 import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.enums.Status;
 import lombok.Getter;
@@ -35,7 +34,7 @@ public class Matching extends TimeBase {
 	@Column
 	private Integer matchingCount;
 
-	private Matching (
+	private Matching(
 		Long reservationId,
 		Long managerId,
 		Status matchingStatus,
@@ -47,7 +46,7 @@ public class Matching extends TimeBase {
 		this.matchingCount = matchingCount;
 	}
 
-	public static Matching of(MatchingResponseDto dto){
+	public static Matching of(MatchingResponseDto dto) {
 		return new Matching(
 			dto.getReservationId(),
 			dto.getManagerId(),

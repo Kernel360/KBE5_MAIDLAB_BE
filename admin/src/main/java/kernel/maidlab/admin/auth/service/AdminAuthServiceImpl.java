@@ -1,26 +1,24 @@
 package kernel.maidlab.admin.auth.service;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-
 import kernel.maidlab.admin.auth.entity.Admin;
-import kernel.maidlab.common.dto.auth.AdminJwtDto;
-import kernel.maidlab.admin.auth.jwt.AdminJwtFilter;
-import kernel.maidlab.admin.auth.jwt.AdminJwtProvider;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
+import kernel.maidlab.admin.auth.service.AdminTokenService;
+import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.auth.JwtDto;
 import kernel.maidlab.common.dto.auth.request.AdminLoginRequestDto;
 import kernel.maidlab.common.dto.auth.response.LoginResponseDto;
-import kernel.maidlab.api.auth.jwt.JwtProperties;
+import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.exception.BaseException;
 import kernel.maidlab.common.util.CookieUtil;
-import kernel.maidlab.api.util.PasswordUtil;
-import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.enums.ResponseType;
-
+import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.core.security.jwt.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,9 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminAuthServiceImpl implements AdminAuthService {
 
 	private final AdminRepository adminRepository;
-	private final AdminJwtProvider adminJwtProvider;
+	private final AdminTokenService adminTokenService;
 	private final JwtProperties jwtProperties;
-	private final PasswordUtil passwordUtil;
+	private final PasswordEncoder passwordEncoder;
 	private final CookieUtil cookieUtil;
 
 	// 관리자 로그인
@@ -48,11 +46,11 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 			throw new BaseException(ResponseType.ACCOUNT_DELETED);
 		}
 
-		if (!passwordUtil.checkPassword(req.getPassword(), admin.getPassword())) {
+		if (!passwordEncoder.matches(req.getPassword(), admin.getPassword())) {
 			throw new BaseException(ResponseType.LOGIN_FAILED);
 		}
 
-		AdminJwtDto.TokenPair tokenPair = adminJwtProvider.generateAdminTokenPair(admin.getAdminKey());
+		kernel.maidlab.common.dto.auth.AdminJwtDto.TokenPair tokenPair = adminTokenService.generateAdminTokenPair(admin.getAdminKey());
 		long expirationTime = jwtProperties.getExpiration().getAccess();
 
 		cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
@@ -68,7 +66,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 	// 관리자 토큰 갱신
 	@Override
 	public ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(String refreshToken, HttpServletResponse res) {
-		AdminJwtDto.AdminRefreshResult result = adminJwtProvider.refreshAdminTokens(refreshToken);
+		kernel.maidlab.common.dto.auth.AdminJwtDto.AdminRefreshResult result = adminTokenService.refreshAdminTokens(refreshToken);
 
 		if (!result.isSuccess()) {
 			throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);
@@ -89,9 +87,9 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 	// 관리자 로그아웃
 	@Override
 	public ResponseEntity<ResponseDto<Void>> logout(HttpServletRequest req, HttpServletResponse res) {
-		String adminKey = (String) req.getAttribute(AdminJwtFilter.CURRENT_ADMIN_KEY_VALUE);
+		String adminKey = AuthenticationHelper.getCurrentUserId();
 
-		adminJwtProvider.removeAdminRefreshToken(adminKey);
+		adminTokenService.removeAdminRefreshToken(adminKey);
 		cookieUtil.clearRefreshTokenCookie(res);
 
 		return ResponseDto.success(null);
