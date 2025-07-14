@@ -81,12 +81,8 @@ public class Reservation extends TimeBase {
 		}
 	}
 
-	public void usePoints(Integer pointToUse){
-		if (pointToUse > 0){
-			BigDecimal pointValue = BigDecimal.valueOf(pointToUse);
-			BigDecimal newPrice = this.totalPrice.subtract(pointValue);
-			this.finalPaymentPrice = newPrice.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : newPrice;
-		}
+	public void applyFinalPaymentPrice(BigDecimal finalPaymentPrice){
+		this.finalPaymentPrice = finalPaymentPrice;
 	}
 
 	public void checkin(LocalDateTime checkinTime) {
