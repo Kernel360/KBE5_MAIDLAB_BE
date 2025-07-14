@@ -56,7 +56,9 @@ public class SecurityConfig {
 					"/swagger-resources/**",
 					"/webjars/**",
 					"/favicon.ico",
-					"/error"
+					"/error",
+					"/admin/logs/stream",// WebSocket 엔드포인트
+					"/api/notifications/**"
 				).permitAll()
 
 				// 관리자 전용 API
