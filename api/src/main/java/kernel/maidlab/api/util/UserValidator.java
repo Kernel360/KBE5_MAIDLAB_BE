@@ -72,7 +72,7 @@ public class UserValidator {
 		};
 	}
 
-	// uuid 사용자 조회
+	// uuid 사용자 조회 (Consumer, Manager만 지원)
 	public <T> T findByUuid(String uuid, UserType userType) {
 		return switch (userType) {
 			case CONSUMER -> {

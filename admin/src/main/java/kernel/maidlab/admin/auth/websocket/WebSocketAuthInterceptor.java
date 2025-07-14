@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import kernel.maidlab.admin.auth.jwt.AdminJwtProvider;
+import kernel.maidlab.core.security.jwt.AdminJwtProvider;
 import kernel.maidlab.common.dto.auth.AdminJwtDto;
 
 @Component
@@ -39,17 +39,16 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor {
 			}
 
 			// Validate the token
-			AdminJwtDto.AdminValidationResult validationResult = adminJwtProvider.validateAdminAccessToken(token);
-
-			if (!validationResult.isValid()) {
-				log.warn("WebSocket handshake failed: Invalid token - {}", validationResult.getMessage());
+			if (!adminJwtProvider.validateAdminAccessToken(token)) {
+				log.warn("WebSocket handshake failed: Invalid token");
 				return false;
 			}
 
 			// Store admin key in session attributes for later use
-			attributes.put("adminKey", validationResult.getAdminKey());
+			String adminKey = adminJwtProvider.getAdminKey(token);
+			attributes.put("adminKey", adminKey);
 
-			log.info("WebSocket handshake successful for admin: {}", validationResult.getAdminKey());
+			log.info("WebSocket handshake successful for admin: {}", adminKey);
 			return true;
 
 		} catch (Exception e) {

@@ -12,7 +12,8 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.admin.auth.jwt.AdminJwtProvider;
+import kernel.maidlab.core.security.jwt.AdminJwtProvider;
+import kernel.maidlab.admin.auth.service.AdminTokenService;
 import kernel.maidlab.common.dto.auth.AdminJwtDto;
 import kernel.maidlab.common.util.CookieUtil;
 
@@ -22,10 +23,12 @@ public class CookieWebSocketAuthInterceptor implements HandshakeInterceptor {
 	private static final Logger log = LoggerFactory.getLogger(CookieWebSocketAuthInterceptor.class);
 
 	private final AdminJwtProvider adminJwtProvider;
+	private final AdminTokenService adminTokenService;
 	private final CookieUtil cookieUtil;
 
-	public CookieWebSocketAuthInterceptor(AdminJwtProvider adminJwtProvider, CookieUtil cookieUtil) {
+	public CookieWebSocketAuthInterceptor(AdminJwtProvider adminJwtProvider, AdminTokenService adminTokenService, CookieUtil cookieUtil) {
 		this.adminJwtProvider = adminJwtProvider;
+		this.adminTokenService = adminTokenService;
 		this.cookieUtil = cookieUtil;
 	}
 
@@ -50,17 +53,22 @@ public class CookieWebSocketAuthInterceptor implements HandshakeInterceptor {
 				return false;
 			}
 
-			// Validate refresh token (includes DB token matching)
-			AdminJwtDto.AdminValidationResult validationResult =
-				adminJwtProvider.validateAdminToken(cookieRefreshToken, "refresh");
+			// Validate refresh token and check DB
+			if (!adminJwtProvider.validateAdminRefreshToken(cookieRefreshToken)) {
+				log.warn("WebSocket handshake failed: Invalid refresh token");
+				return false;
+			}
 
-			if (!validationResult.isValid()) {
-				log.warn("WebSocket handshake failed: {}", validationResult.getMessage());
+			String adminKey = adminJwtProvider.getAdminKey(cookieRefreshToken);
+			
+			// Check if token matches stored token in DB
+			String storedToken = adminTokenService.getStoredAdminRefreshToken(adminKey);
+			if (storedToken == null || !storedToken.equals(cookieRefreshToken)) {
+				log.warn("WebSocket handshake failed: Refresh token does not match stored token");
 				return false;
 			}
 
 			// Authentication successful - store admin key in session attributes
-			String adminKey = validationResult.getAdminKey();
 			attributes.put("adminKey", adminKey);
 
 			return true;

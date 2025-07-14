@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.admin.service.AdminJwtTokenService;
+import kernel.maidlab.admin.auth.service.AdminTokenService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.auth.JwtDto;
 import kernel.maidlab.common.dto.auth.request.AdminLoginRequestDto;
@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminAuthServiceImpl implements AdminAuthService {
 
 	private final AdminRepository adminRepository;
-	private final AdminJwtTokenService jwtTokenService;
+	private final AdminTokenService adminTokenService;
 	private final JwtProperties jwtProperties;
 	private final PasswordEncoder passwordEncoder;
 	private final CookieUtil cookieUtil;
@@ -50,7 +50,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 			throw new BaseException(ResponseType.LOGIN_FAILED);
 		}
 
-		JwtDto.TokenPair tokenPair = jwtTokenService.generateTokenPair(admin.getAdminKey());
+		kernel.maidlab.common.dto.auth.AdminJwtDto.TokenPair tokenPair = adminTokenService.generateAdminTokenPair(admin.getAdminKey());
 		long expirationTime = jwtProperties.getExpiration().getAccess();
 
 		cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
@@ -66,7 +66,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 	// 관리자 토큰 갱신
 	@Override
 	public ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(String refreshToken, HttpServletResponse res) {
-		JwtDto.RefreshResult result = jwtTokenService.refreshTokens(refreshToken);
+		kernel.maidlab.common.dto.auth.AdminJwtDto.AdminRefreshResult result = adminTokenService.refreshAdminTokens(refreshToken);
 
 		if (!result.isSuccess()) {
 			throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);
@@ -89,7 +89,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 	public ResponseEntity<ResponseDto<Void>> logout(HttpServletRequest req, HttpServletResponse res) {
 		String adminKey = AuthenticationHelper.getCurrentUserId();
 
-		jwtTokenService.removeRefreshToken(adminKey);
+		adminTokenService.removeAdminRefreshToken(adminKey);
 		cookieUtil.clearRefreshTokenCookie(res);
 
 		return ResponseDto.success(null);

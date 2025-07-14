@@ -38,14 +38,19 @@ public class JwtProvider {
 		Date now = new Date();
 		Date expiry = new Date(now.getTime() + jwtProperties.getExpiration().getAccess());
 
-		return Jwts.builder()
+		var builder = Jwts.builder()
 			.setSubject(userId)
 			.claim("userType", userType.name())
 			.claim("type", "ACCESS")
 			.setIssuedAt(now)
-			.setExpiration(expiry)
-			.signWith(getSigningKey(), SignatureAlgorithm.HS512)
-			.compact();
+			.setExpiration(expiry);
+
+		// Admin의 경우 기존 형식과 호환되도록 role claim 추가
+		if (userType == UserType.ADMIN) {
+			builder.claim("role", "ADMIN");
+		}
+
+		return builder.signWith(getSigningKey(), SignatureAlgorithm.HS512).compact();
 	}
 
 	// refresh 토큰 생성
@@ -53,14 +58,19 @@ public class JwtProvider {
 		Date now = new Date();
 		Date expiry = new Date(now.getTime() + jwtProperties.getExpiration().getRefresh());
 
-		return Jwts.builder()
+		var builder = Jwts.builder()
 			.setSubject(userId)
 			.claim("userType", userType.name())
 			.claim("type", "REFRESH")
 			.setIssuedAt(now)
-			.setExpiration(expiry)
-			.signWith(getSigningKey(), SignatureAlgorithm.HS512)
-			.compact();
+			.setExpiration(expiry);
+
+		// Admin의 경우 기존 형식과 호환되도록 role claim 추가
+		if (userType == UserType.ADMIN) {
+			builder.claim("role", "ADMIN");
+		}
+
+		return builder.signWith(getSigningKey(), SignatureAlgorithm.HS512).compact();
 	}
 
 	// 소셜 로그인 임시 토큰 생성
