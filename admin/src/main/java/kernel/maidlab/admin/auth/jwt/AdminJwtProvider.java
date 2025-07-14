@@ -3,7 +3,7 @@ package kernel.maidlab.admin.auth.jwt;
 import kernel.maidlab.common.dto.auth.AdminJwtDto;
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.api.auth.jwt.JwtProperties;
+import kernel.maidlab.core.security.jwt.JwtProperties;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -96,17 +96,6 @@ public class AdminJwtProvider {
 		return AdminJwtDto.AdminRefreshResult.success(tokenPair.getAccessToken(), tokenPair.getRefreshToken());
 	}
 
-	// 토큰 추출
-	public String extractToken(HttpServletRequest request) {
-		String authHeader = request.getHeader(jwtProperties.getHeader());
-
-		if (authHeader != null && authHeader.startsWith(jwtProperties.getPrefix())) {
-			return authHeader.substring(jwtProperties.getPrefix().length());
-		}
-
-		return null;
-	}
-
 	// 관리자용 토큰 검증
 	public AdminJwtDto.AdminValidationResult validateAdminToken(String token, String type) {
 		if (token == null || token.trim().isEmpty()) {
@@ -157,16 +146,6 @@ public class AdminJwtProvider {
 	// Access 토큰 검증
 	public AdminJwtDto.AdminValidationResult validateAdminAccessToken(String token) {
 		return validateAdminToken(token, "access");
-	}
-
-	// 관리자 찾기
-	public Admin findAdmin(String adminKey) {
-		try {
-			return adminRepository.findByAdminKeyAndIsDeletedFalse(adminKey).orElse(null);
-		} catch (Exception e) {
-			log.error("관리자 조회 중 오류", e);
-		}
-		return null;
 	}
 
 	// 관리자용 리프레시 토큰 저장

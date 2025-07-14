@@ -1,4 +1,4 @@
-package kernel.maidlab.api.auth.jwt;
+package kernel.maidlab.core.security.jwt;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

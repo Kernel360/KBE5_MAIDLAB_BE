@@ -43,6 +43,9 @@ out/
 ### env ###
 .env
 
+### application config files with sensitive data ###
+**/application-localkey.yaml
+
 ### log ###
 *.log
 
