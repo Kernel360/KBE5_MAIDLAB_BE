@@ -248,11 +248,11 @@ public class ReservationServiceImpl implements ReservationService {
 			managerId);
 
 		// 예약 완료 시 manager 매칭
-		MatchingResponseDto match = MatchingResponseDto.builder()
-			.reservationId(matchingReservation.getId())
-			.managerId(matchingReservation.getManagerId())
-			.matchingStatus(Status.PENDING)
-			.build();
+		MatchingResponseDto match = new MatchingResponseDto(
+			matchingReservation.getManagerId(),
+			matchingReservation.getId(),
+			Status.PENDING
+		);
 		matchingService.createMatching(match);
 		return reservation.getId();
 	}

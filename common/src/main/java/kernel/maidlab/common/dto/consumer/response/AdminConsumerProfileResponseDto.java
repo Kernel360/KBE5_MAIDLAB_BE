@@ -4,13 +4,11 @@ import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.SocialType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
 
 @Getter
-@Builder
 @AllArgsConstructor
 public class AdminConsumerProfileResponseDto {
 

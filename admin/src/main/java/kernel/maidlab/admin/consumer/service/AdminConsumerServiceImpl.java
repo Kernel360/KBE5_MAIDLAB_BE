@@ -38,18 +38,7 @@ public class AdminConsumerServiceImpl implements AdminConsumerService{
 		Consumer consumer = adminConsumerRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-		return AdminConsumerProfileResponseDto.builder()
-			.profileImage(consumer.getProfileImage())
-			.phoneNumber(consumer.getPhoneNumber())
-			.name(consumer.getName())
-			.birth(consumer.getBirth())
-			.gender(consumer.getGender())
-			.address(consumer.getAddress())
-			.detailAddress(consumer.getDetailAddress())
-			.point(consumer.getPoint())
-			.socialType(consumer.getSocialType())
-			.isDeleted(consumer.getIsDeleted())
-			.build();
+		return AdminConsumerProfileResponseDto.getInstance(consumer);
 	}
 
 	@Override

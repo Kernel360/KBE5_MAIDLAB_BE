@@ -88,11 +88,7 @@ public class MatchingController implements MatchingApi {
 	@Override
 	public ResponseEntity<ResponseDto<String>> matchStart(@RequestParam Long reservation_id,
 		@RequestParam Long manager_id) {
-		MatchingResponseDto matchingResponseDto = MatchingResponseDto.builder()
-			.managerId(manager_id)
-			.reservationId(reservation_id)
-			.matchingStatus(Status.PENDING)
-			.build();
+		MatchingResponseDto matchingResponseDto = new MatchingResponseDto(manager_id, reservation_id, Status.PENDING);
 		matchingService.createMatching(matchingResponseDto);
 		return ResponseDto.success(ResponseType.SUCCESS, matchingResponseDto.toString());
 	}

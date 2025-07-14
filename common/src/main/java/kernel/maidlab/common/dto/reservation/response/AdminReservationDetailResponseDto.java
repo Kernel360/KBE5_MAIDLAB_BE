@@ -3,13 +3,14 @@ package kernel.maidlab.common.dto.reservation.response;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import kernel.maidlab.common.entity.consumer.Consumer;
+import kernel.maidlab.common.entity.manager.Manager;
+import kernel.maidlab.common.entity.reservation.Reservation;
 import kernel.maidlab.common.enums.Status;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 @AllArgsConstructor
 public class AdminReservationDetailResponseDto {
 	private Long id;
@@ -57,6 +58,38 @@ public class AdminReservationDetailResponseDto {
 	private String consumerName;
 	private String consumerProfileImage;
 
-
-
+	public static AdminReservationDetailResponseDto getInstance(Long reservationId, Reservation reservation, Manager manager, Consumer consumer) {
+		return new AdminReservationDetailResponseDto(
+			reservationId,
+			reservation.getCreatedAt(),
+			reservation.getUpdatedAt(),
+			reservation.getAddress(),
+			reservation.getAddressDetail(),
+			reservation.getStartTime(),
+			reservation.getEndTime(),
+			reservation.getCanceledAt(),
+			reservation.getCheckinTime(),
+			reservation.getCheckoutTime(),
+			reservation.getHousingInformation(),
+			reservation.getHousingType(),
+			reservation.getManagerId(),
+			reservation.getConsumerId(),
+			reservation.getPet(),
+			reservation.getReservationDate(),
+			reservation.getRoomSize(),
+			reservation.getServiceAdd(),
+			reservation.getSpecialRequest(),
+			reservation.getStatus(),
+			reservation.getTotalPrice(),
+			reservation.getServiceDetailType().getServiceType().toString(),
+			reservation.getServiceDetailType().getServiceDetailType(),
+			manager.getPhoneNumber(),
+			manager.getName(),
+			manager.getAverageRate(),
+			manager.getProfileImage(),
+			consumer.getPhoneNumber(),
+			consumer.getName(),
+			consumer.getProfileImage()
+		);
+	}
 }

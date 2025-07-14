@@ -28,22 +28,7 @@ public class AdminManagerServiceImpl implements AdminManagerService {
 	public AdminManagerResponseDto getManager(Long id) {
 		Manager manager = adminManagerRepository.findById(id).orElse(null);
 		Objects.requireNonNull(manager);
-		return AdminManagerResponseDto.builder()
-			.id(manager.getId())
-			.phoneNumber(manager.getPhoneNumber())
-			.name(manager.getName())
-			.birth(manager.getBirth())
-			.gender(manager.getGender())
-			.averageRate(manager.getAverageRate())
-			.region(manager.getRegions())
-			.isVerified(manager.getIsVerified())
-			.isDeleted(manager.getIsDeleted())
-			.introduceText(manager.getIntroduceText())
-			.profileImage(manager.getProfileImage())
-			.socialType(manager.getSocialType())
-			.createdAt(manager.getCreatedAt())
-			.updatedAt(manager.getUpdatedAt())
-			.build();
+		return AdminManagerResponseDto.getInstance(manager);
 	}
 
 	@Transactional

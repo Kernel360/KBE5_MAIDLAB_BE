@@ -34,9 +34,7 @@ import kernel.maidlab.common.enums.UserType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import kernel.maidlab.common.dto.manager.ManagerResponseDto;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
-import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
