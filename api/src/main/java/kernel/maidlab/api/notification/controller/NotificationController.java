@@ -42,8 +42,8 @@ public class NotificationController {
 	@CrossOrigin(origins = {"http://localhost:5173", "https://kbe-5-maidlab-fe.vercel.app",
 		"https://api-maidlab.duckdns.org", "https://www.maidlab.site"})
 	@GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public SseEmitter connect(HttpServletRequest request) {
-		return notificationService.connect(request);
+	public SseEmitter connect() {
+		return notificationService.connect();
 	}
 
 	@Operation(summary = "SSE 연결 해제", description = "사용자의 SSE 연결을 해제합니다.")

@@ -55,15 +55,21 @@ public class NotificationServiceImpl implements NotificationService {
 		};
 	}
 
-	private NotificationConnectionKey createConnectionKey(HttpServletRequest request) {
-		UserType type = getCurrentUserType(request);
-		Long id = getCurrentUserId(request);
-		return NotificationConnectionKey.of(id, type);
+	private NotificationConnectionKey createConnectionKey() {
+		UserType type = AuthenticationHelper.getCurrentUserType();
+		String uuid = AuthenticationHelper.getCurrentUserId();
+		Object user = userValidator.findByUuid(uuid, type);
+
+		return switch (type) {
+			case MANAGER -> NotificationConnectionKey.of(((Manager)user).getId(), type);
+			case CONSUMER -> NotificationConnectionKey.of(((Consumer)user).getId(), type);
+			case ADMIN -> null;//NotificationConnectionKey.of(((Admin)user).getId(), type);
+		};
 	}
 
 	@Override
-	public SseEmitter connect(HttpServletRequest request) {
-		NotificationConnectionKey connectionKey = createConnectionKey(request);
+	public SseEmitter connect() {
+		NotificationConnectionKey connectionKey = createConnectionKey();
 
 		SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
 
@@ -120,7 +126,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public void disconnect(HttpServletRequest request) {
-		NotificationConnectionKey connectionKey = createConnectionKey(request);
+		NotificationConnectionKey connectionKey = createConnectionKey();
 
 		SseEmitter emitter = connections.remove(connectionKey);
 		if (emitter != null) {
@@ -230,7 +236,7 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	@Transactional
 	public void markAllAsRead(HttpServletRequest request) {
-		NotificationConnectionKey connectionKey = createConnectionKey(request);
+		NotificationConnectionKey connectionKey = createConnectionKey();
 		Long id = getCurrentUserId(request);
 		UserType type = getCurrentUserType(request);
 
@@ -325,4 +331,7 @@ public class NotificationServiceImpl implements NotificationService {
 			reservationId
 		);
 	}
+
+
+
 }
