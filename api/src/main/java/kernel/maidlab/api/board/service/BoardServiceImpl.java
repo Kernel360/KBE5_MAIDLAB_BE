@@ -9,7 +9,8 @@ import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
-import kernel.maidlab.common.entity.base.UserBase;
+import kernel.maidlab.core.security.CustomUserDetails;
+import kernel.maidlab.core.aop.aspect.auth.AuthenticationAspect;
 import kernel.maidlab.common.dto.board.BoardQueryDto;
 import kernel.maidlab.common.dto.board.ImageDto;
 import kernel.maidlab.common.dto.board.request.BoardRequestDto;
@@ -51,7 +52,7 @@ public class BoardServiceImpl implements BoardService {
 
 		String userId = AuthenticationHelper.getCurrentUserId();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
-		UserBase user = userValidator.findByUuid(userId, userType);
+		Object user = userValidator.findByUuid(userId, userType);
 
 		Board board = Board.createBoard(user, boardRequestDto);
 		Board savedBoard = boardRepository.save(board);
@@ -71,9 +72,10 @@ public class BoardServiceImpl implements BoardService {
 
 		String userId = AuthenticationHelper.getCurrentUserId();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
-		UserBase user = userValidator.findByUuid(userId, userType);
+		Object user = userValidator.findByUuid(userId, userType);
 
-		List<BoardQueryDto> boardQueryDtoList = getBoardQueryDtoList(user, userType);
+		CustomUserDetails currentUser = AuthenticationAspect.getCurrentUser();
+		List<BoardQueryDto> boardQueryDtoList = getBoardQueryDtoList(currentUser, userType);
 
 		return boardQueryDtoList.stream()
 			.map(BoardResponseDto::from)
@@ -89,7 +91,7 @@ public class BoardServiceImpl implements BoardService {
 
 		String userId = AuthenticationHelper.getCurrentUserId();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
-		UserBase user = userValidator.findByUuid(userId, userType);
+		Object user = userValidator.findByUuid(userId, userType);
 
 		Board board = boardRepository.findByIdAndIsDeletedFalse(boardId)
 			.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시물 입니다."));
@@ -121,7 +123,7 @@ public class BoardServiceImpl implements BoardService {
 			.orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
 
 		// 사용자 검증
-		UserBase user = getUser(request);
+		CustomUserDetails user = getUser(request);
 		if (!isUserBoardWriter(board, user)) {
 			throw new RuntimeException("수정 권한이 없습니다.");
 		}
@@ -153,24 +155,26 @@ public class BoardServiceImpl implements BoardService {
 	 *서비스 외의 로직
 	 */
 	// 사용자 접근 검증
-	public boolean isUserBoardWriter(Board board, UserBase user) {
-		if (user instanceof Consumer consumer) {
+	public boolean isUserBoardWriter(Board board, CustomUserDetails user) {
+		if (user.getUserType() == UserType.CONSUMER) {
+			Consumer consumer = userValidator.findByUuid(user.getUserId(), UserType.CONSUMER);
 			return board.getConsumer() != null && board.getConsumer().getId().equals(consumer.getId());
-		} else if (user instanceof Manager manager) {
+		} else if (user.getUserType() == UserType.MANAGER) {
+			Manager manager = userValidator.findByUuid(user.getUserId(), UserType.MANAGER);
 			return board.getManager() != null && board.getManager().getId().equals(manager.getId());
 		}
 		return false;
 	}
 
 	// user타입에 따른 board 조회
-	public List<BoardQueryDto> getBoardQueryDtoList(UserBase user, UserType userType) {
+	public List<BoardQueryDto> getBoardQueryDtoList(CustomUserDetails user, UserType userType) {
 
 		if (userType == UserType.CONSUMER) {
-			Consumer consumer = (Consumer)user;
+			Consumer consumer = userValidator.findByUuid(user.getUserId(), UserType.CONSUMER);
 			return boardRepository.findAllByUserIdIsDeletedFalse(consumer.getId(), userType);
 
 		} else if (userType == UserType.MANAGER) {
-			Manager manager = (Manager)user;
+			Manager manager = userValidator.findByUuid(user.getUserId(), UserType.MANAGER);
 			return boardRepository.findAllByUserIdIsDeletedFalse(manager.getId(), userType);
 
 		}
@@ -178,12 +182,8 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	// 유저 찾기
-	public UserBase getUser(HttpServletRequest request) {
-
-		UserType userType = AuthenticationHelper.getCurrentUserType();
-		String userId = AuthenticationHelper.getCurrentUserId();
-
-		return userValidator.findByUuid(userId, userType);
+	public CustomUserDetails getUser(HttpServletRequest request) {
+		return AuthenticationAspect.getCurrentUser();
 	}
 
 	// 이미지 수정 로직

@@ -29,16 +29,14 @@ public class ConsumerController {
 	@GetMapping("/mypage")
 	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<ConsumerMyPageDto>> getMyPage() {
-		CustomUserDetails currentUser = AuthenticationAspect.getCurrentUser();
-		ConsumerMyPageDto myPageDto = consumerService.getConsumerMyPage(currentUser.getUserId());
+		ConsumerMyPageDto myPageDto = consumerService.getConsumerMyPage();
 		return ResponseDto.success(myPageDto);
 	}
 
 	@GetMapping("/profile")
 	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<ConsumerProfileResponseDto>> getProfile() {
-		CustomUserDetails currentUser = AuthenticationAspect.getCurrentUser();
-		ConsumerProfileResponseDto responseDto = consumerService.getConsumerProfile(currentUser.getUserId());
+		ConsumerProfileResponseDto responseDto = consumerService.getConsumerProfile();
 		return ResponseDto.success(responseDto);
 	}
 
@@ -46,8 +44,7 @@ public class ConsumerController {
 	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<Void>> createProfile(
 		@Validated @RequestBody ConsumerProfileRequestDto consumerProfileRequestDto) {
-		CustomUserDetails currentUser = AuthenticationAspect.getCurrentUser();
-		consumerService.createConsumerProfile(consumerProfileRequestDto, currentUser.getUserId());
+		consumerService.createConsumerProfile(consumerProfileRequestDto);
 		return ResponseDto.success();
 	}
 
@@ -55,8 +52,7 @@ public class ConsumerController {
 	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<Void>> updateProfile(
 		@Validated @RequestBody ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto) {
-		CustomUserDetails currentUser = AuthenticationAspect.getCurrentUser();
-		consumerService.updateConsumerProfile(consumerProfileUpdateRequestDto, currentUser.getUserId());
+		consumerService.updateConsumerProfile(consumerProfileUpdateRequestDto);
 		return ResponseDto.success();
 	}
 

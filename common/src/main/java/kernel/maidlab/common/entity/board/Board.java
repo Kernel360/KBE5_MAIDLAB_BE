@@ -92,6 +92,14 @@ public class Board extends TimeBase {
 		);
 	}
 
+	public static Board createBoard(Object user, BoardRequestDto boardRequestDto) {
+		return switch (user) {
+			case Consumer consumer -> createBoard(consumer, boardRequestDto);
+			case Manager manager -> createBoard(manager, boardRequestDto);
+			default -> throw new IllegalArgumentException("지원하지 않는 사용자 타입입니다.");
+		};
+	}
+
 	public List<BoardImage> getBoardImages() {
 		return boardImages != null ? boardImages : Collections.emptyList();
 	}
@@ -112,5 +120,13 @@ public class Board extends TimeBase {
 
 	public boolean isAccessibleBy(Manager manager) {
 		return this.manager != null && this.manager.getId().equals(manager.getId());
+	}
+
+	public boolean isAccessibleBy(Object user) {
+		return switch (user) {
+			case Consumer consumer -> isAccessibleBy(consumer);
+			case Manager manager -> isAccessibleBy(manager);
+			default -> false;
+		};
 	}
 }

@@ -17,12 +17,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementGraphDataDto;
-import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 
 @Tag(name = "Reservation", description = "예약 관련 API")
 public interface AdminReservationApi {
@@ -51,7 +51,6 @@ public interface AdminReservationApi {
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @RequestParam int page,
 		@RequestParam int size);
 
-
 	@Operation(summary = "정산 상세 조회", description = "정산 id에 따른 상세 정보를 조회합니다.", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "조회 성공"),
 		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
@@ -60,8 +59,6 @@ public interface AdminReservationApi {
 	@GetMapping("settlement/{settlementId}")
 	ResponseEntity<ResponseDto<SettlementResponseDto>> getSettlementDetail(HttpServletRequest request,
 		@PathVariable Long settlementId);
-
-
 
 	@PatchMapping("settlement/{settlementId}/approve")
 	@Operation(summary = "정산 승인", description = "정산 승인 API")
@@ -85,8 +82,6 @@ public interface AdminReservationApi {
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<Long>> todayReservation(HttpServletRequest request);
 
-
-
 	@GetMapping("/consumer/{id}")
 	ResponseEntity<ResponseDto<List<ReservationResponseDto>>> consumerReservation(HttpServletRequest request,
 		@PathVariable Long id, @RequestParam int page, @RequestParam int size);
@@ -102,7 +97,8 @@ public interface AdminReservationApi {
 	ResponseEntity<ResponseDto<BigDecimal>> totalPaidMoney(HttpServletRequest request, @PathVariable Long consumerId);
 
 	@GetMapping("/reviewedpercent/{consumerId}")
-	ResponseEntity<ResponseDto<BigDecimal>> consumerReviewedPercent(HttpServletRequest request, @PathVariable Long consumerId);
+	ResponseEntity<ResponseDto<BigDecimal>> consumerReviewedPercent(HttpServletRequest request,
+		@PathVariable Long consumerId);
 
 	@GetMapping("/manager/activecount/{managerId}")
 	@Operation(summary = "매니저의 활성 예약 수 조회", description = "매니저의 PAID, WORKING, COMPLETED 상태 예약 수를 조회합니다.", security = @SecurityRequirement(name = "JWT"))
@@ -110,7 +106,8 @@ public interface AdminReservationApi {
 		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
 		@ApiResponse(responseCode = "403", description = "권한 없음"),
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류")})
-	ResponseEntity<ResponseDto<Long>> managerActiveReservationCount(HttpServletRequest request, @PathVariable Long managerId);
+	ResponseEntity<ResponseDto<Long>> managerActiveReservationCount(HttpServletRequest request,
+		@PathVariable Long managerId);
 
 	@GetMapping("/manager/settlementsum/{managerId}")
 	@Operation(summary = "매니저의 승인된 정산 금액 총합 조회", description = "매니저 ID에 해당하는 승인된(APPROVED) 정산 금액의 합계를 조회합니다.", security = @SecurityRequirement(name = "JWT"))
@@ -118,7 +115,8 @@ public interface AdminReservationApi {
 		@ApiResponse(responseCode = "401", description = "비로그인 접속"),
 		@ApiResponse(responseCode = "403", description = "권한 없음"),
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류")})
-	ResponseEntity<ResponseDto<BigDecimal>> managerSettlementSum(HttpServletRequest request, @PathVariable Long managerId);
+	ResponseEntity<ResponseDto<BigDecimal>> managerSettlementSum(HttpServletRequest request,
+		@PathVariable Long managerId);
 
 	@GetMapping("/managerreviewedpercent/{managerId}")
 	ResponseEntity<ResponseDto<BigDecimal>> managerReviewedPercent(HttpServletRequest request,

@@ -9,17 +9,17 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.admin.auth.entity.Admin;
-import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
+import kernel.maidlab.admin.event.repository.EventRepository;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.event.object.EventListItem;
 import kernel.maidlab.common.dto.event.request.EventRequestDto;
 import kernel.maidlab.common.dto.event.response.EventListResponseDto;
 import kernel.maidlab.common.dto.event.response.EventResponseDto;
 import kernel.maidlab.common.entity.event.Event;
-import kernel.maidlab.admin.event.repository.EventRepository;
-import kernel.maidlab.common.exception.BaseException;
-import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -97,7 +97,8 @@ public class EventServiceImpl implements EventService {
 
 	// 이벤트 수정
 	@Override
-	public ResponseEntity<ResponseDto<Void>> updateEvent(Long eventId, EventRequestDto eventRequestDto, HttpServletRequest req) {
+	public ResponseEntity<ResponseDto<Void>> updateEvent(Long eventId, EventRequestDto eventRequestDto,
+		HttpServletRequest req) {
 		String adminKey = AuthenticationHelper.getCurrentUserId();
 
 		Admin admin = adminRepository.findByAdminKeyAndIsDeletedFalse(adminKey)

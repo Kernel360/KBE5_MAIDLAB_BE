@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.board.service.AdminBoardServiceImpl;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
 import kernel.maidlab.common.dto.board.response.AdminBoardDetailResponseDto;
 import kernel.maidlab.common.dto.board.response.AdminBoardResponseDto;
-import kernel.maidlab.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -52,26 +52,28 @@ public class AdminBoardControllerImpl implements AdminBoardApi {
 
 	@PostMapping("/answer/{boardId}")
 	@Override
-	public ResponseEntity<ResponseDto<Void>> answer(@RequestBody AnswerRequestDto requestDto, HttpServletRequest request,
+	public ResponseEntity<ResponseDto<Void>> answer(@RequestBody AnswerRequestDto requestDto,
+		HttpServletRequest request,
 		@PathVariable Long boardId) {
 		return adminBoardService.createAnswer(requestDto, request, boardId);
 	}
 
 	@PatchMapping("/answer/{answerId}")
 	@Override
-	public ResponseEntity<ResponseDto<Void>> answer(@RequestBody AnswerRequestDto requestDto, @PathVariable Long answerId) {
+	public ResponseEntity<ResponseDto<Void>> answer(@RequestBody AnswerRequestDto requestDto,
+		@PathVariable Long answerId) {
 		return adminBoardService.modifyAnswer(requestDto, answerId);
 	}
 
 	@GetMapping("/refundboardcount")
 	@Override
-	public ResponseEntity<ResponseDto<Long>> refundBoardCount(HttpServletRequest request){
+	public ResponseEntity<ResponseDto<Long>> refundBoardCount(HttpServletRequest request) {
 		return ResponseDto.success(adminBoardService.getRefundBoardWithoutAnswerCount(request));
 	}
 
 	@GetMapping("/counselboardcount")
 	@Override
-	public ResponseEntity<ResponseDto<Long>> counselBoardCount(HttpServletRequest request){
+	public ResponseEntity<ResponseDto<Long>> counselBoardCount(HttpServletRequest request) {
 		return ResponseDto.success(adminBoardService.getCounselBoardWithoutAnswerCount(request));
 	}
 }

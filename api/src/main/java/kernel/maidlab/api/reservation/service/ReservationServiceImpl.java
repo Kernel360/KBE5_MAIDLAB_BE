@@ -21,7 +21,7 @@ import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.api.notification.service.NotificationService;
 import kernel.maidlab.api.point.repository.PointRepository;
 import kernel.maidlab.api.reservation.repository.*;
-import kernel.maidlab.api.util.AuthUtil;
+import kernel.maidlab.api.util.UserValidator;
 import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.common.dto.notification.NotificationDto;
 import kernel.maidlab.common.dto.reservation.request.*;
@@ -289,7 +289,8 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public void pay(PaymentRequestDto dto, HttpServletRequest request) {
 
-		Consumer consumer = (Consumer)request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+		String userId = AuthenticationHelper.getCurrentUserId();
+		Consumer consumer = userValidator.findByUuid(userId, UserType.CONSUMER);
 
 		Reservation reservation = reservationRepository.findById(dto.getReservationId())
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
@@ -334,9 +335,10 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		Long managerId = getCurrentManager().getId();
+		Manager manager = getCurrentManager();
+		Long managerId = manager.getId();
 
-		if (!reservation.getManagerId().equals(manager.getId())) {
+		if (!reservation.getManagerId().equals(managerId)) {
 			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
 		}
 		// 이미 체크인 되어 있는 경우
@@ -362,7 +364,8 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		Long managerId = getCurrentManager().getId();
+		Manager manager = getCurrentManager();
+		Long managerId = manager.getId();
 
 		if (!reservation.getManagerId().equals(managerId)) {
 			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
@@ -392,10 +395,11 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public void cancel(Long reservationId, HttpServletRequest request) {
 
-		Long consumerId = getCurrentConsumer().getId();
+		Consumer consumer = getCurrentConsumer();
+		Long consumerId = consumer.getId();
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
-		if (!reservation.getConsumerId().equals(consumer.getId())) {
+		if (!reservation.getConsumerId().equals(consumerId)) {
 			throw new ReservationException(ResponseType.DO_NOT_HAVE_PERMISSION);
 		}
 

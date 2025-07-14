@@ -86,7 +86,8 @@ public class PointServiceImpl implements PointService{
             HttpServletRequest request,
             PointChargeRequestDto pointChargeRequestDto
     ){
-        Consumer consumer = (Consumer) request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+        String userId = AuthenticationHelper.getCurrentUserId();
+        Consumer consumer = userValidator.findByUuid(userId, UserType.CONSUMER);
 
         if (pointChargeRequestDto.getChargeAmount() > 0){
             Point chargedPoint = Point.createChargePoint(

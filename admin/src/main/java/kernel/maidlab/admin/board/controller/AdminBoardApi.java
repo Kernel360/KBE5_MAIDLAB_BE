@@ -15,11 +15,10 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
 import kernel.maidlab.common.dto.board.response.AdminBoardDetailResponseDto;
 import kernel.maidlab.common.dto.board.response.AdminBoardResponseDto;
-import kernel.maidlab.common.dto.board.response.BoardDetailResponseDto;
-import kernel.maidlab.common.dto.ResponseDto;
 
 public interface AdminBoardApi {
 
@@ -53,7 +52,8 @@ public interface AdminBoardApi {
 		@ApiResponse(responseCode = "400", description = "Validation failed (VF)"),
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<Void>> answer(@RequestBody AnswerRequestDto requestDto, HttpServletRequest request, @PathVariable Long boardId);
+	ResponseEntity<ResponseDto<Void>> answer(@RequestBody AnswerRequestDto requestDto, HttpServletRequest request,
+		@PathVariable Long boardId);
 
 	@PatchMapping("/answer/{answerId}")
 	@Operation(summary = "답변 게시물 수정", description = "답변 게시판의 게시물을 수정합니다.")

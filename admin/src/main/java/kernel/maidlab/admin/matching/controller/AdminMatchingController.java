@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.matching.service.AdminMatchingService;
-import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,8 @@ public class AdminMatchingController implements AdminMatchingApi {
 
 	@GetMapping
 	@Override
-	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> allMatching(HttpServletRequest request, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> allMatching(HttpServletRequest request,
+		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 		List<MatchingResponseDto> response = adminmatchingService.allMatching(request, page, size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
@@ -34,7 +35,8 @@ public class AdminMatchingController implements AdminMatchingApi {
 	@GetMapping("/status")
 	@Override
 	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> statusMatching(Status status,
-		HttpServletRequest request , @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+		HttpServletRequest request, @RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size) {
 		List<MatchingResponseDto> response = adminmatchingService.statusMatching(status, page, size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}

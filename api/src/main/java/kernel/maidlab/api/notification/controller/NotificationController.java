@@ -15,8 +15,9 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.auth.jwt.JwtFilter;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.api.notification.service.NotificationService;
+import kernel.maidlab.api.util.UserValidator;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.notification.NotificationDto;
 import kernel.maidlab.common.enums.NotificationType;
@@ -35,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NotificationController {
     
     private final NotificationService notificationService;
+    private final UserValidator userValidator;
     
     
     @Operation(summary = "SSE 연결", description = "사용자의 실시간 알림을 위한 SSE 연결을 생성합니다.")
@@ -70,11 +72,13 @@ public class NotificationController {
     @Operation(summary = "테스트 알림 전송", description = "테스트용 알림을 전송합니다.")
     @PostMapping("/test")
     public ResponseEntity<ResponseDto<String>> sendTestNotification(HttpServletRequest request) {
-        UserType type = (UserType) request.getAttribute(JwtFilter.CURRENT_USER_TYPE_KEY);
-        Object user = request.getAttribute(JwtFilter.CURRENT_USER_KEY);
+        UserType type = AuthenticationHelper.getCurrentUserType();
+        String userId = AuthenticationHelper.getCurrentUserId();
+        Object user = userValidator.findByUuid(userId, type);
         Long id = switch (type) {
             case MANAGER -> ((Manager) user).getId();
             case CONSUMER -> ((Consumer) user).getId();
+            default -> throw new IllegalArgumentException("지원하지 않는 사용자 타입: " + type);
         };
         
         log.info("테스트 알림 전송 요청 - 사용자 ID: {}, 타입: {}", id, type);

@@ -6,10 +6,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.WeekFields;
-import java.util.Locale;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,13 +26,12 @@ import kernel.maidlab.admin.reservation.repository.AdminReservationRepository;
 import kernel.maidlab.admin.reservation.repository.AdminReviewRepository;
 import kernel.maidlab.admin.reservation.repository.AdminServiceDetailTypeRepository;
 import kernel.maidlab.admin.reservation.repository.AdminSettlementRepository;
-import kernel.maidlab.api.reservation.repository.ReviewRepository;
 import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminSettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementGraphDataDto;
+import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.entity.reservation.Reservation;
@@ -83,9 +80,9 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 
 		Optional<Consumer> consumer = adminConsumerRepository.findById(reservation.getConsumerId());
 
-
 		return AdminReservationDetailResponseDto.getInstance(reservationId, reservation, manager.get(), consumer.get());
 	}
+
 	@Override
 	public List<ReservationResponseDto> dailyReservations(LocalDate date, int page, int size) {
 		Page<Reservation> reservations;
@@ -124,7 +121,8 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 			.reduce(BigDecimal.ZERO, BigDecimal::add);
 
 		Page<AdminSettlementResponseDto> dtoPage = settlementPage.map(settlement -> {
-			ServiceDetailType detailType = adminServiceDetailTypeRepository.findById(settlement.getServiceDetailTypeId())
+			ServiceDetailType detailType = adminServiceDetailTypeRepository.findById(
+					settlement.getServiceDetailTypeId())
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 			Manager manager = adminManagerRepository.findById(settlement.getManagerId())
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
@@ -139,8 +137,6 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 				settlement.getCreatedAt()
 			);
 		});
-
-
 
 		return new AdminWeeklySettlementResponseDto(totalAmount, dtoPage);
 	}
@@ -161,13 +157,15 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 
 	@Override
 	public SettlementResponseDto getSettlementDetail(Long settlementId, HttpServletRequest request) {
-		Optional<Settlement> settlement= adminSettlementRepository.findById(settlementId);
+		Optional<Settlement> settlement = adminSettlementRepository.findById(settlementId);
 
 		return new SettlementResponseDto(
 			settlement.get().getId(),
 			settlement.get().getReservationId(),
 			settlement.get().getServiceType(),
-			adminServiceDetailTypeRepository.findById(settlement.get().getServiceDetailTypeId()).get().getServiceDetailType(),
+			adminServiceDetailTypeRepository.findById(settlement.get().getServiceDetailTypeId())
+				.get()
+				.getServiceDetailType(),
 			settlement.get().getStatus(),
 			settlement.get().getPlatformFee(),
 			settlement.get().getAmount()
@@ -181,11 +179,12 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 	}
 
 	@Override
-	public List<ReservationResponseDto> getConsumerReservation(HttpServletRequest request, Long consumerId, int page, int size) {
+	public List<ReservationResponseDto> getConsumerReservation(HttpServletRequest request, Long consumerId, int page,
+		int size) {
 
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-		return  adminReservationRepository.findAllByConsumerId(consumerId, pageable).stream()
+		return adminReservationRepository.findAllByConsumerId(consumerId, pageable).stream()
 			.map(reservation -> ReservationResponseDto.builder()
 				.reservationId(reservation.getId())
 				.serviceType(reservation.getServiceDetailType().getServiceType().toString())
@@ -200,7 +199,8 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 	}
 
 	@Override
-	public List<ReservationResponseDto> getManagerReservation(HttpServletRequest request, Long managerId, int page, int size) {
+	public List<ReservationResponseDto> getManagerReservation(HttpServletRequest request, Long managerId, int page,
+		int size) {
 
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
@@ -228,7 +228,8 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 		BigDecimal total = adminReservationRepository.sumTotalPrice(consumerId);
 		if (total != null)
 			return total;
-		else return BigDecimal.ZERO;
+		else
+			return BigDecimal.ZERO;
 	}
 
 	@Override
@@ -239,7 +240,7 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 			return BigDecimal.ZERO;
 		}
 
-		return BigDecimal.valueOf(completed/countReview).multiply(BigDecimal.valueOf(100));
+		return BigDecimal.valueOf(completed / countReview).multiply(BigDecimal.valueOf(100));
 	}
 
 	@Override
@@ -250,7 +251,9 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 			return BigDecimal.ZERO;
 		}
 
-		return BigDecimal.valueOf(countReview).divide(BigDecimal.valueOf(completed), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+		return BigDecimal.valueOf(countReview)
+			.divide(BigDecimal.valueOf(completed), 2, RoundingMode.HALF_UP)
+			.multiply(BigDecimal.valueOf(100));
 	}
 
 	@Override
@@ -265,7 +268,8 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 	}
 
 	@Override
-	public SettlementGraphDataDto getSettlementGraphData(HttpServletRequest request, LocalDate startDate, LocalDate endDate, String period) {
+	public SettlementGraphDataDto getSettlementGraphData(HttpServletRequest request, LocalDate startDate,
+		LocalDate endDate, String period) {
 		if (startDate == null) {
 			startDate = LocalDate.now().minusDays(30);
 		}
@@ -291,7 +295,8 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 				BigDecimal totalAmount = serviceSettlements.stream()
 					.map(Settlement::getAmount)
 					.reduce(BigDecimal.ZERO, BigDecimal::add);
-				return new SettlementGraphDataDto.ServiceTypeData(serviceType, totalAmount, (long) serviceSettlements.size());
+				return new SettlementGraphDataDto.ServiceTypeData(serviceType, totalAmount,
+					(long)serviceSettlements.size());
 			})
 			.collect(Collectors.toList());
 
@@ -304,7 +309,7 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 				BigDecimal totalAmount = statusSettlements.stream()
 					.map(Settlement::getAmount)
 					.reduce(BigDecimal.ZERO, BigDecimal::add);
-				return new SettlementGraphDataDto.StatusData(status, totalAmount, (long) statusSettlements.size());
+				return new SettlementGraphDataDto.StatusData(status, totalAmount, (long)statusSettlements.size());
 			})
 			.collect(Collectors.toList());
 
@@ -316,9 +321,10 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 			.map(Settlement::getPlatformFee)
 			.reduce(BigDecimal.ZERO, BigDecimal::add);
 
-		Long totalCount = (long) settlements.size();
+		Long totalCount = (long)settlements.size();
 
-		return new SettlementGraphDataDto(dailyData, weeklyData, monthlyData, serviceTypeData, statusData, totalAmount, totalPlatformFee, totalCount);
+		return new SettlementGraphDataDto(dailyData, weeklyData, monthlyData, serviceTypeData, statusData, totalAmount,
+			totalPlatformFee, totalCount);
 	}
 
 	private List<SettlementGraphDataDto.DailySettlementData> getDailyData(List<Settlement> settlements) {
@@ -334,7 +340,8 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 				BigDecimal totalPlatformFee = dailySettlements.stream()
 					.map(Settlement::getPlatformFee)
 					.reduce(BigDecimal.ZERO, BigDecimal::add);
-				return new SettlementGraphDataDto.DailySettlementData(date, totalAmount, totalPlatformFee, (long) dailySettlements.size());
+				return new SettlementGraphDataDto.DailySettlementData(date, totalAmount, totalPlatformFee,
+					(long)dailySettlements.size());
 			})
 			.sorted((a, b) -> a.getDate().compareTo(b.getDate()))
 			.collect(Collectors.toList());
@@ -358,7 +365,8 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 				BigDecimal totalPlatformFee = weeklySettlements.stream()
 					.map(Settlement::getPlatformFee)
 					.reduce(BigDecimal.ZERO, BigDecimal::add);
-				return new SettlementGraphDataDto.WeeklySettlementData(weekStart, weekEnd, totalAmount, totalPlatformFee, (long) weeklySettlements.size());
+				return new SettlementGraphDataDto.WeeklySettlementData(weekStart, weekEnd, totalAmount,
+					totalPlatformFee, (long)weeklySettlements.size());
 			})
 			.sorted((a, b) -> a.getWeekStart().compareTo(b.getWeekStart()))
 			.collect(Collectors.toList());
@@ -382,7 +390,8 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 				BigDecimal totalPlatformFee = monthlySettlements.stream()
 					.map(Settlement::getPlatformFee)
 					.reduce(BigDecimal.ZERO, BigDecimal::add);
-				return new SettlementGraphDataDto.MonthlySettlementData(year, month, totalAmount, totalPlatformFee, (long) monthlySettlements.size());
+				return new SettlementGraphDataDto.MonthlySettlementData(year, month, totalAmount, totalPlatformFee,
+					(long)monthlySettlements.size());
 			})
 			.sorted((a, b) -> {
 				if (a.getYear() != b.getYear()) {

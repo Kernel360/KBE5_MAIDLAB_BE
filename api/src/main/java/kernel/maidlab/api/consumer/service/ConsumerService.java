@@ -13,23 +13,23 @@ import java.util.List;
 
 public interface ConsumerService {
 
-	ConsumerMyPageDto getConsumerMyPage(HttpServletRequest req);
+	ConsumerMyPageDto getConsumerMyPage();
 
-	ConsumerProfileResponseDto getConsumerProfile(HttpServletRequest req);
+	ConsumerProfileResponseDto getConsumerProfile();
 
-	void createConsumerProfile(ConsumerProfileRequestDto consumerProfileRequestDto, HttpServletRequest req);
+	void createConsumerProfile(ConsumerProfileRequestDto consumerProfileRequestDto);
 
-	void updateConsumerProfile(ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto, HttpServletRequest req);
+	void updateConsumerProfile(ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto);
 
-	List<LikedManagerResponseDto> getLikedManagerList(HttpServletRequest req);
+	List<LikedManagerResponseDto> getLikedManagerList();
 
-	List<BlackListedManagerResponseDto> getBlackListedManagerList(HttpServletRequest req);
+	List<BlackListedManagerResponseDto> getBlackListedManagerList();
 
-	void saveLikedOrBlackListedManager(HttpServletRequest req, String managerUuid, boolean preference);
+	void saveLikedOrBlackListedManager(String managerUuid, boolean preference);
 
-	long deleteLikedAOrBlackListManager(String managerUuid, HttpServletRequest req);
+	long deleteLikedAOrBlackListManager(String managerUuid);
 
-	Consumer getConsumer(HttpServletRequest req);
+	Consumer getConsumer();
 
 	Consumer findById(Long consumerId);
 }

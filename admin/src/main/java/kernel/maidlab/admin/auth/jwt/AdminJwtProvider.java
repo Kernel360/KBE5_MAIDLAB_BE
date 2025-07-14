@@ -1,25 +1,24 @@
 package kernel.maidlab.admin.auth.jwt;
 
-import kernel.maidlab.common.dto.auth.AdminJwtDto;
-import kernel.maidlab.admin.auth.entity.Admin;
-import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.core.security.jwt.JwtProperties;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.UUID;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.crypto.SecretKey;
-
-import jakarta.servlet.http.HttpServletRequest;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.UUID;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import kernel.maidlab.admin.auth.entity.Admin;
+import kernel.maidlab.admin.auth.repository.AdminRepository;
+import kernel.maidlab.common.dto.auth.AdminJwtDto;
+import kernel.maidlab.core.security.jwt.JwtProperties;
 
 @Component
 public class AdminJwtProvider {

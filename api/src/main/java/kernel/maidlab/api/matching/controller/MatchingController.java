@@ -85,8 +85,7 @@ public class MatchingController implements MatchingApi {
 	@Override
 	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> previousManager(HttpServletRequest request) {
-		String userId = AuthenticationHelper.getCurrentUserId();
-		Consumer consumer = consumerService.getConsumer(userId);
+		Consumer consumer = consumerService.getConsumer();
 		List<AvailableManagerResponseDto> response = matchingService.previousManager(consumer);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}

@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.core.aop.annotation.auth.AdminRequired;
 import kernel.maidlab.admin.manager.service.AdminManagerService;
-import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
 import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.core.aop.annotation.auth.AdminRequired;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -46,7 +46,8 @@ public class AdminManagerController implements AdminManagerApi {
 		@RequestParam(defaultValue = "false") boolean sortByRating,
 		@RequestParam(required = false) Boolean isDescending) {
 
-		Page<ManagerListResponseDto> response = adminManagerService.getManagerByPageWithStatus(page, size, status, sortByRating,
+		Page<ManagerListResponseDto> response = adminManagerService.getManagerByPageWithStatus(page, size, status,
+			sortByRating,
 			isDescending);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
