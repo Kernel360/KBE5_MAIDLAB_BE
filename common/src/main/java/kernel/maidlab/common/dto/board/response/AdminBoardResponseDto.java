@@ -1,13 +1,13 @@
 package kernel.maidlab.common.dto.board.response;
 
+import java.time.LocalDateTime;
+
 import kernel.maidlab.common.dto.board.AdminBoardQueryDto;
 import kernel.maidlab.common.entity.board.Board;
 import kernel.maidlab.common.enums.BoardType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -50,8 +50,8 @@ public class AdminBoardResponseDto {
 		adminBoardDto.boardType = board.getBoardType();
 		adminBoardDto.createdAt = board.getCreatedAt();
 		adminBoardDto.updatedAt = board.getUpdatedAt();
-		adminBoardDto.managerName = board.getManager() != null ? board.getManager().getName() : null ;
-		adminBoardDto.consumerName= board.getConsumer() != null ? board.getConsumer().getName() : null ;
+		adminBoardDto.managerName = board.getManager() != null ? board.getManager().getName() : null;
+		adminBoardDto.consumerName = board.getConsumer() != null ? board.getConsumer().getName() : null;
 		return adminBoardDto;
 	}
 }

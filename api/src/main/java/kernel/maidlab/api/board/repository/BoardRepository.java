@@ -1,30 +1,23 @@
 package kernel.maidlab.api.board.repository;
 
-import kernel.maidlab.common.entity.board.Board;
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import kernel.maidlab.common.entity.board.Board;
+
 public interface BoardRepository extends JpaRepository<Board, Long>, BoardRepositoryCustom {
 
+	/**
+	 * isDeleted = false만 조회하도록
+	 */
+	// 전체 게시판 조회
+	List<Board> findAllByIsDeletedFalse();
 
-
-
-    /**
-     * isDeleted = false만 조회하도록
-     */
-    // 전체 게시판 조회
-    List<Board> findAllByIsDeletedFalse();
-
-    // 단건 조회
-    Optional<Board> findByIdAndIsDeletedFalse(Long id);
-
-
+	// 단건 조회
+	Optional<Board> findByIdAndIsDeletedFalse(Long id);
 
 	List<Board> findAllByConsumerIdNull(Pageable pageable);
 }

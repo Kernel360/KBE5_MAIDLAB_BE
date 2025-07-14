@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AdminBoardQueryDto {
 
-
 	private Long boardId;
 	private String title;
 	private String content;
@@ -24,7 +23,8 @@ public class AdminBoardQueryDto {
 	private String managerName;
 
 	@QueryProjection
-	public AdminBoardQueryDto(Long boardId, String title, String content, BoardType boardType, boolean answered, LocalDateTime createdAt, LocalDateTime updatedAt, String consumerName, String managerName) {
+	public AdminBoardQueryDto(Long boardId, String title, String content, BoardType boardType, boolean answered,
+		LocalDateTime createdAt, LocalDateTime updatedAt, String consumerName, String managerName) {
 		this.boardId = boardId;
 		this.title = title;
 		this.content = content;

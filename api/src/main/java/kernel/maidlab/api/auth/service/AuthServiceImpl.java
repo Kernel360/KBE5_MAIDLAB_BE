@@ -1,16 +1,23 @@
 package kernel.maidlab.api.auth.service;
 
-import kernel.maidlab.api.util.UserValidator;
+import java.util.Optional;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-
-import kernel.maidlab.api.auth.social.*;
+import kernel.maidlab.api.auth.social.GoogleOAuthService;
+import kernel.maidlab.api.auth.social.GoogleResourceApi;
+import kernel.maidlab.api.auth.social.GoogleResourceDto;
+import kernel.maidlab.api.auth.social.GoogleTokenDto;
+import kernel.maidlab.api.consumer.repository.ConsumerRepository;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.util.UserValidator;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.auth.JwtDto;
 import kernel.maidlab.common.dto.auth.request.ChangePwRequestDto;
 import kernel.maidlab.common.dto.auth.request.LoginRequestDto;
@@ -21,22 +28,15 @@ import kernel.maidlab.common.dto.auth.response.LoginResponseDto;
 import kernel.maidlab.common.dto.auth.response.SocialLoginResponseDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.api.consumer.repository.ConsumerRepository;
-import kernel.maidlab.api.manager.repository.ManagerRepository;
-import kernel.maidlab.common.exception.BaseException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import kernel.maidlab.core.security.AuthenticationHelper;
-import kernel.maidlab.core.security.jwt.JwtProperties;
-import kernel.maidlab.common.util.CookieUtil;
-import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.SocialType;
 import kernel.maidlab.common.enums.UserType;
-
+import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.common.util.CookieUtil;
+import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.core.security.jwt.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -98,8 +98,9 @@ public class AuthServiceImpl implements AuthService {
 	// 휴대폰 로그인
 	@Override
 	public ResponseEntity<ResponseDto<LoginResponseDto>> login(LoginRequestDto req, HttpServletResponse res) {
-		Object user = userValidator.validateLoginCredentials(req.getPhoneNumber(), req.getPassword(), req.getUserType());
-		
+		Object user = userValidator.validateLoginCredentials(req.getPhoneNumber(), req.getPassword(),
+			req.getUserType());
+
 		String userUuid = userValidator.getUserUuid(user);
 		JwtDto.TokenPair tokenPair = jwtTokenService.generateTokenPair(userUuid, req.getUserType());
 		long expirationTime = jwtProperties.getExpiration().getAccess();
@@ -109,8 +110,8 @@ public class AuthServiceImpl implements AuthService {
 		boolean profileCompleted = userValidator.hasCompleteProfile(user);
 		Long userId = userValidator.getUserId(user);
 		String userName = userValidator.getUserName(user);
-		
-		log.info("{} 로그인 성공 - ID: {}, 이름: {}, 프로필 완성 여부: {}", 
+
+		log.info("{} 로그인 성공 - ID: {}, 이름: {}, 프로필 완성 여부: {}",
 			req.getUserType().getName(), userId, userName, profileCompleted);
 
 		LoginResponseDto responseDto = new LoginResponseDto(
@@ -143,7 +144,7 @@ public class AuthServiceImpl implements AuthService {
 
 	private ResponseEntity<ResponseDto<SocialLoginResponseDto>> processSocialLogin(
 		GoogleResourceDto googleUser, UserType userType, HttpServletResponse res) {
-		
+
 		Optional<Object> userOpt = userValidator.findBySocialId(googleUser.getId(), userType);
 
 		if (userOpt.isEmpty()) {
@@ -159,18 +160,18 @@ public class AuthServiceImpl implements AuthService {
 		}
 
 		Object user = userOpt.get();
-		
+
 		// 탈퇴한 계정 체크
-		if (userType == UserType.CONSUMER && ((Consumer) user).getIsDeleted()) {
+		if (userType == UserType.CONSUMER && ((Consumer)user).getIsDeleted()) {
 			throw new BaseException(ResponseType.ACCOUNT_DELETED);
 		}
-		if (userType == UserType.MANAGER && ((Manager) user).getIsDeleted()) {
+		if (userType == UserType.MANAGER && ((Manager)user).getIsDeleted()) {
 			throw new BaseException(ResponseType.ACCOUNT_DELETED);
 		}
 
 		String userUuid = userValidator.getUserUuid(user);
 		boolean profileCompleted = userValidator.hasCompleteProfile(user);
-		
+
 		JwtDto.TokenPair tokenPair = jwtTokenService.generateTokenPair(userUuid, userType);
 		long expirationTime = jwtProperties.getExpiration().getAccess();
 
@@ -230,7 +231,7 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public ResponseEntity<ResponseDto<Void>> socialSignUp(SocialSignUpRequestDto req, HttpServletRequest req2) {
 		JwtDto.TempTokenInfo googleInfo = extractGoogleInfo(req2);
-		
+
 		if (googleInfo.getUserType() == UserType.CONSUMER) {
 			Consumer consumer = Consumer.createSocialConsumer(
 				googleInfo.getGoogleId(),
@@ -306,12 +307,12 @@ public class AuthServiceImpl implements AuthService {
 		userValidator.validateSocialAccountPasswordChange(user, userType);
 
 		if (userType == UserType.CONSUMER) {
-			Consumer consumer = (Consumer) user;
+			Consumer consumer = (Consumer)user;
 			consumer.updatePassword(encodedNewPassword);
 			consumerRepository.save(consumer);
 			log.info("Consumer 비밀번호 변경 완료 - ID: {}", consumer.getId());
 		} else {
-			Manager manager = (Manager) user;
+			Manager manager = (Manager)user;
 			manager.updatePassword(encodedNewPassword);
 			managerRepository.save(manager);
 			log.info("Manager 비밀번호 변경 완료 - ID: {}", manager.getId());
@@ -337,17 +338,17 @@ public class AuthServiceImpl implements AuthService {
 	public ResponseEntity<ResponseDto<Void>> withdraw(HttpServletRequest req, HttpServletResponse res) {
 		String uuid = AuthenticationHelper.getCurrentUserId();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
-		
+
 		Object user = userValidator.findByUuid(uuid, userType);
 		Long userId = userValidator.getUserId(user);
 
 		if (userType == UserType.CONSUMER) {
-			Consumer consumer = (Consumer) user;
+			Consumer consumer = (Consumer)user;
 			consumer.deleteAccount();
 			consumerRepository.save(consumer);
 			log.info("Consumer 회원탈퇴 완료 - ID: {}", userId);
 		} else {
-			Manager manager = (Manager) user;
+			Manager manager = (Manager)user;
 			manager.deleteAccount();
 			managerRepository.save(manager);
 			log.info("Manager 회원탈퇴 완료 - ID: {}", userId);

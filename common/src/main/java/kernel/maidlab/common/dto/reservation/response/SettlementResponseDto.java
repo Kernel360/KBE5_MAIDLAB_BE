@@ -16,7 +16,8 @@ public class SettlementResponseDto {
 	private final BigDecimal platformFee;
 	private final BigDecimal amount;
 
-	public SettlementResponseDto(Long settlementId, Long reservationId, ServiceType serviceType, String serviceDetailType, Status status,
+	public SettlementResponseDto(Long settlementId, Long reservationId, ServiceType serviceType,
+		String serviceDetailType, Status status,
 		BigDecimal platformFee, BigDecimal amount) {
 		this.settlementId = settlementId;
 		this.reservationId = reservationId;

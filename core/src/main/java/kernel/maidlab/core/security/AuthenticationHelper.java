@@ -1,11 +1,11 @@
 package kernel.maidlab.core.security;
 
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.exception.custom.AuthException;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.common.exception.custom.AuthException;
 
 public class AuthenticationHelper {
 

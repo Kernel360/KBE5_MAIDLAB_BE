@@ -26,7 +26,7 @@ public class AdminManagerResponseDto {
 	private String introduceText;
 	private String profileImage;
 	private SocialType socialType;
- 	private List<Region> region;
+	private List<Region> region;
 	private Status isVerified;
 	private Boolean isDeleted;
 

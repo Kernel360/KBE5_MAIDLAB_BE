@@ -1,6 +1,5 @@
 package kernel.maidlab.common.dto.reservation.request;
 
-
 import java.util.List;
 
 import lombok.AllArgsConstructor;

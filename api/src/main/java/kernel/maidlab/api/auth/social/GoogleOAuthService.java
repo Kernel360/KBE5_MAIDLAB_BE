@@ -1,16 +1,18 @@
 package kernel.maidlab.api.auth.social;
 
-import kernel.maidlab.common.exception.BaseException;
-import kernel.maidlab.common.enums.ResponseType;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.exception.BaseException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -36,7 +38,6 @@ public class GoogleOAuthService {
 		params.add("grant_type", "authorization_code");
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-
 
 		try {
 			ResponseEntity<GoogleTokenDto> response = restTemplate.postForEntity(

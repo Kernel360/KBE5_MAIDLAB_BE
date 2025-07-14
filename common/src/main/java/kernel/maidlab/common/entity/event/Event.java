@@ -42,7 +42,7 @@ public class Event extends Base {
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
-	private Event(Long admin, String title,String mainImageUrl, String imageUrl, String content) {
+	private Event(Long admin, String title, String mainImageUrl, String imageUrl, String content) {
 		this.admin = admin;
 		this.title = title;
 		this.mainImageUrl = mainImageUrl;
@@ -54,7 +54,7 @@ public class Event extends Base {
 		return new Event(adminId, title, mainImageUrl, imageUrl, content);
 	}
 
-	public void updateEvent(String title,String mainImageUrl, String imageUrl, String content) {
+	public void updateEvent(String title, String mainImageUrl, String imageUrl, String content) {
 		this.title = title;
 		this.mainImageUrl = mainImageUrl;
 		this.imageUrl = imageUrl;

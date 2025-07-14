@@ -6,20 +6,15 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpServletRequest;
-
-import kernel.maidlab.common.dto.manager.request.*;
-import kernel.maidlab.common.dto.manager.response.*;
 import kernel.maidlab.common.dto.ResponseDto;
-
-import org.springframework.data.domain.Page;
-
-import jakarta.transaction.Transactional;
-import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
-import kernel.maidlab.common.dto.manager.ManagerResponseDto;
+import kernel.maidlab.common.dto.manager.request.ProfileRequestDto;
+import kernel.maidlab.common.dto.manager.request.ProfileUpdateRequestDto;
+import kernel.maidlab.common.dto.manager.response.MypageResponseDto;
+import kernel.maidlab.common.dto.manager.response.ProfileResponseDto;
+import kernel.maidlab.common.dto.manager.response.ReviewListResponseDto;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.enums.Status;
 
 public interface ManagerService {
 

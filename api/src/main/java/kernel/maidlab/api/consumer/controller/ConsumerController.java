@@ -1,22 +1,27 @@
 package kernel.maidlab.api.consumer.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import kernel.maidlab.api.consumer.service.ConsumerService;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.consumer.ConsumerMyPageDto;
 import kernel.maidlab.common.dto.consumer.request.ConsumerProfileRequestDto;
 import kernel.maidlab.common.dto.consumer.request.ConsumerProfileUpdateRequestDto;
 import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
-import kernel.maidlab.api.consumer.service.ConsumerService;
-import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
 import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.core.aop.aspect.auth.AuthenticationAspect;
-import kernel.maidlab.core.security.CustomUserDetails;
-
+import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -56,7 +61,6 @@ public class ConsumerController {
 		return ResponseDto.success();
 	}
 
-
 	@GetMapping("/likes")
 	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<Object>> getLikes() {
@@ -83,7 +87,7 @@ public class ConsumerController {
 	@DeleteMapping("/preference/{managerUuid}")
 	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<String>> deleteManagerPreference(
-			@PathVariable String managerUuid) {
+		@PathVariable String managerUuid) {
 		consumerService.deleteLikedAOrBlackListManager(managerUuid);
 		return ResponseDto.success("삭제 완료");
 	}

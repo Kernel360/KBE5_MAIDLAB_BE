@@ -1,15 +1,15 @@
 package kernel.maidlab.core.security;
 
-import kernel.maidlab.common.enums.UserType;
-import lombok.Builder;
-import lombok.Getter;
+import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
+import kernel.maidlab.common.enums.UserType;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
 @Builder

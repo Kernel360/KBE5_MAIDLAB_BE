@@ -5,7 +5,7 @@ import kernel.maidlab.common.exception.BaseException;
 
 public class PointException extends BaseException {
 
-    public PointException(ResponseType responseType) {
-        super(responseType);
-    }
+	public PointException(ResponseType responseType) {
+		super(responseType);
+	}
 }

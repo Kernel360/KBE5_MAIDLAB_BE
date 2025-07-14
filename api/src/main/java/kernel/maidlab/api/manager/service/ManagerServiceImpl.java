@@ -1,43 +1,50 @@
 package kernel.maidlab.api.manager.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
-
-// import jakarta.transaction.Transactional;
-import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.api.auth.service.JwtTokenService;
+import kernel.maidlab.api.manager.repository.ManagerDocumentRepository;
+import kernel.maidlab.api.manager.repository.ManagerRegionRepository;
+import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.manager.repository.ManagerScheduleRepository;
+import kernel.maidlab.api.manager.repository.ManagerServiceTypeRepository;
+import kernel.maidlab.api.manager.repository.RegionRepository;
+import kernel.maidlab.api.reservation.repository.ReviewRepository;
+import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.manager.object.DocumentListItem;
+import kernel.maidlab.common.dto.manager.object.RegionListItem;
+import kernel.maidlab.common.dto.manager.object.ReviewListItem;
+import kernel.maidlab.common.dto.manager.object.ScheduleListItem;
+import kernel.maidlab.common.dto.manager.object.ServiceListItem;
+import kernel.maidlab.common.dto.manager.request.ProfileRequestDto;
+import kernel.maidlab.common.dto.manager.request.ProfileUpdateRequestDto;
+import kernel.maidlab.common.dto.manager.response.MypageResponseDto;
+import kernel.maidlab.common.dto.manager.response.ProfileResponseDto;
+import kernel.maidlab.common.dto.manager.response.ReviewListResponseDto;
 import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.dto.auth.JwtDto;
-import kernel.maidlab.api.auth.service.JwtTokenService;
 import kernel.maidlab.common.entity.manager.ManagerDocument;
 import kernel.maidlab.common.entity.manager.ManagerRegion;
 import kernel.maidlab.common.entity.manager.ManagerSchedule;
 import kernel.maidlab.common.entity.manager.ManagerServiceType;
 import kernel.maidlab.common.entity.manager.Region;
-import kernel.maidlab.common.exception.BaseException;
-import kernel.maidlab.common.dto.manager.request.*;
-import kernel.maidlab.common.dto.manager.response.*;
-import kernel.maidlab.common.dto.manager.object.*;
-import kernel.maidlab.api.manager.repository.*;
-import kernel.maidlab.api.reservation.repository.ReviewRepository;
-import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.ServiceType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
-
+import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import kernel.maidlab.api.manager.repository.ManagerRepository;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -226,7 +233,8 @@ public class ManagerServiceImpl implements ManagerService {
 						serviceTypeEnum);
 					managerServiceTypeRepository.save(managerServiceType);
 				} catch (IllegalArgumentException e) {
-					log.warn("잘못된 서비스 타입 수정 시도 - 매니저 ID: {}, 서비스 타입: {}", manager.getId(), serviceItem.getServiceType());
+					log.warn("잘못된 서비스 타입 수정 시도 - 매니저 ID: {}, 서비스 타입: {}", manager.getId(),
+						serviceItem.getServiceType());
 					throw new BaseException(ResponseType.VALIDATION_FAILED);
 				}
 			}
@@ -296,7 +304,7 @@ public class ManagerServiceImpl implements ManagerService {
 	}
 
 	@Override
-	public List<AvailableManagerResponseDto> previousManagers(Consumer consumer){
+	public List<AvailableManagerResponseDto> previousManagers(Consumer consumer) {
 		return managerRepository.previousManagers(consumer);
 	}
 

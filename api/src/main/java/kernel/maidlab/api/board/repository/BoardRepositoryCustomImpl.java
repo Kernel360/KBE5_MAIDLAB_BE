@@ -3,78 +3,67 @@ package kernel.maidlab.api.board.repository;
 import static kernel.maidlab.common.entity.board.QAnswer.*;
 import static kernel.maidlab.common.entity.board.QBoard.*;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Path;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Repository;
+
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import kernel.maidlab.common.dto.board.BoardQueryDto;
 import kernel.maidlab.common.dto.board.QBoardQueryDto;
 import kernel.maidlab.common.entity.board.Board;
 import kernel.maidlab.common.entity.board.QAnswer;
 import kernel.maidlab.common.entity.board.QBoard;
-import kernel.maidlab.common.entity.point.Point;
-import kernel.maidlab.common.entity.point.QPoint;
-import kernel.maidlab.common.enums.PointType;
 import kernel.maidlab.common.enums.UserType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
+public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
-    private final JPAQueryFactory jpaQueryFactory;
+	private final JPAQueryFactory jpaQueryFactory;
 
-    @Override
-    public List<BoardQueryDto> findAllByUserIdIsDeletedFalse(Long userId, UserType userType) {
-        QBoard board = QBoard.board;
-        QAnswer answer = QAnswer.answer;
+	@Override
+	public List<BoardQueryDto> findAllByUserIdIsDeletedFalse(Long userId, UserType userType) {
+		QBoard board = QBoard.board;
+		QAnswer answer = QAnswer.answer;
 
-        BooleanExpression condition = (userType == UserType.CONSUMER)
-                ? board.consumer.id.eq(userId)
-                : board.manager.id.eq(userId);
+		BooleanExpression condition = (userType == UserType.CONSUMER)
+			? board.consumer.id.eq(userId)
+			: board.manager.id.eq(userId);
 
-        BooleanExpression notDeleted = board.isDeleted.isFalse();
+		BooleanExpression notDeleted = board.isDeleted.isFalse();
 
-        return jpaQueryFactory
-                .select(new QBoardQueryDto(
-                        board.id,
-                        board.title,
-                        board.content,
-                        board.boardType,
-                        board.isAnswered,
-                        board.createdAt,
-                        answer.content,
-                        answer.createdAt
-                ))
-                .from(board)
-                .leftJoin(answer).on(answer.board.eq(board))
-                .where(condition.and(notDeleted))
-                .fetch();
-    }
+		return jpaQueryFactory
+			.select(new QBoardQueryDto(
+				board.id,
+				board.title,
+				board.content,
+				board.boardType,
+				board.isAnswered,
+				board.createdAt,
+				answer.content,
+				answer.createdAt
+			))
+			.from(board)
+			.leftJoin(answer).on(answer.board.eq(board))
+			.where(condition.and(notDeleted))
+			.fetch();
+	}
 
-    @Override
-    public Optional<Board> findBoardWithAnswerIfAnswered(Long boardId) {
-        return Optional.ofNullable(jpaQueryFactory
-            .selectFrom(board)
-            .leftJoin(board.answer, answer).fetchJoin()
-            .where(
-                board.id.eq(boardId),
-                board.isDeleted.isFalse(),
-                board.isAnswered.isTrue()
-            )
-            .fetchOne()
-        );
-    }
+	@Override
+	public Optional<Board> findBoardWithAnswerIfAnswered(Long boardId) {
+		return Optional.ofNullable(jpaQueryFactory
+			.selectFrom(board)
+			.leftJoin(board.answer, answer).fetchJoin()
+			.where(
+				board.id.eq(boardId),
+				board.isDeleted.isFalse(),
+				board.isAnswered.isTrue()
+			)
+			.fetchOne()
+		);
+	}
 }

@@ -1,6 +1,16 @@
 package kernel.maidlab.common.entity.reservation;
 
-import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
 import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.enums.Status;
@@ -9,9 +19,6 @@ import kernel.maidlab.common.util.RoomSizeRuleUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reservation")
@@ -74,14 +81,14 @@ public class Reservation extends TimeBase {
 	@Column(name = "final_payment_price")
 	private BigDecimal finalPaymentPrice = BigDecimal.ZERO;
 
-	public void pay(){
+	public void pay() {
 		this.status = Status.PAID;
-		if (this.finalPaymentPrice.compareTo(BigDecimal.ZERO) == 0){
+		if (this.finalPaymentPrice.compareTo(BigDecimal.ZERO) == 0) {
 			this.finalPaymentPrice = this.totalPrice;
 		}
 	}
 
-	public void applyFinalPaymentPrice(BigDecimal finalPaymentPrice){
+	public void applyFinalPaymentPrice(BigDecimal finalPaymentPrice) {
 		this.finalPaymentPrice = finalPaymentPrice;
 	}
 
@@ -137,21 +144,21 @@ public class Reservation extends TimeBase {
 		Integer roomSize = RoomSizeRuleUtil.resolveRoomSize(dto.getLifeCleaningRoomIdx());
 		String serializedOptions = ReservationOptionUtil.serializeOptions(dto.getServiceOptions());
 		return new Reservation(
-				managerId,
-				consumerId,
-				detailType,
-				dto.getReservationDate(),
-				dto.getStartTime(),
-				dto.getEndTime(),
-				dto.getAddress(),
-				dto.getAddressDetail(),
-				dto.getHousingType(),
-				roomSize,
-				dto.getHousingInformation(),
-				serializedOptions,
-				dto.getPet(),
-				dto.getSpecialRequest(),
-				dto.getTotalPrice());
+			managerId,
+			consumerId,
+			detailType,
+			dto.getReservationDate(),
+			dto.getStartTime(),
+			dto.getEndTime(),
+			dto.getAddress(),
+			dto.getAddressDetail(),
+			dto.getHousingType(),
+			roomSize,
+			dto.getHousingInformation(),
+			serializedOptions,
+			dto.getPet(),
+			dto.getSpecialRequest(),
+			dto.getTotalPrice());
 	}
 
 }

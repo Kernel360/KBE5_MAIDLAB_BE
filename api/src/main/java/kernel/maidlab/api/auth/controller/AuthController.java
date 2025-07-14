@@ -1,8 +1,17 @@
 package kernel.maidlab.api.auth.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import kernel.maidlab.api.auth.service.AuthService;
-import kernel.maidlab.common.exception.BaseException;
-import kernel.maidlab.common.util.CookieUtil;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.dto.auth.request.ChangePwRequestDto;
 import kernel.maidlab.common.dto.auth.request.LoginRequestDto;
@@ -12,15 +21,10 @@ import kernel.maidlab.common.dto.auth.request.SocialSignUpRequestDto;
 import kernel.maidlab.common.dto.auth.response.LoginResponseDto;
 import kernel.maidlab.common.dto.auth.response.SocialLoginResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.common.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController

@@ -12,17 +12,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.api.notification.repository.NotificationRepository;
+import kernel.maidlab.api.notification.util.NotificationConnectionKey;
 import kernel.maidlab.api.util.UserValidator;
+import kernel.maidlab.common.dto.notification.NotificationDto;
 import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.api.notification.util.NotificationConnectionKey;
-import kernel.maidlab.common.dto.notification.NotificationDto;
 import kernel.maidlab.common.entity.notification.Notification;
 import kernel.maidlab.common.enums.NotificationType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,10 +47,10 @@ public class NotificationServiceImpl implements NotificationService {
 		UserType type = getCurrentUserType(request);
 		String userId = AuthenticationHelper.getCurrentUserId();
 		Object user = userValidator.findByUuid(userId, type);
-		
+
 		return switch (type) {
-			case MANAGER -> ((Manager) user).getId();
-			case CONSUMER -> ((Consumer) user).getId();
+			case MANAGER -> ((Manager)user).getId();
+			case CONSUMER -> ((Consumer)user).getId();
 			default -> throw new IllegalArgumentException("지원하지 않는 사용자 타입: " + type);
 		};
 	}
@@ -313,6 +313,7 @@ public class NotificationServiceImpl implements NotificationService {
 			reservationId
 		);
 	}
+
 	@Override
 	public NotificationDto createReservationCheckOutNotification(Long consumerId, Long reservationId,
 		String managerName) {

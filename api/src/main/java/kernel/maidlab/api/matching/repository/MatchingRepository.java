@@ -15,7 +15,9 @@ import kernel.maidlab.common.enums.Status;
 
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
 	boolean existsByReservationId(Long ReservationId);
+
 	Matching findByReservationId(Long ReservationId);
+
 	Page<Matching> findByManagerIdAndMatchingStatus(Long id, Status status, Pageable pageable);
 
 	@Modifying

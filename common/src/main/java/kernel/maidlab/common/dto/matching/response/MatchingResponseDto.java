@@ -14,7 +14,8 @@ public class MatchingResponseDto {
 	private Status matchingStatus = Status.PENDING;
 	private Integer matchingCount = 1;
 
-	public MatchingResponseDto() {}
+	public MatchingResponseDto() {
+	}
 
 	public MatchingResponseDto(Long managerId, Long reservationId, Status matchingStatus) {
 		this.managerId = managerId;
@@ -23,14 +24,15 @@ public class MatchingResponseDto {
 		this.matchingCount = 1;
 	}
 
-	public MatchingResponseDto(Long reservationId, Long managerId, Status matchingStatus, Integer matchingCount, LocalDateTime updatedAt) {
+	public MatchingResponseDto(Long reservationId, Long managerId, Status matchingStatus, Integer matchingCount,
+		LocalDateTime updatedAt) {
 		this.reservationId = reservationId;
 		this.managerId = managerId;
 		this.matchingStatus = matchingStatus;
 		this.matchingCount = matchingCount;
 		this.updatedAt = updatedAt;
 	}
-	
+
 	@JsonFormat(pattern = "yyyy.MM.dd HH:mm")
 	private LocalDateTime updatedAt;
 

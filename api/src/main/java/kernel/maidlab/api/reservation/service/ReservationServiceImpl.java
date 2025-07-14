@@ -1,30 +1,44 @@
 package kernel.maidlab.api.reservation.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import kernel.maidlab.core.security.AuthenticationHelper;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.entity.consumer.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
-import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
-import kernel.maidlab.common.entity.matching.Matching;
-import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
-import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
-import kernel.maidlab.common.enums.ServiceOptionType;
-import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.api.notification.service.NotificationService;
 import kernel.maidlab.api.point.repository.PointRepository;
-import kernel.maidlab.api.reservation.repository.*;
+import kernel.maidlab.api.reservation.repository.ReservationRepository;
+import kernel.maidlab.api.reservation.repository.ReviewKeywordRepository;
+import kernel.maidlab.api.reservation.repository.ReviewRepository;
+import kernel.maidlab.api.reservation.repository.ServiceDetailTypeRepository;
+import kernel.maidlab.api.reservation.repository.SettlementRepository;
 import kernel.maidlab.api.util.UserValidator;
 import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.common.dto.notification.NotificationDto;
-import kernel.maidlab.common.dto.reservation.request.*;
+import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
+import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
+import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
+import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
+import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
 import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
 import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
@@ -33,7 +47,11 @@ import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.entity.consumer.ManagerPreference;
 import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.entity.point.Point;
-import kernel.maidlab.common.entity.reservation.*;
+import kernel.maidlab.common.entity.reservation.Reservation;
+import kernel.maidlab.common.entity.reservation.Review;
+import kernel.maidlab.common.entity.reservation.ReviewKeyword;
+import kernel.maidlab.common.entity.reservation.ServiceDetailType;
+import kernel.maidlab.common.entity.reservation.Settlement;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.ServiceOptionType;
 import kernel.maidlab.common.enums.Status;
@@ -41,21 +59,9 @@ import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.common.exception.custom.PointException;
 import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.common.util.RoomSizeRuleUtil;
-import kernel.maidlab.api.util.UserValidator;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -87,7 +93,7 @@ public class ReservationServiceImpl implements ReservationService {
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		if (userType == UserType.CONSUMER) {
-			Consumer consumer = (Consumer) userValidator.findByUuid(userId, userType);
+			Consumer consumer = (Consumer)userValidator.findByUuid(userId, userType);
 			Manager manager = managerRepository.findById(reservation.getManagerId())
 				.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 			// 매니저 선호도 테이블 관리
@@ -162,10 +168,11 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	// 고객 맞춤 예약 내역 페이징 및 상태별 필터링
-    @Override
-    public Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size, String sortBy, String sortOrder, HttpServletRequest request) {
-        Consumer consumer = getCurrentConsumer();
-        Long consumerId = consumer.getId();
+	@Override
+	public Page<ReservationResponseDto> getConsumerReservationsWithPaging(String status, int page, int size,
+		String sortBy, String sortOrder, HttpServletRequest request) {
+		Consumer consumer = getCurrentConsumer();
+		Long consumerId = consumer.getId();
 
 		if (size > 50) {
 			size = 50;
@@ -193,10 +200,11 @@ public class ReservationServiceImpl implements ReservationService {
 		return reservationRepository.findConsumerReservationsWithPaging(consumerId, statusEnum, pageable);
 	}
 
-    @Override
-    public Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size, String sortOrder, HttpServletRequest request) {
-        Manager manager = getCurrentManager();
-        Long managerId = manager.getId();
+	@Override
+	public Page<ReservationResponseDto> getManagerReservationsWithPaging(String status, int page, int size,
+		String sortOrder, HttpServletRequest request) {
+		Manager manager = getCurrentManager();
+		Long managerId = manager.getId();
 
 		if (size > 50) {
 			size = 50;
@@ -226,7 +234,7 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 
 		String consumerUuid = AuthenticationHelper.getCurrentUserId();
-		Consumer consumer = (Consumer) userValidator.findByUuid(consumerUuid, UserType.CONSUMER);
+		Consumer consumer = (Consumer)userValidator.findByUuid(consumerUuid, UserType.CONSUMER);
 		Long consumerId = consumer.getId();
 
 		// 결제 검증 로직(애플리케이션 상용 전 true 고정)
@@ -296,11 +304,11 @@ public class ReservationServiceImpl implements ReservationService {
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
 		// 결제시 포인트 사용
-		if (dto.isPointUsed()){
+		if (dto.isPointUsed()) {
 
 			// 사용 가능한 포인트 검증
 			Long useAblePoint = pointRepository.getTotalPointsByConsumerId(consumer.getId());
-			if (useAblePoint < dto.getPointToUse()){
+			if (useAblePoint < dto.getPointToUse()) {
 				throw new PointException(ResponseType.INSUFFICIENT_POINT);
 			}
 
@@ -478,9 +486,9 @@ public class ReservationServiceImpl implements ReservationService {
 		return new WeeklySettlementResponseDto(totalAmount, responseList);
 	}
 
-	public BigDecimal usePoints(Integer pointToUse, Reservation reservation){
+	public BigDecimal usePoints(Integer pointToUse, Reservation reservation) {
 
-		if (pointToUse < 0){
+		if (pointToUse < 0) {
 			throw new PointException(ResponseType.VALIDATION_FAILED);
 		}
 		BigDecimal pointValue = BigDecimal.valueOf(pointToUse);
@@ -504,12 +512,12 @@ public class ReservationServiceImpl implements ReservationService {
 
 	private Consumer getCurrentConsumer() {
 		String userUuid = AuthenticationHelper.getCurrentUserId();
-		return (Consumer) userValidator.findByUuid(userUuid, UserType.CONSUMER);
+		return (Consumer)userValidator.findByUuid(userUuid, UserType.CONSUMER);
 	}
 
 	private Manager getCurrentManager() {
 		String userUuid = AuthenticationHelper.getCurrentUserId();
-		return (Manager) userValidator.findByUuid(userUuid, UserType.MANAGER);
+		return (Manager)userValidator.findByUuid(userUuid, UserType.MANAGER);
 	}
 }
 

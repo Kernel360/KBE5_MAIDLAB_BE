@@ -12,21 +12,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
-import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.api.consumer.service.ConsumerService;
-import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
-import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.exception.BaseException;
-import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
-import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
-import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
+import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
+import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
+import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
+import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
+import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,7 +53,8 @@ public class MatchingController implements MatchingApi {
 	@PostMapping("/matchmanager")
 	@Override
 	@AuthRequired(roles = {UserType.CONSUMER})
-	public ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> matchManagers(@RequestBody MatchingRequestDto dto) {
+	public ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> matchManagers(
+		@RequestBody MatchingRequestDto dto) {
 		List<AvailableManagerResponseDto> AvailableManagers = matchingService.findAvailableManagers(dto);
 
 		// 후보군 작성을 위한 redis 설정으로 일단 일시중지
@@ -99,6 +99,5 @@ public class MatchingController implements MatchingApi {
 		matchingService.createMatching(matchingResponseDto);
 		return ResponseDto.success(ResponseType.SUCCESS, matchingResponseDto.toString());
 	}
-
 
 }

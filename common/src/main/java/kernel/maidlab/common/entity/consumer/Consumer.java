@@ -1,24 +1,23 @@
 package kernel.maidlab.common.entity.consumer;
 
-import jakarta.persistence.*;
-import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
+import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Index;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import kernel.maidlab.common.dto.consumer.request.ConsumerProfileRequestDto;
 import kernel.maidlab.common.dto.consumer.request.ConsumerProfileUpdateRequestDto;
-import kernel.maidlab.common.entity.base.Base;
 import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.SocialType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "consumer", indexes = {
@@ -78,7 +77,7 @@ public class Consumer extends TimeBase {
 	@Column(name = "emergency_call")
 	private String emergencyCall;
 
-	private Consumer(String phoneNumber,String password, String name, Gender gender, LocalDate birth) {
+	private Consumer(String phoneNumber, String password, String name, Gender gender, LocalDate birth) {
 		this.phoneNumber = phoneNumber;
 		this.password = password;
 		this.name = name;
@@ -89,8 +88,6 @@ public class Consumer extends TimeBase {
 		this.totalReviewedCnt = 0L;
 		this.isDeleted = false;
 	}
-
-
 
 	public static Consumer createConsumer(String phoneNumber, String password, String name, Gender gender,
 		LocalDate birth) {
@@ -122,13 +119,13 @@ public class Consumer extends TimeBase {
 		this.totalReviewedCnt += 1;
 	}
 
-	public void createProfile(ConsumerProfileRequestDto consumerProfileRequestDto){
+	public void createProfile(ConsumerProfileRequestDto consumerProfileRequestDto) {
 		this.profileImage = consumerProfileRequestDto.getProfileImage();
 		this.address = consumerProfileRequestDto.getAddress();
 		this.detailAddress = consumerProfileRequestDto.getDetailAddress();
 	}
 
-	public void updateProfile(ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto){
+	public void updateProfile(ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto) {
 		this.profileImage = consumerProfileUpdateRequestDto.getProfileImage();
 		this.name = consumerProfileUpdateRequestDto.getName();
 		this.gender = consumerProfileUpdateRequestDto.getGender();

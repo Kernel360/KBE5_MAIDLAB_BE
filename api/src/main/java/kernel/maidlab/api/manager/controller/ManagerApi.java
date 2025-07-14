@@ -11,9 +11,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.dto.manager.request.*;
-import kernel.maidlab.common.dto.manager.response.*;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.dto.manager.request.ProfileRequestDto;
+import kernel.maidlab.common.dto.manager.request.ProfileUpdateRequestDto;
+import kernel.maidlab.common.dto.manager.response.MypageResponseDto;
+import kernel.maidlab.common.dto.manager.response.ProfileResponseDto;
+import kernel.maidlab.common.dto.manager.response.ReviewListResponseDto;
 import lombok.Generated;
 
 @Tag(name = "Manager", description = "매니저(Manager) 관련 API")
