@@ -18,7 +18,7 @@ public class BlackListedManagerResponseDto {
     private float  averageRate;
     private String introduceText;
 
-    public static List<BlackListedManagerResponseDto> getManagerResponseDtoList(List<Manager> BlacklistedManagerList){
+    public static List<BlackListedManagerResponseDto> from(List<Manager> BlacklistedManagerList){
         return BlacklistedManagerList.stream()
                 .map(m -> new BlackListedManagerResponseDto(
                         m.getUuid(),

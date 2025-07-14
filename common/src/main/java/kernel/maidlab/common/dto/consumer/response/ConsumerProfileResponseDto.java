@@ -22,7 +22,7 @@ public class ConsumerProfileResponseDto {
     private String address;
     private String detailAddress;
 
-    public static ConsumerProfileResponseDto getInstance(Consumer consumer){
+    public static ConsumerProfileResponseDto from(Consumer consumer){
 
         return new ConsumerProfileResponseDto(
                 consumer.getProfileImage(),

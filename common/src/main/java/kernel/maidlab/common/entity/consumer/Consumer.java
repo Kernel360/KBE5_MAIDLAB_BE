@@ -122,10 +122,10 @@ public class Consumer extends TimeBase {
 		this.totalReviewedCnt += 1;
 	}
 
-	public void createProfile(String profileImage, String address, String detailAddress){
-		this.profileImage = profileImage;
-		this.address = address;
-		this.detailAddress = detailAddress;
+	public void createProfile(ConsumerProfileRequestDto consumerProfileRequestDto){
+		this.profileImage = consumerProfileRequestDto.getProfileImage();
+		this.address = consumerProfileRequestDto.getAddress();
+		this.detailAddress = consumerProfileRequestDto.getDetailAddress();
 	}
 
 	public void updateProfile(ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto){
