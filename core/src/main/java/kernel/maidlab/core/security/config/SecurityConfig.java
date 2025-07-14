@@ -35,6 +35,13 @@ public class SecurityConfig {
 		http
 			.csrf(AbstractHttpConfigurer::disable)
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+			.headers(headers -> headers
+				.frameOptions(frameOptions -> frameOptions.deny())
+				.httpStrictTransportSecurity(hstsConfig -> hstsConfig
+					.maxAgeInSeconds(31536000)
+					.includeSubDomains(true)
+				)
+			)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
