@@ -60,10 +60,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	// http request 의 jwt 토큰 추출
 	private String extractTokenFromRequest(HttpServletRequest request) {
+		// 1. 헤더에서 토큰 확인
 		String bearerToken = request.getHeader(jwtProperties.getHeader());
-
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(jwtProperties.getPrefix())) {
 			return bearerToken.substring(jwtProperties.getPrefix().length()).trim();
+		}
+
+		// 2. URL 파라미터에서 토큰 확인 (SSE 연결용)
+		String tokenParam = request.getParameter("token");
+		if (StringUtils.hasText(tokenParam)) {
+			return tokenParam;
 		}
 
 		return null;
