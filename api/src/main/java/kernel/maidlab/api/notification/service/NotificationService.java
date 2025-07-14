@@ -13,7 +13,7 @@ import kernel.maidlab.common.enums.Status;
 
 public interface NotificationService {
 	// SSE 연결 관리
-	SseEmitter connect(HttpServletRequest request);
+	SseEmitter connect();
 
 	void disconnect(HttpServletRequest request);
 

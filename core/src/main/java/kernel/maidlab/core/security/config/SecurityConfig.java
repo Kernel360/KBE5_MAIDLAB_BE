@@ -57,8 +57,7 @@ public class SecurityConfig {
 					"/webjars/**",
 					"/favicon.ico",
 					"/error",
-					"/admin/logs/stream",// WebSocket 엔드포인트
-					"/api/notifications/**"
+					"/admin/logs/stream"// WebSocket 엔드포인트
 				).permitAll()
 
 				// 관리자 전용 API
@@ -79,7 +78,8 @@ public class SecurityConfig {
 					"/api/matching/**",
 					"/api/reservations/**",
 					"/api/points/**",
-					"/api/aws/**"
+					"/api/aws/**",
+					"/api/notifications/**"
 				).hasAnyRole("CONSUMER", "MANAGER")
 
 				// 나머지 모든 요청은 인증 필요
