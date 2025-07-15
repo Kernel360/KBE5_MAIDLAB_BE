@@ -1,7 +1,7 @@
 package kernel.maidlab.admin.consumer.service;
 
-import kernel.maidlab.api.consumer.dto.response.AdminConsumerProfileResponseDto;
-import kernel.maidlab.api.consumer.dto.response.ConsumerListResponseDto;
+import kernel.maidlab.domain.consumer.dto.response.AdminConsumerProfileResponseDto;
+import kernel.maidlab.domain.consumer.dto.response.ConsumerListResponseDto;
 import org.springframework.data.domain.Page;
 
 

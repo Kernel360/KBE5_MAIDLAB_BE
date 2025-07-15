@@ -5,8 +5,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.api.auth.dto.request.AdminLoginRequestDto;
-import kernel.maidlab.api.auth.dto.response.LoginResponseDto;
+import kernel.maidlab.domain.auth.dto.request.AdminLoginRequestDto;
+import kernel.maidlab.domain.auth.dto.response.LoginResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.util.CookieUtil;
@@ -47,7 +47,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 			throw new BaseException(ResponseType.LOGIN_FAILED);
 		}
 
-		kernel.maidlab.api.auth.dto.AdminJwtDto.TokenPair tokenPair = adminTokenService.generateAdminTokenPair(admin.getAdminKey());
+		kernel.maidlab.domain.auth.dto.AdminJwtDto.TokenPair tokenPair = adminTokenService.generateAdminTokenPair(admin.getAdminKey());
 		long expirationTime = jwtProperties.getExpiration().getAccess();
 
 		cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
@@ -63,7 +63,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 	// 관리자 토큰 갱신
 	@Override
 	public ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(String refreshToken, HttpServletResponse res) {
-		kernel.maidlab.api.auth.dto.AdminJwtDto.AdminRefreshResult result = adminTokenService.refreshAdminTokens(refreshToken);
+		kernel.maidlab.domain.auth.dto.AdminJwtDto.AdminRefreshResult result = adminTokenService.refreshAdminTokens(refreshToken);
 
 		if (!result.isSuccess()) {
 			throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);

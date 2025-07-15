@@ -2,7 +2,7 @@ package kernel.maidlab.admin.reservation.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import kernel.maidlab.api.reservation.dto.response.*;
+import kernel.maidlab.domain.reservation.dto.response.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

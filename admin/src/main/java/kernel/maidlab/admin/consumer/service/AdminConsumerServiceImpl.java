@@ -1,9 +1,9 @@
 package kernel.maidlab.admin.consumer.service;
 
 import kernel.maidlab.admin.consumer.repository.AdminConsumerRepository;
-import kernel.maidlab.api.consumer.dto.response.AdminConsumerProfileResponseDto;
-import kernel.maidlab.api.consumer.dto.response.ConsumerListResponseDto;
-import kernel.maidlab.api.consumer.entity.Consumer;
+import kernel.maidlab.domain.consumer.dto.response.AdminConsumerProfileResponseDto;
+import kernel.maidlab.domain.consumer.dto.response.ConsumerListResponseDto;
+import kernel.maidlab.domain.consumer.entity.Consumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

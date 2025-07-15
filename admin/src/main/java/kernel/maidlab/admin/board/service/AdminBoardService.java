@@ -1,9 +1,9 @@
 package kernel.maidlab.admin.board.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.board.dto.request.AnswerRequestDto;
-import kernel.maidlab.api.board.dto.response.AdminBoardDetailResponseDto;
-import kernel.maidlab.api.board.dto.response.AdminBoardResponseDto;
+import kernel.maidlab.domain.board.dto.request.AnswerRequestDto;
+import kernel.maidlab.domain.board.dto.response.AdminBoardDetailResponseDto;
+import kernel.maidlab.domain.board.dto.response.AdminBoardResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;

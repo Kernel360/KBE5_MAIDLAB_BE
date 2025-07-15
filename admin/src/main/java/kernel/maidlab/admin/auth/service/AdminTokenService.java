@@ -2,7 +2,7 @@ package kernel.maidlab.admin.auth.service;
 
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.api.auth.dto.AdminJwtDto;
+import  kernel.maidlab.domain.auth.dto.AdminJwtDto;
 import kernel.maidlab.core.security.jwt.AdminJwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

@@ -1,7 +1,7 @@
 package kernel.maidlab.admin.board.repository;
 
 import kernel.maidlab.admin.board.repository.support.querydsl.AdminBoardRepositoryCustom;
-import kernel.maidlab.api.board.entity.Board;
+import kernel.maidlab.domain.board.entity.Board;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 

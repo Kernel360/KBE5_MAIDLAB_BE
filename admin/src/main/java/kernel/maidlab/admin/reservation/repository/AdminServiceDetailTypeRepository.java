@@ -1,6 +1,6 @@
 package kernel.maidlab.admin.reservation.repository;
 
-import kernel.maidlab.api.reservation.entity.ServiceDetailType;
+import kernel.maidlab.domain.reservation.entity.ServiceDetailType;
 import kernel.maidlab.common.enums.ServiceType;
 import org.springframework.data.jpa.repository.JpaRepository;
 

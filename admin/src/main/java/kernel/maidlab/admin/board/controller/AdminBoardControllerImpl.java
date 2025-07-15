@@ -2,9 +2,9 @@ package kernel.maidlab.admin.board.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.board.service.AdminBoardServiceImpl;
-import kernel.maidlab.api.board.dto.request.AnswerRequestDto;
-import kernel.maidlab.api.board.dto.response.AdminBoardDetailResponseDto;
-import kernel.maidlab.api.board.dto.response.AdminBoardResponseDto;
+import kernel.maidlab.domain.board.dto.request.AnswerRequestDto;
+import kernel.maidlab.domain.board.dto.response.AdminBoardDetailResponseDto;
+import kernel.maidlab.domain.board.dto.response.AdminBoardResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

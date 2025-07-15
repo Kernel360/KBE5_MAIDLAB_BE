@@ -1,6 +1,6 @@
 package kernel.maidlab.admin.board.repository.support;
 
-import kernel.maidlab.api.board.entity.BoardImage;
+import kernel.maidlab.domain.board.entity.BoardImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,8 +1,8 @@
 package kernel.maidlab.admin.consumer.controller;
 
 import kernel.maidlab.admin.consumer.service.AdminConsumerService;
-import kernel.maidlab.api.consumer.dto.response.AdminConsumerProfileResponseDto;
-import kernel.maidlab.api.consumer.dto.response.ConsumerListResponseDto;
+import kernel.maidlab.domain.consumer.dto.response.AdminConsumerProfileResponseDto;
+import kernel.maidlab.domain.consumer.dto.response.ConsumerListResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.core.aop.annotation.auth.AdminRequired;

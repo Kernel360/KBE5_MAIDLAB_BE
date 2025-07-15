@@ -1,6 +1,6 @@
 package kernel.maidlab.admin.board.service.support;
 
-import kernel.maidlab.api.board.entity.Answer;
+import kernel.maidlab.domain.board.entity.Answer;
 
 import java.util.Optional;
 

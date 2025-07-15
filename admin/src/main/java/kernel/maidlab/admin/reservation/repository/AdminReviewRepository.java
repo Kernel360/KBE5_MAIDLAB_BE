@@ -1,6 +1,6 @@
 package kernel.maidlab.admin.reservation.repository;
 
-import kernel.maidlab.api.reservation.entity.Review;
+import kernel.maidlab.domain.reservation.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

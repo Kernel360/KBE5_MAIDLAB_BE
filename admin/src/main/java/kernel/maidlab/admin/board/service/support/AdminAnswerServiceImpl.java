@@ -1,7 +1,7 @@
 package kernel.maidlab.admin.board.service.support;
 
 import kernel.maidlab.admin.board.repository.support.AdminAnswerRepository;
-import kernel.maidlab.api.board.entity.Answer;
+import kernel.maidlab.domain.board.entity.Answer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
