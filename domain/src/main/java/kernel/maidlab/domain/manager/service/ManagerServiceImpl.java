@@ -18,7 +18,7 @@ import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.ServiceType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.core.exception.BaseException;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +47,7 @@ public class ManagerServiceImpl implements ManagerService {
 	private final JwtTokenService jwtTokenService;
 
 	private Manager getCurrentManager() {
-		String userUuid = AuthenticationHelper.getCurrentUserId();
+		String userUuid = AuthenticationHelper.getCurrentUserKey();
 		return managerRepository.findByUuid(userUuid)
 			.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
 	}

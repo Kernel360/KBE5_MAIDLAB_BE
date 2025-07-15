@@ -16,7 +16,7 @@ import kernel.maidlab.domain.reservation.entity.ServiceDetailType;
 import kernel.maidlab.domain.reservation.entity.Settlement;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
-import kernel.maidlab.common.exception.custom.ReservationException;
+import kernel.maidlab.core.exception.custom.ReservationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

@@ -11,8 +11,13 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import kernel.maidlab.common.enums.LogLevel;
 import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.common.enums.RetryStrategy;
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.annotation.exception.Retry;
+import kernel.maidlab.core.exception.BaseException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -22,6 +27,20 @@ public class GoogleOAuthService {
 	@Autowired
 	private RestTemplate restTemplate;
 
+	@Retry(
+		maxAttempts = 3,
+		delay = 1000,
+		strategy = RetryStrategy.EXPONENTIAL,
+		retryFor = {Exception.class},
+		noRetryFor = {IllegalArgumentException.class}
+	)
+	@ExceptionHandler(
+		value = {HttpClientErrorException.class, RuntimeException.class},
+		responseType = ResponseType.LOGIN_FAILED,
+		message = "Google OAuth 토큰 발급 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
+	)
 	public GoogleTokenDto getGoogleToken(String code, String clientId,
 		String clientSecret, String redirectUri) {
 

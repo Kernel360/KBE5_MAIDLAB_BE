@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import kernel.maidlab.core.security.jwt.AdminJwtProvider;
 import java.net.URI;
 import java.util.Map;
 

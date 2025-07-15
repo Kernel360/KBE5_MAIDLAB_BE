@@ -27,9 +27,11 @@ import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.ServiceOptionType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.exception.custom.PointException;
-import kernel.maidlab.common.exception.custom.ReservationException;
 import kernel.maidlab.common.util.RoomSizeRuleUtil;
+import kernel.maidlab.core.exception.custom.PointException;
+import kernel.maidlab.core.exception.custom.ReservationException;
+import kernel.maidlab.core.exception.custom.PointException;
+import kernel.maidlab.core.exception.custom.ReservationException;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +69,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public void registerReview(ReviewRegisterRequestDto dto, HttpServletRequest request) {
 		UserType userType = AuthenticationHelper.getCurrentUserType();
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 
 		Boolean isConsumerToManager = userType == UserType.CONSUMER;
 
@@ -215,7 +217,7 @@ public class ReservationServiceImpl implements ReservationService {
 			throw new ReservationException(ResponseType.AVAILABLE_MANAGER_DOES_NOT_EXIST);
 		}
 
-		String consumerUuid = AuthenticationHelper.getCurrentUserId();
+		String consumerUuid = AuthenticationHelper.getCurrentUserKey();
 		Consumer consumer = (Consumer)userValidator.findByUuid(consumerUuid, UserType.CONSUMER);
 		Long consumerId = consumer.getId();
 
@@ -279,7 +281,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public void pay(PaymentRequestDto dto, HttpServletRequest request) {
 
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		Consumer consumer = userValidator.findByUuid(userId, UserType.CONSUMER);
 
 		Reservation reservation = reservationRepository.findById(dto.getReservationId())
@@ -485,7 +487,7 @@ public class ReservationServiceImpl implements ReservationService {
 	// }
 
 	private Long getCurrentUserEntityId() {
-		String userUuid = AuthenticationHelper.getCurrentUserId();
+		String userUuid = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 
 		Object user = userValidator.findByUuid(userUuid, userType);
@@ -493,12 +495,12 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	private Consumer getCurrentConsumer() {
-		String userUuid = AuthenticationHelper.getCurrentUserId();
+		String userUuid = AuthenticationHelper.getCurrentUserKey();
 		return (Consumer)userValidator.findByUuid(userUuid, UserType.CONSUMER);
 	}
 
 	private Manager getCurrentManager() {
-		String userUuid = AuthenticationHelper.getCurrentUserId();
+		String userUuid = AuthenticationHelper.getCurrentUserKey();
 		return (Manager)userValidator.findByUuid(userUuid, UserType.MANAGER);
 	}
 }

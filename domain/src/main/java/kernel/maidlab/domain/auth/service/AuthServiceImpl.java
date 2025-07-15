@@ -17,11 +17,13 @@ import kernel.maidlab.domain.manager.entity.Manager;
 import kernel.maidlab.domain.manager.repository.ManagerRepository;
 import kernel.maidlab.domain.util.UserValidator;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.enums.LogLevel;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.SocialType;
 import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.exception.BaseException;
 import kernel.maidlab.common.util.CookieUtil;
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.exception.BaseException;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.core.security.jwt.JwtProperties;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +62,12 @@ public class AuthServiceImpl implements AuthService {
 
 	// 휴대폰 회원가입
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class, RuntimeException.class},
+		responseType = ResponseType.VALIDATION_FAILED,
+		message = "회원가입 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	public ResponseEntity<ResponseDto<Void>> signUp(SignUpRequestDto req) {
 		userValidator.validatePhoneNumberDuplication(req.getPhoneNumber(), req.getUserType());
 
@@ -92,6 +100,12 @@ public class AuthServiceImpl implements AuthService {
 
 	// 휴대폰 로그인
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class, RuntimeException.class},
+		responseType = ResponseType.LOGIN_FAILED,
+		message = "로그인 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.WARN
+	)
 	public ResponseEntity<ResponseDto<LoginResponseDto>> login(LoginRequestDto req, HttpServletResponse res) {
 		Object user = userValidator.validateLoginCredentials(req.getPhoneNumber(), req.getPassword(),
 			req.getUserType());
@@ -120,6 +134,12 @@ public class AuthServiceImpl implements AuthService {
 
 	// 소셜 로그인
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class, RuntimeException.class},
+		responseType = ResponseType.LOGIN_FAILED,
+		message = "소셜 로그인 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.WARN
+	)
 	public ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLogin(
 		SocialLoginRequestDto req,
 		HttpServletRequest request,
@@ -213,6 +233,12 @@ public class AuthServiceImpl implements AuthService {
 
 	// 소셜 회원가입
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class, RuntimeException.class},
+		responseType = ResponseType.VALIDATION_FAILED,
+		message = "소셜 회원가입 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	public ResponseEntity<ResponseDto<Void>> socialSignUp(SocialSignUpRequestDto req, HttpServletRequest req2) {
 		JwtDto.TempTokenInfo googleInfo = extractGoogleInfo(req2);
 
@@ -259,6 +285,12 @@ public class AuthServiceImpl implements AuthService {
 
 	// 토큰 갱신
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class, RuntimeException.class},
+		responseType = ResponseType.INVALID_REFRESH_TOKEN,
+		message = "토큰 갱신 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	public ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(String refreshToken, HttpServletResponse res) {
 		JwtDto.RefreshResult result = jwtTokenService.refreshTokens(refreshToken);
 
@@ -283,7 +315,7 @@ public class AuthServiceImpl implements AuthService {
 	// 비밀번호 재설정
 	@Override
 	public ResponseEntity<ResponseDto<Void>> changePw(ChangePwRequestDto changePwRequestDto, HttpServletRequest req) {
-		String uuid = AuthenticationHelper.getCurrentUserId();
+		String uuid = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 		String encodedNewPassword = passwordEncoder.encode(changePwRequestDto.getPassword());
 
@@ -309,7 +341,7 @@ public class AuthServiceImpl implements AuthService {
 	// 로그아웃
 	@Override
 	public ResponseEntity<ResponseDto<Void>> logout(HttpServletRequest req, HttpServletResponse res) {
-		String uuid = AuthenticationHelper.getCurrentUserId();
+		String uuid = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 		jwtTokenService.removeRefreshToken(uuid, userType);
 		cookieUtil.clearRefreshTokenCookie(res);
@@ -320,7 +352,7 @@ public class AuthServiceImpl implements AuthService {
 	// 회원탈퇴
 	@Override
 	public ResponseEntity<ResponseDto<Void>> withdraw(HttpServletRequest req, HttpServletResponse res) {
-		String uuid = AuthenticationHelper.getCurrentUserId();
+		String uuid = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 
 		Object user = userValidator.findByUuid(uuid, userType);

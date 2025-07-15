@@ -43,13 +43,11 @@ public class AdminJwtProvider {
 			}
 
 			// 토큰 타입 검증 (ACCESS/REFRESH vs access/refresh 호환)
-			boolean typeMatches = switch (type.toLowerCase()) {
+			return switch (type.toLowerCase()) {
 				case "access" -> jwtProvider.isAccessToken(token);
 				case "refresh" -> jwtProvider.isRefreshToken(token);
 				default -> false;
 			};
-
-			return typeMatches;
 
 		} catch (Exception e) {
 			log.error("관리자 토큰 검증 실패", e);
@@ -69,6 +67,6 @@ public class AdminJwtProvider {
 
 	// 관리자 키 추출
 	public String getAdminKey(String token) {
-		return jwtProvider.getUserId(token);
+		return jwtProvider.getUserKey(token);
 	}
 }

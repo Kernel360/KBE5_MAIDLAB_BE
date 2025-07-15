@@ -9,8 +9,8 @@ import kernel.maidlab.domain.auth.dto.request.AdminLoginRequestDto;
 import kernel.maidlab.domain.auth.dto.response.LoginResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.exception.BaseException;
 import kernel.maidlab.common.util.CookieUtil;
+import kernel.maidlab.core.exception.BaseException;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.core.security.jwt.JwtProperties;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +84,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 	// 관리자 로그아웃
 	@Override
 	public ResponseEntity<ResponseDto<Void>> logout(HttpServletRequest req, HttpServletResponse res) {
-		String adminKey = AuthenticationHelper.getCurrentUserId();
+		String adminKey = AuthenticationHelper.getCurrentUserKey();
 
 		adminTokenService.removeAdminRefreshToken(adminKey);
 		cookieUtil.clearRefreshTokenCookie(res);

@@ -21,7 +21,8 @@ import kernel.maidlab.domain.reservation.entity.QServiceDetailType;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.exception.custom.ReservationException;
+import kernel.maidlab.core.exception.custom.ReservationException;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -163,7 +164,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 
 		BooleanExpression statusCondition = null;
 		BooleanExpression dateCondition = null;
-		
+
 		// 상태별 조건 처리
 		if (status != null) {
 			if (status == Status.PAID) {
@@ -172,7 +173,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 			} else {
 				statusCondition = reservation.status.eq(status);
 			}
-			
+
 			// MATCHED, PAID, PENDING 상태일 때는 오늘 날짜 이후의 예약만 조회
 			if (status == Status.MATCHED || status == Status.PAID || status == Status.PENDING) {
 				LocalDate today = LocalDate.now();
@@ -180,7 +181,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 				dateCondition = reservation.reservationDate.goe(startOfToday);
 			}
 		}
-		
+
 		// 조건들을 결합
 		BooleanExpression finalCondition = baseCondition;
 		if (statusCondition != null) {

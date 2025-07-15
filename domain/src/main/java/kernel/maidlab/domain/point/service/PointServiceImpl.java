@@ -32,7 +32,8 @@ public class PointServiceImpl implements PointService {
 	@Override
 	public PointResponseDto getPoint(HttpServletRequest request) {
 
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
+
 		Consumer consumer = (Consumer)userValidator.findByUuid(userId, UserType.CONSUMER);
 		Long totalPointsByConsumerId = pointRepository.getTotalPointsByConsumerId(consumer.getId());
 		return PointResponseDto.from(totalPointsByConsumerId);
@@ -61,7 +62,8 @@ public class PointServiceImpl implements PointService {
 			)
 		);
 
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
+
 		Consumer consumer = (Consumer)userValidator.findByUuid(userId, UserType.CONSUMER);
 
 		LocalDate startOfMonth = LocalDate.now().plusMonths(requestDto.getMonthOffset()).withDayOfMonth(1);
@@ -84,7 +86,8 @@ public class PointServiceImpl implements PointService {
 		HttpServletRequest request,
 		PointChargeRequestDto pointChargeRequestDto
 	) {
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
+
 		Consumer consumer = userValidator.findByUuid(userId, UserType.CONSUMER);
 
 		if (pointChargeRequestDto.getChargeAmount() > 0) {

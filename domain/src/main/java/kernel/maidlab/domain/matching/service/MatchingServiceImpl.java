@@ -22,7 +22,7 @@ import kernel.maidlab.domain.util.UserValidator;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.core.exception.BaseException;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +84,7 @@ public class MatchingServiceImpl implements MatchingService {
 	@Override
 	public List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size) {
 
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 		Manager me = userValidator.findByUuid(userId, userType);
 

@@ -100,7 +100,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Override
 	public Consumer getConsumer() {
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		return userValidator.findByUuid(userId, UserType.CONSUMER);
 	}
 
