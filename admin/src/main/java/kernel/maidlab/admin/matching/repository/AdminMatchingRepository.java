@@ -1,11 +1,10 @@
 package kernel.maidlab.admin.matching.repository;
 
+import kernel.maidlab.domain.matching.entity.Matching;
+import kernel.maidlab.common.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import kernel.maidlab.common.entity.matching.Matching;
-import kernel.maidlab.common.enums.Status;
 
 public interface AdminMatchingRepository extends JpaRepository<Matching, Long> {
 

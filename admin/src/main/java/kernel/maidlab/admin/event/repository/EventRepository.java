@@ -1,12 +1,12 @@
 package kernel.maidlab.admin.event.repository;
 
-import java.util.List;
-
+import kernel.maidlab.admin.event.entity.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import kernel.maidlab.common.entity.event.Event;
+import java.util.List;
+
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
