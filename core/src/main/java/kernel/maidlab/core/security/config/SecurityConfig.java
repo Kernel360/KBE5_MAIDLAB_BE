@@ -65,7 +65,9 @@ public class SecurityConfig {
 					"/webjars/**",
 					"/favicon.ico",
 					"/error",
-					"/admin/logs/stream"// WebSocket 엔드포인트
+					"/admin/logs/stream",
+					"/nodeexport/prometheus"
+					// WebSocket 엔드포인트
 				).permitAll()
 
 				// 관리자 전용 API
