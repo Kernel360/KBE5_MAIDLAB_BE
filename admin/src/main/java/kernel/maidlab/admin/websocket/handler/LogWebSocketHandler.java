@@ -9,9 +9,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kernel.maidlab.admin.logs.LogMonitoringService;
-import kernel.maidlab.admin.websocket.session.LogSessionManager;
 import kernel.maidlab.core.websocket.WebSocketMessage;
 import kernel.maidlab.core.websocket.WebSocketMessageHandler;
+import kernel.maidlab.core.websocket.WebSocketSessionManager;
 import kernel.maidlab.core.websocket.WebSocketUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LogWebSocketHandler extends WebSocketMessageHandler {
 
 	private final LogMonitoringService logMonitoringService;
-	private final LogSessionManager sessionManager;
+	private final WebSocketSessionManager sessionManager;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private volatile boolean isMonitoring = false;
 
@@ -117,7 +117,11 @@ public class LogWebSocketHandler extends WebSocketMessageHandler {
 
 	private void startLogMonitoring() {
 		isMonitoring = true;
-		logMonitoringService.startMonitoring(sessionManager::broadcastLogUpdate);
+		logMonitoringService.startMonitoring(newContent -> {
+			if (newContent != null && !newContent.trim().isEmpty()) {
+				sessionManager.broadcast("update", newContent);
+			}
+		});
 	}
 
 	private void stopLogMonitoring() {

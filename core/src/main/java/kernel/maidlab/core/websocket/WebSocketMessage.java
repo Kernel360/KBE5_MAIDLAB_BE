@@ -8,7 +8,6 @@ public class WebSocketMessage {
 	private String type;
 	private String content;
 	private long timestamp;
-	private Object data;
 	
 	public WebSocketMessage() {
 		this.timestamp = System.currentTimeMillis();
@@ -18,12 +17,6 @@ public class WebSocketMessage {
 		this();
 		this.type = type;
 		this.content = content;
-	}
-	
-	public WebSocketMessage(String type, Object data) {
-		this();
-		this.type = type;
-		this.data = data;
 	}
 	
 	public String getType() {
@@ -48,13 +41,5 @@ public class WebSocketMessage {
 	
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
-	}
-	
-	public Object getData() {
-		return data;
-	}
-	
-	public void setData(Object data) {
-		this.data = data;
 	}
 }
