@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
-import kernel.maidlab.domain.aws.dto.FileNamesRequestDto;
-import kernel.maidlab.domain.aws.dto.PresignedFileResponseDto;
-import kernel.maidlab.domain.aws.service.S3Service;
+import kernel.maidlab.core.aws.dto.FileNamesRequestDto;
+import kernel.maidlab.core.aws.dto.PresignedFileResponseDto;
+import kernel.maidlab.core.aws.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

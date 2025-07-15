@@ -1,4 +1,4 @@
-package kernel.maidlab.domain.aws.dto;
+package kernel.maidlab.core.aws.dto;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package kernel.maidlab.domain.aws.service;
+package kernel.maidlab.core.aws.service;
 
 import java.time.Duration;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import kernel.maidlab.domain.aws.dto.PresignedFileResponseDto;
+import kernel.maidlab.core.aws.dto.PresignedFileResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
