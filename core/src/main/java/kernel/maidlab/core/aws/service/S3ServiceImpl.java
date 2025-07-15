@@ -1,6 +1,6 @@
-package kernel.maidlab.domain.aws.service;
+package kernel.maidlab.core.aws.service;
 
-import kernel.maidlab.domain.aws.dto.PresignedFileResponseDto;
+import kernel.maidlab.core.aws.dto.PresignedFileResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

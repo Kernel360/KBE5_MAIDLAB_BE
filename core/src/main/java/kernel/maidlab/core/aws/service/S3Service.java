@@ -1,6 +1,6 @@
-package kernel.maidlab.domain.aws.service;
+package kernel.maidlab.core.aws.service;
 
-import kernel.maidlab.domain.aws.dto.PresignedFileResponseDto;
+import kernel.maidlab.core.aws.dto.PresignedFileResponseDto;
 
 import java.util.List;
 

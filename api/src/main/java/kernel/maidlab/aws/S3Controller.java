@@ -1,8 +1,8 @@
 package kernel.maidlab.aws;
 
-import kernel.maidlab.domain.aws.dto.FileNamesRequestDto;
-import kernel.maidlab.domain.aws.dto.PresignedFileResponseDto;
-import kernel.maidlab.domain.aws.service.S3Service;
+import kernel.maidlab.core.aws.dto.FileNamesRequestDto;
+import kernel.maidlab.core.aws.dto.PresignedFileResponseDto;
+import kernel.maidlab.core.aws.service.S3Service;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
