@@ -1,33 +1,24 @@
 package kernel.maidlab.api.matching.service;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.api.consumer.dto.response.LikedManagerResponseDto;
+import kernel.maidlab.api.consumer.entity.Consumer;
 import kernel.maidlab.api.consumer.service.ConsumerService;
+import kernel.maidlab.api.manager.entity.Manager;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.manager.service.ManagerService;
+import kernel.maidlab.api.matching.dto.request.MatchingRequestDto;
+import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
+import kernel.maidlab.api.matching.dto.response.MatchingResponseDto;
+import kernel.maidlab.api.matching.dto.response.RequestMatchingListResponseDto;
+import kernel.maidlab.api.matching.entity.Matching;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
+import kernel.maidlab.api.notification.dto.NotificationDto;
 import kernel.maidlab.api.notification.service.NotificationService;
+import kernel.maidlab.api.reservation.entity.Reservation;
 import kernel.maidlab.api.reservation.repository.ReservationRepository;
 import kernel.maidlab.api.util.UserValidator;
-import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
-import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
-import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
-import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
-import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
-import kernel.maidlab.common.dto.notification.NotificationDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.entity.matching.Matching;
-import kernel.maidlab.common.entity.reservation.Reservation;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
@@ -35,6 +26,14 @@ import kernel.maidlab.core.exception.BaseException;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Service

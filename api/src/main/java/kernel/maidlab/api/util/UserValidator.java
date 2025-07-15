@@ -1,19 +1,18 @@
 package kernel.maidlab.api.util;
 
-import java.util.Optional;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-
+import kernel.maidlab.api.consumer.entity.Consumer;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
+import kernel.maidlab.api.manager.entity.Manager;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Slf4j
 @Component

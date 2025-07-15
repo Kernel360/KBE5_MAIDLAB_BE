@@ -1,12 +1,11 @@
 package kernel.maidlab.api.reservation.repository;
 
-import java.time.LocalDateTime;
-
+import kernel.maidlab.api.reservation.entity.Reservation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import kernel.maidlab.common.entity.reservation.Reservation;
+import java.time.LocalDateTime;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long>, ReservationRepositoryCustom {
 	Page<Reservation> findAllByReservationDateBetween(LocalDateTime start, LocalDateTime end, Pageable pageable);

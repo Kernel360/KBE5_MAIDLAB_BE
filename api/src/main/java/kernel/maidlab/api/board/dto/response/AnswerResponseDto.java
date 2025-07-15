@@ -1,11 +1,11 @@
 package kernel.maidlab.api.board.dto.response;
 
-import java.time.LocalDateTime;
-
-import kernel.maidlab.common.entity.board.Answer;
+import kernel.maidlab.api.board.entity.Answer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor

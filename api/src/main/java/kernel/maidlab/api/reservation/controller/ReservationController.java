@@ -1,35 +1,23 @@
 package kernel.maidlab.api.reservation.controller;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.reservation.dto.request.*;
+import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
 import kernel.maidlab.api.reservation.service.ReservationService;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
-import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -93,7 +81,7 @@ public class ReservationController implements ReservationApi {
 	@Override
 	@AuthRequired(roles = {UserType.CONSUMER, UserType.MANAGER})
 	public ResponseEntity<ResponseDto<ReservationDetailResponseDto>> reservationDetail(@PathVariable Long reservationId,
-		HttpServletRequest request) {
+																					   HttpServletRequest request) {
 		ReservationDetailResponseDto data = reservationService.getReservationDetail(reservationId, request);
 		return ResponseDto.success(ResponseType.SUCCESS, data);
 	}
@@ -121,7 +109,7 @@ public class ReservationController implements ReservationApi {
 	@PostMapping("/{reservationId}/response")
 	@AuthRequired(roles = {UserType.MANAGER})
 	public ResponseEntity<ResponseDto<String>> managerResponseToReservation(@PathVariable Long reservationId,
-		@RequestBody ReservationIsApprovedRequestDto dto, HttpServletRequest request) {
+																			@RequestBody ReservationIsApprovedRequestDto dto, HttpServletRequest request) {
 		reservationService.managerResponseToReservation(reservationId, dto, request);
 		return ResponseDto.success(ResponseType.SUCCESS, "예약 응답 처리가 완료되었습니다.");
 	}
@@ -130,7 +118,7 @@ public class ReservationController implements ReservationApi {
 	@PostMapping("/{reservationId}/checkin")
 	@AuthRequired(roles = {UserType.MANAGER})
 	public ResponseEntity<ResponseDto<String>> checkin(@PathVariable Long reservationId,
-		@RequestBody CheckInOutRequestDto dto, HttpServletRequest request) {
+													   @RequestBody CheckInOutRequestDto dto, HttpServletRequest request) {
 		reservationService.checkin(reservationId, dto, request);
 		return ResponseDto.success(ResponseType.SUCCESS, "체크인 완료!");
 	}
@@ -156,7 +144,7 @@ public class ReservationController implements ReservationApi {
 	@PostMapping("/review")
 	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<String>> review(
-		@RequestBody ReviewRegisterRequestDto dto, HttpServletRequest request) {
+			@RequestBody ReviewRegisterRequestDto dto, HttpServletRequest request) {
 		reservationService.registerReview(dto, request);
 		return ResponseDto.success(ResponseType.SUCCESS, "리뷰 등록 완료!");
 	}
@@ -165,7 +153,7 @@ public class ReservationController implements ReservationApi {
 	@GetMapping("/settlements/weekly-details")
 	@AuthRequired(roles = {UserType.MANAGER})
 	public ResponseEntity<ResponseDto<WeeklySettlementResponseDto>> getWeeklySettlements(HttpServletRequest request,
-		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate) {
+																						 @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate) {
 		WeeklySettlementResponseDto data = reservationService.getWeeklySettlements(request, startDate);
 		return ResponseDto.success(ResponseType.SUCCESS, data);
 	}

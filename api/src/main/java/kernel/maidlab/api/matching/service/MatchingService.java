@@ -1,15 +1,15 @@
 package kernel.maidlab.api.matching.service;
 
-import java.util.List;
-
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
-import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
-import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
-import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
-import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
+import kernel.maidlab.api.consumer.dto.response.LikedManagerResponseDto;
+import kernel.maidlab.api.consumer.entity.Consumer;
+import kernel.maidlab.api.matching.dto.request.MatchingRequestDto;
+import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
+import kernel.maidlab.api.matching.dto.response.MatchingResponseDto;
+import kernel.maidlab.api.matching.dto.response.RequestMatchingListResponseDto;
 import kernel.maidlab.common.enums.Status;
+
+import java.util.List;
 
 public interface MatchingService {
 

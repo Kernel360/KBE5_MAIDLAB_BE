@@ -1,20 +1,15 @@
 package kernel.maidlab.admin.consumer.controller;
 
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import kernel.maidlab.admin.consumer.service.AdminConsumerService;
+import kernel.maidlab.api.consumer.dto.response.AdminConsumerProfileResponseDto;
+import kernel.maidlab.api.consumer.dto.response.ConsumerListResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.consumer.response.AdminConsumerProfileResponseDto;
-import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.core.aop.annotation.auth.AdminRequired;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController

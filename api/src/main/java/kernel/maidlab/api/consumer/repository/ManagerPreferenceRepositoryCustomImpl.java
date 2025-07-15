@@ -1,16 +1,14 @@
 package kernel.maidlab.api.consumer.repository;
 
-import java.util.List;
-
-import org.springframework.stereotype.Repository;
-
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
-import kernel.maidlab.common.entity.consumer.QManagerPreference;
-import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.entity.manager.QManager;
+import kernel.maidlab.api.consumer.entity.QManagerPreference;
+import kernel.maidlab.api.manager.entity.Manager;
+import kernel.maidlab.api.manager.entity.QManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,6 +19,7 @@ public class ManagerPreferenceRepositoryCustomImpl implements ManagerPreferenceR
 	public List<Manager> findManagersByPreference(Long consumerId, boolean preference) {
 		QManager m = QManager.manager;
 		QManagerPreference mp = QManagerPreference.managerPreference;
+
 
 		JPAQuery<Manager> query = jpaQueryFactory
 			.selectDistinct(m)

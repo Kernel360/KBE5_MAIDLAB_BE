@@ -1,7 +1,5 @@
 package kernel.maidlab.api.manager.controller;
 
-import org.springframework.http.ResponseEntity;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -11,13 +9,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.manager.dto.request.ProfileRequestDto;
+import kernel.maidlab.api.manager.dto.request.ProfileUpdateRequestDto;
+import kernel.maidlab.api.manager.dto.response.MypageResponseDto;
+import kernel.maidlab.api.manager.dto.response.ProfileResponseDto;
+import kernel.maidlab.api.manager.dto.response.ReviewListResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.manager.request.ProfileRequestDto;
-import kernel.maidlab.common.dto.manager.request.ProfileUpdateRequestDto;
-import kernel.maidlab.common.dto.manager.response.MypageResponseDto;
-import kernel.maidlab.common.dto.manager.response.ProfileResponseDto;
-import kernel.maidlab.common.dto.manager.response.ReviewListResponseDto;
 import lombok.Generated;
+import org.springframework.http.ResponseEntity;
 
 @Tag(name = "Manager", description = "매니저(Manager) 관련 API")
 @Generated

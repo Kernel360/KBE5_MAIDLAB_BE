@@ -1,6 +1,6 @@
 package kernel.maidlab.api.manager.dto.response;
 
-import kernel.maidlab.common.entity.manager.Manager;
+import kernel.maidlab.api.manager.entity.Manager;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.Region;
 import kernel.maidlab.common.enums.SocialType;

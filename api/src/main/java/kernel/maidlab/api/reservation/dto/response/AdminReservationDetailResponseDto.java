@@ -1,8 +1,8 @@
 package kernel.maidlab.api.reservation.dto.response;
 
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.entity.reservation.Reservation;
+import kernel.maidlab.api.consumer.entity.Consumer;
+import kernel.maidlab.api.manager.entity.Manager;
+import kernel.maidlab.api.reservation.entity.Reservation;
 import kernel.maidlab.common.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

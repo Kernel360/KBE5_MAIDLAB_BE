@@ -1,16 +1,15 @@
 package kernel.maidlab.admin.reservation.repository;
 
-import static kernel.maidlab.common.entity.reservation.QReservation.*;
+
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import kernel.maidlab.common.enums.Status;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import org.springframework.stereotype.Repository;
-
-import com.querydsl.jpa.impl.JPAQueryFactory;
-
-import kernel.maidlab.common.enums.Status;
-import lombok.RequiredArgsConstructor;
+import static kernel.maidlab.api.reservation.entity.QReservation.reservation;
 
 @Repository
 @RequiredArgsConstructor

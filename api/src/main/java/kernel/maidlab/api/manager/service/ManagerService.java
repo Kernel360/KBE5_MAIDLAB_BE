@@ -1,20 +1,19 @@
 package kernel.maidlab.api.manager.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
+import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.consumer.entity.Consumer;
+import kernel.maidlab.api.manager.dto.request.ProfileRequestDto;
+import kernel.maidlab.api.manager.dto.request.ProfileUpdateRequestDto;
+import kernel.maidlab.api.manager.dto.response.MypageResponseDto;
+import kernel.maidlab.api.manager.dto.response.ProfileResponseDto;
+import kernel.maidlab.api.manager.dto.response.ReviewListResponseDto;
+import kernel.maidlab.api.manager.entity.Manager;
+import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
+import kernel.maidlab.common.dto.ResponseDto;
 import org.springframework.http.ResponseEntity;
 
-import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.manager.request.ProfileRequestDto;
-import kernel.maidlab.common.dto.manager.request.ProfileUpdateRequestDto;
-import kernel.maidlab.common.dto.manager.response.MypageResponseDto;
-import kernel.maidlab.common.dto.manager.response.ProfileResponseDto;
-import kernel.maidlab.common.dto.manager.response.ReviewListResponseDto;
-import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.manager.Manager;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ManagerService {
 
@@ -32,7 +31,7 @@ public interface ManagerService {
 
 	List<AvailableManagerResponseDto> previousManagers(Consumer consumer);
 
-	kernel.maidlab.common.entity.manager.Manager getManager(String userId);
+	kernel.maidlab.api.manager.entity.Manager getManager(String userId);
 
 	Manager findById(Long managerId);
 }

@@ -1,12 +1,11 @@
 package kernel.maidlab.api.board.repository;
 
-import java.util.List;
-
+import kernel.maidlab.api.board.entity.Board;
+import kernel.maidlab.api.board.entity.BoardImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 
-import kernel.maidlab.common.entity.board.Board;
-import kernel.maidlab.common.entity.board.BoardImage;
+import java.util.List;
 
 public interface ImageRepository extends JpaRepository<BoardImage, Long> {
 

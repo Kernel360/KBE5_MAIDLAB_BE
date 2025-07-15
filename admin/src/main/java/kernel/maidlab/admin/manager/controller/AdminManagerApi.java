@@ -1,21 +1,20 @@
 package kernel.maidlab.admin.manager.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.manager.dto.ManagerListResponseDto;
+import kernel.maidlab.api.manager.dto.response.AdminManagerResponseDto;
+import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
-import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
-import kernel.maidlab.common.enums.Status;
 
 @Tag(name = "Manager", description = "Manager API")
 
@@ -25,7 +24,7 @@ public interface AdminManagerApi {
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagers(@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "10") int size);
+																		  @RequestParam(defaultValue = "10") int size);
 
 	// @Operation(summary = "계정 상태별 매니저 계정 조회", description = "상태별 계정 조회 API")
 	// @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),

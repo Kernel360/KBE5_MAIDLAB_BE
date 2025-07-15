@@ -1,8 +1,8 @@
 package kernel.maidlab.admin.consumer.repository;
 
+import kernel.maidlab.api.consumer.entity.Consumer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import kernel.maidlab.common.entity.consumer.Consumer;
 
 public interface AdminConsumerRepository extends JpaRepository<Consumer, Long> {
 

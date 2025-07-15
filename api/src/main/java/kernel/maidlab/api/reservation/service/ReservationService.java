@@ -1,19 +1,14 @@
 package kernel.maidlab.api.reservation.service;
 
-import java.time.LocalDate;
-import java.util.List;
-
+import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.reservation.dto.request.*;
+import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
 import org.springframework.data.domain.Page;
 
-import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
-import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
+import java.time.LocalDate;
+import java.util.List;
 
 public interface ReservationService {
 	Long createReservation(ReservationRequestDto dto, HttpServletRequest request);

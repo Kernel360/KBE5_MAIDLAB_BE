@@ -1,9 +1,8 @@
 package kernel.maidlab.api.point.repository;
 
+import kernel.maidlab.api.point.dto.response.PointRecordResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import kernel.maidlab.common.dto.point.response.PointRecordResponseDto;
 
 public interface PointRepositoryCustom {
 

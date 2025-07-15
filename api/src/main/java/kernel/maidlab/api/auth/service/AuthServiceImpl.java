@@ -1,34 +1,22 @@
 package kernel.maidlab.api.auth.service;
 
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.api.auth.dto.JwtDto;
+import kernel.maidlab.api.auth.dto.request.*;
+import kernel.maidlab.api.auth.dto.response.LoginResponseDto;
+import kernel.maidlab.api.auth.dto.response.SocialLoginResponseDto;
 import kernel.maidlab.api.auth.social.GoogleOAuthService;
 import kernel.maidlab.api.auth.social.GoogleResourceApi;
 import kernel.maidlab.api.auth.social.GoogleResourceDto;
 import kernel.maidlab.api.auth.social.GoogleTokenDto;
+import kernel.maidlab.api.consumer.entity.Consumer;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
+import kernel.maidlab.api.manager.entity.Manager;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.util.UserValidator;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.auth.JwtDto;
-import kernel.maidlab.common.dto.auth.request.ChangePwRequestDto;
-import kernel.maidlab.common.dto.auth.request.LoginRequestDto;
-import kernel.maidlab.common.dto.auth.request.SignUpRequestDto;
-import kernel.maidlab.common.dto.auth.request.SocialLoginRequestDto;
-import kernel.maidlab.common.dto.auth.request.SocialSignUpRequestDto;
-import kernel.maidlab.common.dto.auth.response.LoginResponseDto;
-import kernel.maidlab.common.dto.auth.response.SocialLoginResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.enums.LogLevel;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.SocialType;
 import kernel.maidlab.common.enums.UserType;
@@ -39,6 +27,12 @@ import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.core.security.jwt.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Slf4j
 @Service

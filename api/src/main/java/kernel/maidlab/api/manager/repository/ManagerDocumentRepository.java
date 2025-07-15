@@ -1,11 +1,11 @@
 package kernel.maidlab.api.manager.repository;
 
-import java.util.List;
-
+import kernel.maidlab.api.manager.entity.ManagerDocument;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import kernel.maidlab.common.entity.manager.ManagerDocument;
+import java.util.List;
+
 
 @Repository
 public interface ManagerDocumentRepository extends JpaRepository<ManagerDocument, Long> {

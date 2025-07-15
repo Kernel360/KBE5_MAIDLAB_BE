@@ -1,15 +1,15 @@
 package kernel.maidlab.admin.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.common.dto.auth.JwtDto;
+import kernel.maidlab.api.auth.dto.JwtDto;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
