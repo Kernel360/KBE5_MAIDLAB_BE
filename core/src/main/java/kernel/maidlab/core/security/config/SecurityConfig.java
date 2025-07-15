@@ -66,7 +66,8 @@ public class SecurityConfig {
 					"/favicon.ico",
 					"/error",
 					"/admin/logs/stream",
-					"/nodeexport/prometheus"
+					"/nodeexport/prometheus",
+					"/actuator/**"
 					// WebSocket 엔드포인트
 				).permitAll()
 
