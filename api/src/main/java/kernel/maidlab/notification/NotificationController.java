@@ -54,6 +54,17 @@ public class NotificationController {
 		return ResponseDto.success(ResponseType.SUCCESS, notifications);
 	}
 
+	@Operation(summary = "전체 알림 조회", description = "사용자의 모든 알림 목록을 페이징으로 조회합니다.")
+	@GetMapping
+	public ResponseEntity<ResponseDto<Page<NotificationDto>>> getAllNotifications(
+		HttpServletRequest request,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<NotificationDto> notifications = notificationService.getAllNotifications(request, pageable);
+		return ResponseDto.success(ResponseType.SUCCESS, notifications);
+	}
+
 	@Operation(summary = "알림 읽음 처리", description = "특정 알림을 읽음으로 처리합니다.")
 	@PostMapping("/{notificationId}/read")
 	public ResponseEntity<ResponseDto<String>> markAsRead(HttpServletRequest request,
