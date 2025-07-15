@@ -1,15 +1,5 @@
 package kernel.maidlab.api.reservation.repository;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -20,20 +10,28 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
-import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.entity.manager.QManager;
-import kernel.maidlab.common.entity.manager.QManagerRegion;
-import kernel.maidlab.common.entity.manager.QRegion;
-import kernel.maidlab.common.entity.reservation.QReservation;
-import kernel.maidlab.common.entity.reservation.QReview;
-import kernel.maidlab.common.entity.reservation.QServiceDetailType;
+import kernel.maidlab.api.manager.entity.QManager;
+import kernel.maidlab.api.manager.entity.QManagerRegion;
+import kernel.maidlab.api.manager.entity.QRegion;
+import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.api.reservation.entity.QReservation;
+import kernel.maidlab.api.reservation.entity.QReview;
+import kernel.maidlab.api.reservation.entity.QServiceDetailType;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.common.exception.custom.ReservationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class ReservationRepositoryCustomImpl implements ReservationRepositoryCustom {
@@ -76,7 +74,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 
 	@Override
 	public ReservationDetailResponseDto findDetailReservationByIdAndUser(Long reservationId, Long userId,
-		UserType userType) {
+																		 UserType userType) {
 
 		// 사용자 일치 조건 (권한 체크)
 		BooleanExpression userCondition = (userType == UserType.MANAGER)

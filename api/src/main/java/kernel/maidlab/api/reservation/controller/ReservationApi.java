@@ -1,15 +1,5 @@
 package kernel.maidlab.api.reservation.controller;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,16 +9,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.reservation.dto.request.*;
+import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
-import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
 import lombok.Generated;
+import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Tag(name = "Reservation", description = "예약(Reservation) 관련 API")
 @Generated
@@ -52,7 +47,7 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
 	})
 	ResponseEntity<ResponseDto<ReservationDetailResponseDto>> reservationDetail(@PathVariable Long reservationId,
-		HttpServletRequest request);
+																				HttpServletRequest request);
 
 	@Operation(summary = "예약 생성", description = "예약 정보를 등록합니다.", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses(value = {
@@ -84,7 +79,7 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
 	})
 	ResponseEntity<ResponseDto<String>> managerResponseToReservation(@PathVariable Long reservationId,
-		@RequestBody ReservationIsApprovedRequestDto dto, HttpServletRequest request);
+																	 @RequestBody ReservationIsApprovedRequestDto dto, HttpServletRequest request);
 
 	@Operation(summary = "결제", description = "임시 결제 로직", security = @SecurityRequirement(name = "JWT"))
 	ResponseEntity<ResponseDto<String>> payment(@RequestBody PaymentRequestDto dto, HttpServletRequest request);
@@ -132,7 +127,7 @@ public interface ReservationApi {
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")
 	})
 	ResponseEntity<ResponseDto<String>> review(
-		@RequestBody ReviewRegisterRequestDto dto, HttpServletRequest request);
+			@RequestBody ReviewRegisterRequestDto dto, HttpServletRequest request);
 
 	@Operation(summary = "주간 정산 조회", description = "매니저 주간 정산 정보 조회 API", security = @SecurityRequirement(name = "JWT"))
 	@ApiResponses(value = {

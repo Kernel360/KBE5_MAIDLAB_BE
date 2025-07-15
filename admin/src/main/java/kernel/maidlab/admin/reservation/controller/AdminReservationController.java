@@ -1,29 +1,19 @@
 package kernel.maidlab.admin.reservation.controller;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.reservation.service.AdminReservationService;
+import kernel.maidlab.api.reservation.dto.response.*;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
-import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.dto.reservation.response.SettlementGraphDataDto;
-import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,7 +33,7 @@ public class AdminReservationController implements AdminReservationApi {
 	@GetMapping("/{reservationId}")
 	@Override
 	public ResponseEntity<ResponseDto<AdminReservationDetailResponseDto>> getReservation(HttpServletRequest request,
-		@PathVariable Long reservationId) {
+																						 @PathVariable Long reservationId) {
 		AdminReservationDetailResponseDto response = adminReservationsService.getReservationDetail(reservationId,
 			request);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
@@ -78,7 +68,7 @@ public class AdminReservationController implements AdminReservationApi {
 	@GetMapping("settlement/{settlementId}")
 	@Override
 	public ResponseEntity<ResponseDto<SettlementResponseDto>> getSettlementDetail(HttpServletRequest request,
-		@PathVariable Long settlementId) {
+																				  @PathVariable Long settlementId) {
 		SettlementResponseDto response = adminReservationsService.getSettlementDetail(settlementId, request);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}

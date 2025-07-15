@@ -1,30 +1,29 @@
 package kernel.maidlab.api.notification.service;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.consumer.entity.Consumer;
+import kernel.maidlab.api.manager.entity.Manager;
+import kernel.maidlab.api.notification.dto.NotificationDto;
+import kernel.maidlab.api.notification.entity.Notification;
 import kernel.maidlab.api.notification.repository.NotificationRepository;
 import kernel.maidlab.api.notification.util.NotificationConnectionKey;
 import kernel.maidlab.api.util.UserValidator;
-import kernel.maidlab.common.dto.notification.NotificationDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.entity.notification.Notification;
 import kernel.maidlab.common.enums.NotificationType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service

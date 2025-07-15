@@ -1,57 +1,28 @@
 package kernel.maidlab.api.reservation.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.api.consumer.entity.Consumer;
+import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
+import kernel.maidlab.api.manager.entity.Manager;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
+import kernel.maidlab.api.matching.dto.response.MatchingResponseDto;
 import kernel.maidlab.api.matching.repository.MatchingRepository;
 import kernel.maidlab.api.matching.service.MatchingService;
+import kernel.maidlab.api.notification.dto.NotificationDto;
 import kernel.maidlab.api.notification.service.NotificationService;
+import kernel.maidlab.api.point.entity.Point;
 import kernel.maidlab.api.point.repository.PointRepository;
-import kernel.maidlab.api.reservation.repository.ReservationRepository;
-import kernel.maidlab.api.reservation.repository.ReviewKeywordRepository;
-import kernel.maidlab.api.reservation.repository.ReviewRepository;
-import kernel.maidlab.api.reservation.repository.ServiceDetailTypeRepository;
-import kernel.maidlab.api.reservation.repository.SettlementRepository;
+import kernel.maidlab.api.reservation.dto.request.*;
+import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.api.reservation.dto.response.SettlementResponseDto;
+import kernel.maidlab.api.reservation.dto.response.WeeklySettlementResponseDto;
+import kernel.maidlab.api.reservation.entity.*;
+import kernel.maidlab.api.reservation.repository.*;
 import kernel.maidlab.api.util.UserValidator;
-import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
-import kernel.maidlab.common.dto.notification.NotificationDto;
-import kernel.maidlab.common.dto.reservation.request.CheckInOutRequestDto;
-import kernel.maidlab.common.dto.reservation.request.PaymentRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReservationIsApprovedRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReservationRequestDto;
-import kernel.maidlab.common.dto.reservation.request.ReviewRegisterRequestDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
-import kernel.maidlab.common.dto.reservation.response.WeeklySettlementResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.consumer.ManagerPreference;
-import kernel.maidlab.common.entity.manager.Manager;
-import kernel.maidlab.common.entity.point.Point;
-import kernel.maidlab.common.entity.reservation.Reservation;
-import kernel.maidlab.common.entity.reservation.Review;
-import kernel.maidlab.common.entity.reservation.ReviewKeyword;
-import kernel.maidlab.common.entity.reservation.ServiceDetailType;
-import kernel.maidlab.common.entity.reservation.Settlement;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.ServiceOptionType;
 import kernel.maidlab.common.enums.Status;
@@ -62,6 +33,17 @@ import kernel.maidlab.common.util.RoomSizeRuleUtil;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor

@@ -1,17 +1,16 @@
 package kernel.maidlab.api.auth.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import kernel.maidlab.api.auth.dto.JwtDto;
+import kernel.maidlab.api.consumer.entity.Consumer;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
+import kernel.maidlab.api.manager.entity.Manager;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
-import kernel.maidlab.common.dto.auth.JwtDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service

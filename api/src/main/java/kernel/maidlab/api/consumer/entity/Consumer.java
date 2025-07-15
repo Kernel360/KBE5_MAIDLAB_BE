@@ -1,0 +1,141 @@
+package kernel.maidlab.api.consumer.entity;
+
+import jakarta.persistence.*;
+import kernel.maidlab.api.consumer.dto.request.ConsumerProfileRequestDto;
+import kernel.maidlab.api.consumer.dto.request.ConsumerProfileUpdateRequestDto;
+import kernel.maidlab.common.entity.base.TimeBase;
+import kernel.maidlab.common.enums.Gender;
+import kernel.maidlab.common.enums.SocialType;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+@Entity
+@Table(name = "consumer", indexes = {
+	@Index(name = "idx_consumer_uuid", columnList = "uuid", unique = true),
+	@Index(name = "idx_consumer_phone_number", columnList = "phone_number", unique = true)})
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Consumer extends TimeBase {
+
+	@Column(name = "uuid", nullable = false, unique = true)
+	private String uuid;
+
+	@Column(name = "phone_number", unique = true)
+	private String phoneNumber;
+
+	@Column(name = "password")
+	private String password;
+
+	@Column(name = "name", nullable = false)
+	private String name;
+
+	@Column(name = "birth", nullable = false)
+	private LocalDate birth;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "gender", nullable = false)
+	private Gender gender;
+
+	@Column(name = "profile_image")
+	private String profileImage;
+
+	@Column(name = "address")
+	private String address;
+
+	@Column(name = "detail_address")
+	private String detailAddress;
+
+	@Column(name = "point", nullable = false)
+	private Integer point;
+
+	@Column(name = "average_rate")
+	private Float averageRate;
+
+	@Column(name = "total_reviewed_cnt")
+	private Long totalReviewedCnt;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "social_type")
+	private SocialType socialType;
+
+	@Column(name = "refresh_token", columnDefinition = "TEXT")
+	private String refreshToken;
+
+	@Column(name = "is_deleted", nullable = false)
+	private Boolean isDeleted;
+
+	@Column(name = "emergency_call")
+	private String emergencyCall;
+
+	private Consumer(String phoneNumber, String password, String name, Gender gender, LocalDate birth) {
+		this.phoneNumber = phoneNumber;
+		this.password = password;
+		this.name = name;
+		this.gender = gender;
+		this.birth = birth;
+		this.point = 0;
+		this.averageRate = 0.0F;
+		this.totalReviewedCnt = 0L;
+		this.isDeleted = false;
+	}
+
+	public static Consumer createConsumer(String phoneNumber, String password, String name, Gender gender,
+		LocalDate birth) {
+		return new Consumer(phoneNumber, password, name, gender, birth);
+	}
+
+	public static Consumer createSocialConsumer(String phoneNumber, String name, Gender gender,
+		LocalDate birth, SocialType socialType) {
+		Consumer consumer = new Consumer(phoneNumber, null, name, gender, birth);
+		consumer.socialType = socialType;
+		return consumer;
+	}
+
+	public void updateRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
+
+	public void updatePassword(String password) {
+		this.password = password;
+	}
+
+	public void deleteAccount() {
+		this.isDeleted = true;
+
+	}
+
+	public void updateAverageRate(Float averageRate) {
+		this.averageRate = averageRate;
+		this.totalReviewedCnt += 1;
+	}
+
+	public void createProfile(ConsumerProfileRequestDto consumerProfileRequestDto) {
+		this.profileImage = consumerProfileRequestDto.getProfileImage();
+		this.address = consumerProfileRequestDto.getAddress();
+		this.detailAddress = consumerProfileRequestDto.getDetailAddress();
+	}
+
+	public void updateProfile(ConsumerProfileUpdateRequestDto consumerProfileUpdateRequestDto) {
+		this.profileImage = consumerProfileUpdateRequestDto.getProfileImage();
+		this.name = consumerProfileUpdateRequestDto.getName();
+		this.gender = consumerProfileUpdateRequestDto.getGender();
+		this.birth = consumerProfileUpdateRequestDto.getBirth();
+		this.address = consumerProfileUpdateRequestDto.getAddress();
+		this.detailAddress = consumerProfileUpdateRequestDto.getDetailAddress();
+	}
+
+	@PrePersist
+	public void generateUuid() {
+		if (this.uuid == null) {
+			this.uuid = UUID.randomUUID().toString();
+		}
+	}
+
+	public boolean hasCompleteProfile() {
+		return this.address != null && !this.address.trim().isEmpty();
+	}
+}

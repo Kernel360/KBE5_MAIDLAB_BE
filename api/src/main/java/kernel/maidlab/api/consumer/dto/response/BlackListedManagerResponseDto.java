@@ -1,6 +1,7 @@
 package kernel.maidlab.api.consumer.dto.response;
 
-import kernel.maidlab.common.entity.manager.Manager;
+
+import kernel.maidlab.api.manager.entity.Manager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

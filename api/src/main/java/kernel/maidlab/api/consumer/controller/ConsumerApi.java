@@ -1,9 +1,5 @@
 package kernel.maidlab.api.consumer.controller;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -13,14 +9,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.consumer.dto.ConsumerMyPageDto;
+import kernel.maidlab.api.consumer.dto.request.ConsumerProfileRequestDto;
+import kernel.maidlab.api.consumer.dto.request.PreferenceRequestDto;
+import kernel.maidlab.api.consumer.dto.response.BlackListedManagerResponseDto;
+import kernel.maidlab.api.consumer.dto.response.ConsumerProfileResponseDto;
+import kernel.maidlab.api.consumer.dto.response.LikedManagerResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.consumer.ConsumerMyPageDto;
-import kernel.maidlab.common.dto.consumer.request.ConsumerProfileRequestDto;
-import kernel.maidlab.common.dto.consumer.request.PreferenceRequestDto;
-import kernel.maidlab.common.dto.consumer.response.BlackListedManagerResponseDto;
-import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
-import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
 import lombok.Generated;
+import org.springframework.http.ResponseEntity;
+import java.util.List;
 
 @Tag(name = "Consumer", description = "소비자(Consumer) 관련 API")
 @Generated

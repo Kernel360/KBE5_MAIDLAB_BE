@@ -1,10 +1,9 @@
 package kernel.maidlab.admin.board.repository.support;
 
-import java.util.List;
-
+import kernel.maidlab.api.board.entity.BoardImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import kernel.maidlab.common.entity.board.BoardImage;
+import java.util.List;
 
 public interface AdminImageRepository extends JpaRepository<BoardImage, Long> {
 

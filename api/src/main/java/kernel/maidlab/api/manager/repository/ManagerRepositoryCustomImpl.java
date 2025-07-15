@@ -1,11 +1,14 @@
 package kernel.maidlab.api.manager.repository;
 
-import static kernel.maidlab.common.entity.consumer.QManagerPreference.*;
-import static kernel.maidlab.common.entity.manager.QManager.*;
-import static kernel.maidlab.common.entity.manager.QManagerRegion.*;
-import static kernel.maidlab.common.entity.manager.QManagerSchedule.*;
-import static kernel.maidlab.common.entity.manager.QRegion.*;
-import static kernel.maidlab.common.entity.reservation.QReservation.*;
+
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import kernel.maidlab.api.consumer.entity.Consumer;
+import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
+import kernel.maidlab.common.enums.Status;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -13,16 +16,12 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-
-import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-
-import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.enums.Status;
-import lombok.RequiredArgsConstructor;
+import static kernel.maidlab.api.consumer.entity.QManagerPreference.managerPreference;
+import static kernel.maidlab.api.manager.entity.QManager.manager;
+import static kernel.maidlab.api.manager.entity.QManagerRegion.managerRegion;
+import static kernel.maidlab.api.manager.entity.QManagerSchedule.managerSchedule;
+import static kernel.maidlab.api.manager.entity.QRegion.region;
+import static kernel.maidlab.api.reservation.entity.QReservation.reservation;
 
 @Repository
 @RequiredArgsConstructor

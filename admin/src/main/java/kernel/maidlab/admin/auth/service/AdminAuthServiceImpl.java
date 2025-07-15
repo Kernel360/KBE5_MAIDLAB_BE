@@ -1,19 +1,13 @@
 package kernel.maidlab.admin.auth.service;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.admin.auth.service.AdminTokenService;
+import kernel.maidlab.api.auth.dto.request.AdminLoginRequestDto;
+import kernel.maidlab.api.auth.dto.response.LoginResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.auth.JwtDto;
-import kernel.maidlab.common.dto.auth.request.AdminLoginRequestDto;
-import kernel.maidlab.common.dto.auth.response.LoginResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.exception.BaseException;
 import kernel.maidlab.common.util.CookieUtil;
@@ -21,6 +15,9 @@ import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.core.security.jwt.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -50,7 +47,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 			throw new BaseException(ResponseType.LOGIN_FAILED);
 		}
 
-		kernel.maidlab.common.dto.auth.AdminJwtDto.TokenPair tokenPair = adminTokenService.generateAdminTokenPair(admin.getAdminKey());
+		kernel.maidlab.api.auth.dto.AdminJwtDto.TokenPair tokenPair = adminTokenService.generateAdminTokenPair(admin.getAdminKey());
 		long expirationTime = jwtProperties.getExpiration().getAccess();
 
 		cookieUtil.setRefreshTokenCookie(res, tokenPair.getRefreshToken());
@@ -66,7 +63,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 	// 관리자 토큰 갱신
 	@Override
 	public ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(String refreshToken, HttpServletResponse res) {
-		kernel.maidlab.common.dto.auth.AdminJwtDto.AdminRefreshResult result = adminTokenService.refreshAdminTokens(refreshToken);
+		kernel.maidlab.api.auth.dto.AdminJwtDto.AdminRefreshResult result = adminTokenService.refreshAdminTokens(refreshToken);
 
 		if (!result.isSuccess()) {
 			throw new BaseException(ResponseType.INVALID_REFRESH_TOKEN);

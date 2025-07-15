@@ -1,14 +1,13 @@
 package kernel.maidlab.api.reservation.repository;
 
-import java.util.List;
-
+import kernel.maidlab.api.reservation.dto.response.ReservationDetailResponseDto;
+import kernel.maidlab.api.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.common.enums.UserType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import kernel.maidlab.common.dto.reservation.response.ReservationDetailResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.enums.Status;
-import kernel.maidlab.common.enums.UserType;
+import java.util.List;
 
 public interface ReservationRepositoryCustom {
 	List<ReservationResponseDto> findAllWithReviewByConsumerId(Long consumerId);

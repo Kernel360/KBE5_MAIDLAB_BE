@@ -1,6 +1,6 @@
 package kernel.maidlab.api.consumer.dto.response;
 
-import kernel.maidlab.common.entity.manager.Manager;
+import kernel.maidlab.api.manager.entity.Manager;
 import kernel.maidlab.common.enums.Region;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

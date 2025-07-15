@@ -1,6 +1,6 @@
 package kernel.maidlab.api.notification.dto;
 
-import kernel.maidlab.common.entity.notification.Notification;
+import kernel.maidlab.api.notification.entity.Notification;
 import kernel.maidlab.common.enums.NotificationType;
 import kernel.maidlab.common.enums.UserType;
 import lombok.AllArgsConstructor;

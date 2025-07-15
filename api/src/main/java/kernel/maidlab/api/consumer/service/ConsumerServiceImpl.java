@@ -1,28 +1,27 @@
 package kernel.maidlab.api.consumer.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import kernel.maidlab.api.consumer.dto.ConsumerMyPageDto;
+import kernel.maidlab.api.consumer.dto.request.ConsumerProfileRequestDto;
+import kernel.maidlab.api.consumer.dto.request.ConsumerProfileUpdateRequestDto;
+import kernel.maidlab.api.consumer.dto.response.BlackListedManagerResponseDto;
+import kernel.maidlab.api.consumer.dto.response.ConsumerProfileResponseDto;
+import kernel.maidlab.api.consumer.dto.response.LikedManagerResponseDto;
+import kernel.maidlab.api.consumer.entity.Consumer;
+import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import kernel.maidlab.api.consumer.repository.ConsumerRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepository;
 import kernel.maidlab.api.consumer.repository.ManagerPreferenceRepositoryCustom;
+import kernel.maidlab.api.manager.entity.Manager;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.util.UserValidator;
-import kernel.maidlab.common.dto.consumer.ConsumerMyPageDto;
-import kernel.maidlab.common.dto.consumer.request.ConsumerProfileRequestDto;
-import kernel.maidlab.common.dto.consumer.request.ConsumerProfileUpdateRequestDto;
-import kernel.maidlab.common.dto.consumer.response.BlackListedManagerResponseDto;
-import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
-import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
-import kernel.maidlab.common.entity.consumer.ManagerPreference;
-import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service

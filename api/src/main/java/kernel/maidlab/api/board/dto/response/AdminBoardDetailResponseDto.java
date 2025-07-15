@@ -1,8 +1,8 @@
 package kernel.maidlab.api.board.dto.response;
 
 import kernel.maidlab.api.board.dto.ImageDto;
-import kernel.maidlab.common.entity.board.Board;
-import kernel.maidlab.common.entity.board.BoardImage;
+import kernel.maidlab.api.board.entity.Board;
+import kernel.maidlab.api.board.entity.BoardImage;
 import kernel.maidlab.common.enums.BoardType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

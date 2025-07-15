@@ -1,14 +1,14 @@
 package kernel.maidlab.admin.manager.repository;
 
-import java.util.List;
-
+import kernel.maidlab.api.manager.entity.ManagerRegion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import kernel.maidlab.common.entity.manager.ManagerRegion;
+import java.util.List;
+
 
 @Repository
 public interface AdminManagerRegionRepository extends JpaRepository<ManagerRegion, String> {

@@ -1,10 +1,11 @@
 package kernel.maidlab.api.manager.repository;
 
+import kernel.maidlab.api.consumer.entity.Consumer;
+import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
-import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
 
 public interface ManagerRepositoryCustom {
 	List<AvailableManagerResponseDto> findAvailableManagers(String site, LocalDateTime start, LocalDateTime end);

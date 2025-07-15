@@ -1,26 +1,15 @@
 package kernel.maidlab.api.matching.controller;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.consumer.dto.response.LikedManagerResponseDto;
+import kernel.maidlab.api.consumer.entity.Consumer;
 import kernel.maidlab.api.consumer.service.ConsumerService;
+import kernel.maidlab.api.matching.dto.request.MatchingRequestDto;
+import kernel.maidlab.api.matching.dto.response.AvailableManagerResponseDto;
+import kernel.maidlab.api.matching.dto.response.MatchingResponseDto;
+import kernel.maidlab.api.matching.dto.response.RequestMatchingListResponseDto;
 import kernel.maidlab.api.matching.service.MatchingService;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
-import kernel.maidlab.common.dto.matching.request.MatchingRequestDto;
-import kernel.maidlab.common.dto.matching.response.AvailableManagerResponseDto;
-import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
-import kernel.maidlab.common.dto.matching.response.RequestMatchingListResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
@@ -28,6 +17,11 @@ import kernel.maidlab.common.exception.BaseException;
 import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -45,7 +39,7 @@ public class MatchingController implements MatchingApi {
 	@Override
 	@AuthRequired(roles = {UserType.CONSUMER})
 	public ResponseEntity<ResponseDto<List<RequestMatchingListResponseDto>>> getMatching(HttpServletRequest request,
-		@RequestParam int page, @RequestParam int size) {
+																						 @RequestParam int page, @RequestParam int size) {
 		List<RequestMatchingListResponseDto> response = matchingService.myMatching(request, page, size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}

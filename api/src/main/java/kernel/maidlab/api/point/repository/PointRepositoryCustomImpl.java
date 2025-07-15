@@ -1,15 +1,5 @@
 package kernel.maidlab.api.point.repository;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -17,12 +7,20 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
-import kernel.maidlab.common.dto.point.response.PointRecordResponseDto;
-import kernel.maidlab.common.entity.point.Point;
-import kernel.maidlab.common.entity.point.QPoint;
+import kernel.maidlab.api.point.dto.response.PointRecordResponseDto;
+import kernel.maidlab.api.point.entity.Point;
+import kernel.maidlab.api.point.entity.QPoint;
 import kernel.maidlab.common.enums.PointType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class PointRepositoryCustomImpl implements PointRepositoryCustom {

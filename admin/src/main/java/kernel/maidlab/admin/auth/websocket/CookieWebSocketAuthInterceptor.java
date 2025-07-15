@@ -1,7 +1,9 @@
 package kernel.maidlab.admin.auth.websocket;
 
-import java.util.Map;
-
+import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.admin.auth.service.AdminTokenService;
+import kernel.maidlab.common.util.CookieUtil;
+import kernel.maidlab.core.security.jwt.AdminJwtProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.server.ServerHttpRequest;
@@ -11,11 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.core.security.jwt.AdminJwtProvider;
-import kernel.maidlab.admin.auth.service.AdminTokenService;
-import kernel.maidlab.common.dto.auth.AdminJwtDto;
-import kernel.maidlab.common.util.CookieUtil;
+import java.util.Map;
 
 @Component
 public class CookieWebSocketAuthInterceptor implements HandshakeInterceptor {

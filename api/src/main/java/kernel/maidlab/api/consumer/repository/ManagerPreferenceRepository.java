@@ -1,8 +1,7 @@
 package kernel.maidlab.api.consumer.repository;
 
+import kernel.maidlab.api.consumer.entity.ManagerPreference;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import kernel.maidlab.common.entity.consumer.ManagerPreference;
 
 public interface ManagerPreferenceRepository extends JpaRepository<ManagerPreference, Long> {
 

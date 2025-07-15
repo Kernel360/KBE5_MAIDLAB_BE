@@ -1,15 +1,14 @@
 package kernel.maidlab.api.notification.service;
 
-import java.util.List;
-
+import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.notification.dto.NotificationDto;
+import kernel.maidlab.common.enums.NotificationType;
+import kernel.maidlab.common.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.dto.notification.NotificationDto;
-import kernel.maidlab.common.enums.NotificationType;
-import kernel.maidlab.common.enums.Status;
+import java.util.List;
 
 public interface NotificationService {
 	// SSE 연결 관리

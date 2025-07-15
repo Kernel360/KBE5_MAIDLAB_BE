@@ -1,14 +1,15 @@
 package kernel.maidlab.api.consumer.service;
 
+import kernel.maidlab.api.consumer.dto.ConsumerMyPageDto;
+import kernel.maidlab.api.consumer.dto.request.ConsumerProfileRequestDto;
+import kernel.maidlab.api.consumer.dto.request.ConsumerProfileUpdateRequestDto;
+import kernel.maidlab.api.consumer.dto.response.BlackListedManagerResponseDto;
+import kernel.maidlab.api.consumer.dto.response.ConsumerProfileResponseDto;
+import kernel.maidlab.api.consumer.dto.response.LikedManagerResponseDto;
+import kernel.maidlab.api.consumer.entity.Consumer;
+
 import java.util.List;
 
-import kernel.maidlab.common.dto.consumer.ConsumerMyPageDto;
-import kernel.maidlab.common.dto.consumer.request.ConsumerProfileRequestDto;
-import kernel.maidlab.common.dto.consumer.request.ConsumerProfileUpdateRequestDto;
-import kernel.maidlab.common.dto.consumer.response.BlackListedManagerResponseDto;
-import kernel.maidlab.common.dto.consumer.response.ConsumerProfileResponseDto;
-import kernel.maidlab.common.dto.consumer.response.LikedManagerResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
 
 public interface ConsumerService {
 

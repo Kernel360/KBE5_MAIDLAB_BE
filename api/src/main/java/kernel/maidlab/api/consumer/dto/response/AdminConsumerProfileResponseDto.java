@@ -1,6 +1,7 @@
 package kernel.maidlab.api.consumer.dto.response;
 
-import kernel.maidlab.common.entity.consumer.Consumer;
+
+import kernel.maidlab.api.consumer.entity.Consumer;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.SocialType;
 import lombok.AllArgsConstructor;

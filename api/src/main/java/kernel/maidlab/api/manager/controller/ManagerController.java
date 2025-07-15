@@ -1,26 +1,20 @@
 package kernel.maidlab.api.manager.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.api.manager.dto.request.ProfileRequestDto;
+import kernel.maidlab.api.manager.dto.request.ProfileUpdateRequestDto;
+import kernel.maidlab.api.manager.dto.response.MypageResponseDto;
+import kernel.maidlab.api.manager.dto.response.ProfileResponseDto;
+import kernel.maidlab.api.manager.dto.response.ReviewListResponseDto;
 import kernel.maidlab.api.manager.service.ManagerService;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.manager.request.ProfileRequestDto;
-import kernel.maidlab.common.dto.manager.request.ProfileUpdateRequestDto;
-import kernel.maidlab.common.dto.manager.response.MypageResponseDto;
-import kernel.maidlab.common.dto.manager.response.ProfileResponseDto;
-import kernel.maidlab.common.dto.manager.response.ReviewListResponseDto;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController

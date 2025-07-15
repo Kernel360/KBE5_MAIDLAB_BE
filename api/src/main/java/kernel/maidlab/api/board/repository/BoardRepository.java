@@ -1,12 +1,12 @@
 package kernel.maidlab.api.board.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import kernel.maidlab.api.board.entity.Board;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import kernel.maidlab.common.entity.board.Board;
+import java.util.List;
+import java.util.Optional;
+
 
 public interface BoardRepository extends JpaRepository<Board, Long>, BoardRepositoryCustom {
 
