@@ -1,4 +1,4 @@
-package kernel.maidlab.admin.auth.websocket;
+package kernel.maidlab.admin.websocket.interceptor;
 
 import java.net.URI;
 import java.util.Map;
@@ -15,7 +15,7 @@ import kernel.maidlab.core.security.jwt.AdminJwtProvider;
 import kernel.maidlab.common.dto.auth.AdminJwtDto;
 
 @Component
-public class WebSocketAuthInterceptor implements HandshakeInterceptor {
+public class WebSocketAuthInterceptor implements kernel.maidlab.core.websocket.WebSocketAuthInterceptor {
 
 	private static final Logger log = LoggerFactory.getLogger(WebSocketAuthInterceptor.class);
 

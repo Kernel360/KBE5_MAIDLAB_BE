@@ -1,4 +1,4 @@
-package kernel.maidlab.admin.auth.websocket;
+package kernel.maidlab.admin.websocket.interceptor;
 
 import java.util.Map;
 
@@ -18,7 +18,7 @@ import kernel.maidlab.common.dto.auth.AdminJwtDto;
 import kernel.maidlab.common.util.CookieUtil;
 
 @Component
-public class CookieWebSocketAuthInterceptor implements HandshakeInterceptor {
+public class CookieWebSocketAuthInterceptor implements kernel.maidlab.core.websocket.WebSocketAuthInterceptor {
 
 	private static final Logger log = LoggerFactory.getLogger(CookieWebSocketAuthInterceptor.class);
 
