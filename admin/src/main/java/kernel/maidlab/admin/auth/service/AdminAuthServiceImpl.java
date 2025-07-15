@@ -9,6 +9,7 @@ import kernel.maidlab.domain.auth.dto.request.AdminLoginRequestDto;
 import kernel.maidlab.domain.auth.dto.response.LoginResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.core.exception.BaseException;
 import kernel.maidlab.common.util.CookieUtil;
 import kernel.maidlab.core.exception.BaseException;
 import kernel.maidlab.core.security.AuthenticationHelper;
