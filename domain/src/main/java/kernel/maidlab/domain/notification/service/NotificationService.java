@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface NotificationService {
 	// SSE 연결 관리
-	SseEmitter connect(HttpServletRequest request);
+	SseEmitter connect();
 
 	void disconnect(HttpServletRequest request);
 
@@ -21,6 +21,8 @@ public interface NotificationService {
 
 	// 알림 조회
 	List<NotificationDto> getUnreadNotifications(HttpServletRequest request);
+
+	Page<NotificationDto> getAllNotifications(HttpServletRequest request, Pageable pageable);
 
 	Page<NotificationDto> getNotifications(HttpServletRequest request, Pageable pageable);
 

@@ -37,7 +37,7 @@ public class MatchingController implements MatchingApi {
 
 	@GetMapping
 	@Override
-	@AuthRequired(roles = {UserType.CONSUMER})
+	@AuthRequired(roles = {UserType.MANAGER})
 	public ResponseEntity<ResponseDto<List<RequestMatchingListResponseDto>>> getMatching(HttpServletRequest request,
 																						 @RequestParam int page, @RequestParam int size) {
 		List<RequestMatchingListResponseDto> response = matchingService.myMatching(request, page, size);

@@ -181,19 +181,8 @@ public class AuthServiceImpl implements AuthService {
 
 	private String getGoogleAccessToken(String authorizationCode, HttpServletRequest request) {
 		try {
-			String origin = request.getHeader("Origin");
-			if (origin == null) {
-				origin = request.getHeader("Referer");
-				if (origin != null && origin.endsWith("/")) {
-					origin = origin.substring(0, origin.length() - 1);
-				}
-			}
-
-			String dynamicRedirectUri = origin != null ?
-				origin + "/google-callback" : googleRedirectUri;
-
 			GoogleTokenDto tokenDto = googleOAuthService.getGoogleToken(
-				authorizationCode, googleClientId, googleClientSecret, dynamicRedirectUri
+				authorizationCode, googleClientId, googleClientSecret, googleRedirectUri
 			);
 
 			if (tokenDto == null || tokenDto.getAccessToken() == null) {

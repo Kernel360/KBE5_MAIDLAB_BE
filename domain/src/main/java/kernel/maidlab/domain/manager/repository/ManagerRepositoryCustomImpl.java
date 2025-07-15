@@ -52,7 +52,9 @@ public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 				manager.isVerified.eq(Status.APPROVED), manager.isDeleted.isFalse(), manager.id.notIn(
 					JPAExpressions.select(reservation.managerId)
 						.from(reservation)
-						.where(reservation.managerId.isNotNull(), reservation.status.eq(Status.APPROVED),
+						.where(reservation.managerId.isNotNull(),
+							reservation.status.eq(Status.MATCHED)
+								.or(reservation.status.eq(Status.PAID).or(reservation.status.eq(Status.WORKING))),
 							reservation.startTime.lt(end),     // 예약 시작 < 요청 종료
 							reservation.endTime.gt(start)      // 예약 종료 > 요청 시작
 						)))
