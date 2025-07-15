@@ -8,6 +8,7 @@ import kernel.maidlab.domain.auth.dto.response.SocialLoginResponseDto;
 import kernel.maidlab.domain.auth.service.AuthService;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.core.exception.BaseException;
 import kernel.maidlab.common.util.CookieUtil;
 import kernel.maidlab.core.exception.BaseException;
 import lombok.RequiredArgsConstructor;
