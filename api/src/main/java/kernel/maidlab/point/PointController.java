@@ -1,18 +1,23 @@
 package kernel.maidlab.point;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
 import kernel.maidlab.domain.point.dto.request.PointChargeRequestDto;
 import kernel.maidlab.domain.point.dto.request.PointRecordRequestDto;
 import kernel.maidlab.domain.point.dto.response.PageResponseDto;
 import kernel.maidlab.domain.point.dto.response.PointRecordResponseDto;
 import kernel.maidlab.domain.point.dto.response.PointResponseDto;
 import kernel.maidlab.domain.point.service.PointService;
-import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor

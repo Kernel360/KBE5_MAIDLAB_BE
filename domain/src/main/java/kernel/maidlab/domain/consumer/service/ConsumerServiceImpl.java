@@ -1,5 +1,12 @@
 package kernel.maidlab.domain.consumer.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.domain.consumer.dto.ConsumerMyPageDto;
 import kernel.maidlab.domain.consumer.dto.request.ConsumerProfileRequestDto;
 import kernel.maidlab.domain.consumer.dto.request.ConsumerProfileUpdateRequestDto;
@@ -14,14 +21,8 @@ import kernel.maidlab.domain.consumer.repository.ManagerPreferenceRepositoryCust
 import kernel.maidlab.domain.manager.entity.Manager;
 import kernel.maidlab.domain.manager.repository.ManagerRepository;
 import kernel.maidlab.domain.util.UserValidator;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -100,7 +101,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Override
 	public Consumer getConsumer() {
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		return userValidator.findByUuid(userId, UserType.CONSUMER);
 	}
 

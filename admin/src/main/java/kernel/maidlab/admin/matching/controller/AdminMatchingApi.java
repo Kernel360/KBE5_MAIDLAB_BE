@@ -1,17 +1,18 @@
 package kernel.maidlab.admin.matching.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.domain.matching.dto.response.MatchingResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.Status;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
+import kernel.maidlab.domain.matching.dto.response.MatchingResponseDto;
 
 @Tag(name = "Matching", description = "매칭 관련 API")
 public interface AdminMatchingApi {
@@ -21,7 +22,7 @@ public interface AdminMatchingApi {
 		@ApiResponse(responseCode = "403", description = "권한 없음"),
 		@ApiResponse(responseCode = "500", description = "데이터베이스 오류")})
 	ResponseEntity<ResponseDto<List<MatchingResponseDto>>> allMatching(HttpServletRequest request,
-																	   @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size);
+		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size);
 
 	@Operation(summary = "매칭 상태별 조회", description = "현재 매칭 테이블에 저장되어있는 모든 매칭 조회")
 	@ApiResponses({@ApiResponse(responseCode = "200", description = "조회 성공"),

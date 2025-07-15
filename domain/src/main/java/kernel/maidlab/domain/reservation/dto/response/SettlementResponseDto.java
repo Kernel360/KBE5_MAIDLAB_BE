@@ -1,10 +1,10 @@
 package kernel.maidlab.domain.reservation.dto.response;
 
+import java.math.BigDecimal;
+
 import kernel.maidlab.common.enums.ServiceType;
 import kernel.maidlab.common.enums.Status;
 import lombok.Getter;
-
-import java.math.BigDecimal;
 
 @Getter
 public class SettlementResponseDto {
@@ -16,7 +16,8 @@ public class SettlementResponseDto {
 	private final BigDecimal platformFee;
 	private final BigDecimal amount;
 
-	public SettlementResponseDto(Long settlementId, Long reservationId, ServiceType serviceType, String serviceDetailType, Status status,
+	public SettlementResponseDto(Long settlementId, Long reservationId, ServiceType serviceType,
+		String serviceDetailType, Status status,
 		BigDecimal platformFee, BigDecimal amount) {
 		this.settlementId = settlementId;
 		this.reservationId = reservationId;

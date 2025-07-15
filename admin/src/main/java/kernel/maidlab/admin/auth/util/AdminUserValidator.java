@@ -5,8 +5,7 @@ import org.springframework.stereotype.Component;
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
 import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.core.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

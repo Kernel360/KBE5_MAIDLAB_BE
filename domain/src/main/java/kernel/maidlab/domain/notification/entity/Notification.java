@@ -1,6 +1,10 @@
 package kernel.maidlab.domain.notification.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
 import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.enums.NotificationType;
 import kernel.maidlab.common.enums.UserType;

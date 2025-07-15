@@ -1,17 +1,18 @@
 package kernel.maidlab.point;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.domain.point.dto.request.PointChargeRequestDto;
 import kernel.maidlab.domain.point.dto.request.PointRecordRequestDto;
 import kernel.maidlab.domain.point.dto.response.PageResponseDto;
 import kernel.maidlab.domain.point.dto.response.PointRecordResponseDto;
 import kernel.maidlab.domain.point.dto.response.PointResponseDto;
-import kernel.maidlab.common.dto.ResponseDto;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "Point", description = "포인트 관련 API")
 public interface PointApi {

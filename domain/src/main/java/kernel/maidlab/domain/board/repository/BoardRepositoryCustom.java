@@ -1,12 +1,13 @@
 package kernel.maidlab.domain.board.repository;
 
-import kernel.maidlab.domain.board.dto.BoardQueryDto;
-import kernel.maidlab.domain.board.entity.Board;
-import kernel.maidlab.common.enums.UserType;
-import org.springframework.data.repository.query.Param;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.repository.query.Param;
+
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.domain.board.dto.BoardQueryDto;
+import kernel.maidlab.domain.board.entity.Board;
 
 public interface BoardRepositoryCustom {
 

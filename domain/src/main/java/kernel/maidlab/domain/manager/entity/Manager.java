@@ -1,6 +1,24 @@
 package kernel.maidlab.domain.manager.entity;
 
-import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.Region;
@@ -9,11 +27,6 @@ import kernel.maidlab.common.enums.Status;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "manager", indexes = {

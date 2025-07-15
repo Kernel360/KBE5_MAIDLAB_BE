@@ -1,5 +1,11 @@
 package kernel.maidlab.admin.event.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.admin.auth.entity.Admin;
@@ -12,15 +18,10 @@ import kernel.maidlab.admin.event.entity.Event;
 import kernel.maidlab.admin.event.repository.EventRepository;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.core.exception.BaseException;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -74,7 +75,7 @@ public class EventServiceImpl implements EventService {
 	// 이벤트 생성
 	@Override
 	public ResponseEntity<ResponseDto<Void>> createEvent(EventRequestDto eventRequestDto, HttpServletRequest req) {
-		String adminKey = AuthenticationHelper.getCurrentUserId();
+		String adminKey = AuthenticationHelper.getCurrentUserKey();
 
 		Admin admin = adminRepository.findByAdminKeyAndIsDeletedFalse(adminKey)
 			.orElseThrow(() -> {
@@ -98,7 +99,7 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public ResponseEntity<ResponseDto<Void>> updateEvent(Long eventId, EventRequestDto eventRequestDto,
 		HttpServletRequest req) {
-		String adminKey = AuthenticationHelper.getCurrentUserId();
+		String adminKey = AuthenticationHelper.getCurrentUserKey();
 
 		Admin admin = adminRepository.findByAdminKeyAndIsDeletedFalse(adminKey)
 			.orElseThrow(() -> {
@@ -123,7 +124,7 @@ public class EventServiceImpl implements EventService {
 	// 이벤트 삭제 (물리 삭제)
 	@Override
 	public ResponseEntity<ResponseDto<Void>> deleteEvent(Long eventId, HttpServletRequest req) {
-		String adminKey = AuthenticationHelper.getCurrentUserId();
+		String adminKey = AuthenticationHelper.getCurrentUserKey();
 
 		Admin admin = adminRepository.findByAdminKeyAndIsDeletedFalse(adminKey)
 			.orElseThrow(() -> {

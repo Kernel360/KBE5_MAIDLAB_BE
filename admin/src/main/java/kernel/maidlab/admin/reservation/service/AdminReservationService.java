@@ -1,12 +1,16 @@
 package kernel.maidlab.admin.reservation.service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
-import kernel.maidlab.domain.reservation.dto.response.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import kernel.maidlab.domain.reservation.dto.response.AdminReservationDetailResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.AdminWeeklySettlementResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.SettlementGraphDataDto;
+import kernel.maidlab.domain.reservation.dto.response.SettlementResponseDto;
 
 public interface AdminReservationService {
 	List<ReservationResponseDto> adminReservations(HttpServletRequest request, int page, int size);
@@ -44,5 +48,5 @@ public interface AdminReservationService {
 	BigDecimal getManagerReviewedPercent(HttpServletRequest request, Long managerId);
 
 	SettlementGraphDataDto getSettlementGraphData(HttpServletRequest request, LocalDate startDate, LocalDate endDate,
-												  String period);
+		String period);
 }

@@ -1,7 +1,20 @@
 package kernel.maidlab.domain.board.service;
 
+import java.nio.file.AccessDeniedException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.aop.aspect.auth.AuthenticationAspect;
+import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.core.security.CustomUserDetails;
 import kernel.maidlab.domain.board.dto.BoardQueryDto;
 import kernel.maidlab.domain.board.dto.ImageDto;
 import kernel.maidlab.domain.board.dto.request.BoardRequestDto;
@@ -17,20 +30,8 @@ import kernel.maidlab.domain.consumer.repository.ConsumerRepository;
 import kernel.maidlab.domain.manager.entity.Manager;
 import kernel.maidlab.domain.manager.repository.ManagerRepository;
 import kernel.maidlab.domain.util.UserValidator;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.core.aop.aspect.auth.AuthenticationAspect;
-import kernel.maidlab.core.security.AuthenticationHelper;
-import kernel.maidlab.core.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.nio.file.AccessDeniedException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -49,7 +50,7 @@ public class BoardServiceImpl implements BoardService {
 		HttpServletRequest request,
 		BoardRequestDto boardRequestDto) {
 
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 		Object user = userValidator.findByUuid(userId, userType);
 
@@ -69,7 +70,7 @@ public class BoardServiceImpl implements BoardService {
 	@Transactional(readOnly = true)
 	public List<BoardResponseDto> getConsumerBoardList(HttpServletRequest request) {
 
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 		Object user = userValidator.findByUuid(userId, userType);
 
@@ -88,7 +89,7 @@ public class BoardServiceImpl implements BoardService {
 		Long boardId
 	) throws AccessDeniedException {
 
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 		Object user = userValidator.findByUuid(userId, userType);
 
@@ -156,10 +157,10 @@ public class BoardServiceImpl implements BoardService {
 	// 사용자 접근 검증
 	public boolean isUserBoardWriter(Board board, CustomUserDetails user) {
 		if (user.getUserType() == UserType.CONSUMER) {
-			Consumer consumer = userValidator.findByUuid(user.getUserId(), UserType.CONSUMER);
+			Consumer consumer = userValidator.findByUuid(user.getUserKey(), UserType.CONSUMER);
 			return board.getConsumer() != null && board.getConsumer().getId().equals(consumer.getId());
 		} else if (user.getUserType() == UserType.MANAGER) {
-			Manager manager = userValidator.findByUuid(user.getUserId(), UserType.MANAGER);
+			Manager manager = userValidator.findByUuid(user.getUserKey(), UserType.MANAGER);
 			return board.getManager() != null && board.getManager().getId().equals(manager.getId());
 		}
 		return false;
@@ -169,11 +170,11 @@ public class BoardServiceImpl implements BoardService {
 	public List<BoardQueryDto> getBoardQueryDtoList(CustomUserDetails user, UserType userType) {
 
 		if (userType == UserType.CONSUMER) {
-			Consumer consumer = userValidator.findByUuid(user.getUserId(), UserType.CONSUMER);
+			Consumer consumer = userValidator.findByUuid(user.getUserKey(), UserType.CONSUMER);
 			return boardRepository.findAllByUserIdIsDeletedFalse(consumer.getId(), userType);
 
 		} else if (userType == UserType.MANAGER) {
-			Manager manager = userValidator.findByUuid(user.getUserId(), UserType.MANAGER);
+			Manager manager = userValidator.findByUuid(user.getUserKey(), UserType.MANAGER);
 			return boardRepository.findAllByUserIdIsDeletedFalse(manager.getId(), userType);
 
 		}

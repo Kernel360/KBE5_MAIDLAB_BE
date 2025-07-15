@@ -1,11 +1,11 @@
 package kernel.maidlab.domain.reservation.dto.response;
 
+import java.math.BigDecimal;
+
 import kernel.maidlab.common.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.math.BigDecimal;
 
 @Getter
 @Builder

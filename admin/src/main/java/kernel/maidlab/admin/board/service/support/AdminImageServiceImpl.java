@@ -1,11 +1,12 @@
 package kernel.maidlab.admin.board.service.support;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import kernel.maidlab.domain.board.entity.BoardImage;
 import kernel.maidlab.domain.board.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

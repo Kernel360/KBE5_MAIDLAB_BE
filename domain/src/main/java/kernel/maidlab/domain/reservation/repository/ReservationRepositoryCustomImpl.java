@@ -1,5 +1,15 @@
 package kernel.maidlab.domain.reservation.repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -10,6 +20,11 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.exception.custom.ReservationException;
 import kernel.maidlab.domain.manager.entity.QManager;
 import kernel.maidlab.domain.manager.entity.QManagerRegion;
 import kernel.maidlab.domain.manager.entity.QRegion;
@@ -18,20 +33,7 @@ import kernel.maidlab.domain.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.domain.reservation.entity.QReservation;
 import kernel.maidlab.domain.reservation.entity.QReview;
 import kernel.maidlab.domain.reservation.entity.QServiceDetailType;
-import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.enums.Status;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.exception.custom.ReservationException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class ReservationRepositoryCustomImpl implements ReservationRepositoryCustom {
@@ -74,7 +76,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 
 	@Override
 	public ReservationDetailResponseDto findDetailReservationByIdAndUser(Long reservationId, Long userId,
-																		 UserType userType) {
+		UserType userType) {
 
 		// 사용자 일치 조건 (권한 체크)
 		BooleanExpression userCondition = (userType == UserType.MANAGER)
@@ -163,7 +165,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 
 		BooleanExpression statusCondition = null;
 		BooleanExpression dateCondition = null;
-		
+
 		// 상태별 조건 처리
 		if (status != null) {
 			if (status == Status.PAID) {
@@ -172,7 +174,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 			} else {
 				statusCondition = reservation.status.eq(status);
 			}
-			
+
 			// MATCHED, PAID, PENDING 상태일 때는 오늘 날짜 이후의 예약만 조회
 			if (status == Status.MATCHED || status == Status.PAID || status == Status.PENDING) {
 				LocalDate today = LocalDate.now();
@@ -180,7 +182,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 				dateCondition = reservation.reservationDate.goe(startOfToday);
 			}
 		}
-		
+
 		// 조건들을 결합
 		BooleanExpression finalCondition = baseCondition;
 		if (statusCondition != null) {

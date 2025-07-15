@@ -1,26 +1,27 @@
 package kernel.maidlab.admin.board.service;
 
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.admin.board.repository.AdminBoardRepository;
-import kernel.maidlab.admin.board.service.support.AdminAnswerService;
-import kernel.maidlab.admin.board.service.support.AdminImageServiceImpl;
-import kernel.maidlab.domain.board.dto.request.AnswerRequestDto;
-import kernel.maidlab.domain.board.dto.response.AdminBoardDetailResponseDto;
-import kernel.maidlab.domain.board.dto.response.AdminBoardResponseDto;
-import kernel.maidlab.domain.board.entity.Answer;
-import kernel.maidlab.domain.board.entity.Board;
-import kernel.maidlab.domain.board.entity.BoardImage;
-import kernel.maidlab.common.dto.ResponseDto;
-import lombok.RequiredArgsConstructor;
+import java.nio.file.AccessDeniedException;
+import java.util.List;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
-import java.util.List;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.admin.board.repository.AdminBoardRepository;
+import kernel.maidlab.admin.board.service.support.AdminAnswerService;
+import kernel.maidlab.admin.board.service.support.AdminImageServiceImpl;
+import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.domain.board.dto.request.AnswerRequestDto;
+import kernel.maidlab.domain.board.dto.response.AdminBoardDetailResponseDto;
+import kernel.maidlab.domain.board.dto.response.AdminBoardResponseDto;
+import kernel.maidlab.domain.board.entity.Answer;
+import kernel.maidlab.domain.board.entity.Board;
+import kernel.maidlab.domain.board.entity.BoardImage;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -73,7 +74,7 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 
 	@Override
 	public ResponseEntity<ResponseDto<Void>> createAnswer(AnswerRequestDto requestDto, HttpServletRequest request,
-														  Long boardId) {
+		Long boardId) {
 		Board board = adminBoardRepository.findById(boardId)
 			.orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다. ID: " + boardId));
 		board.makeAnswer();

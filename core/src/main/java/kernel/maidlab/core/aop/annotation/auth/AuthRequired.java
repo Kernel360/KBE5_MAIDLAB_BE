@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 import kernel.maidlab.common.enums.UserType;
 
-// @AuthRequired(roles = {UserType.CONSUMER}) - 소비자만 접근 가능
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AuthRequired {

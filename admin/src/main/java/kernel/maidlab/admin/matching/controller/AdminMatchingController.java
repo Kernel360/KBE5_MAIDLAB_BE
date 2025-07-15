@@ -1,16 +1,21 @@
 package kernel.maidlab.admin.matching.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.matching.service.AdminMatchingService;
-import kernel.maidlab.domain.matching.dto.response.MatchingResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.domain.matching.dto.response.MatchingResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/matching")
@@ -22,7 +27,7 @@ public class AdminMatchingController implements AdminMatchingApi {
 	@GetMapping
 	@Override
 	public ResponseEntity<ResponseDto<List<MatchingResponseDto>>> allMatching(HttpServletRequest request,
-																			  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 		List<MatchingResponseDto> response = adminmatchingService.allMatching(request, page, size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}
