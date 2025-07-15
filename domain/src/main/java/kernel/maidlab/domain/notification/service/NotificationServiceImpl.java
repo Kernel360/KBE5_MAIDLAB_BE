@@ -56,6 +56,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	private NotificationConnectionKey createConnectionKey() {
 		UserType type = AuthenticationHelper.getCurrentUserType();
+
 		String uuid = AuthenticationHelper.getCurrentUserKey();
 		Object user = userValidator.findByUuid(uuid, type);
 

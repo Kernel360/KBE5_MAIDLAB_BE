@@ -1,5 +1,9 @@
 package kernel.maidlab.notification;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+
 
 @Slf4j
 @Tag(name = "알림", description = "사용자 알림 관련 API")
@@ -78,6 +83,7 @@ public class NotificationController {
 	public ResponseEntity<ResponseDto<String>> sendTestNotification(HttpServletRequest request) {
 		UserType type = AuthenticationHelper.getCurrentUserType();
 		String userId = AuthenticationHelper.getCurrentUserKey();
+
 		Object user = userValidator.findByUuid(userId, type);
 		Long id = switch (type) {
 			case MANAGER -> ((Manager)user).getId();
