@@ -163,11 +163,46 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 		Pageable pageable) {
 		BooleanExpression baseCondition = reservation.consumerId.eq(consumerId);
 
-		BooleanExpression statusCondition = status != null ? reservation.status.eq(status) : null;
-		BooleanExpression finalCondition = statusCondition != null ? baseCondition.and(statusCondition) : baseCondition;
+		BooleanExpression statusCondition = null;
+		BooleanExpression dateCondition = null;
+		
+		// 상태별 조건 처리
+		if (status != null) {
+			if (status == Status.PAID) {
+				// PAID 상태일 때는 WORKING 상태도 포함하고 WORKING이 우선순위가 높음
+				statusCondition = reservation.status.eq(Status.PAID).or(reservation.status.eq(Status.WORKING));
+			} else {
+				statusCondition = reservation.status.eq(status);
+			}
+			
+			// MATCHED, PAID, PENDING 상태일 때는 오늘 날짜 이후의 예약만 조회
+			if (status == Status.MATCHED || status == Status.PAID || status == Status.PENDING) {
+				LocalDate today = LocalDate.now();
+				LocalDateTime startOfToday = today.atStartOfDay();
+				dateCondition = reservation.reservationDate.goe(startOfToday);
+			}
+		}
+		
+		// 조건들을 결합
+		BooleanExpression finalCondition = baseCondition;
+		if (statusCondition != null) {
+			finalCondition = finalCondition.and(statusCondition);
+		}
+		if (dateCondition != null) {
+			finalCondition = finalCondition.and(dateCondition);
+		}
 
 		// Pageable의 Sort 정보를 QueryDSL OrderSpecifier로 변환
 		List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
+
+		// PAID 상태일 때 WORKING 상태가 우선순위가 높게 정렬
+		if (status == Status.PAID) {
+			NumberExpression<Integer> statusPriority = new CaseBuilder()
+				.when(reservation.status.eq(Status.WORKING)).then(0)
+				.when(reservation.status.eq(Status.PAID)).then(1)
+				.otherwise(2);
+			orderSpecifiers.add(new OrderSpecifier<>(Order.ASC, statusPriority));
+		}
 
 		if (pageable.getSort().isSorted()) {
 			for (org.springframework.data.domain.Sort.Order sortOrder : pageable.getSort()) {
@@ -243,8 +278,11 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 			statusCondition = reservation.reservationDate.goe(startOfDay)
 				.and(reservation.reservationDate.loe(endOfDay));
 		} else if ("PAID".equals(status)) {
-			// PAID와 MATCHED 상태 함께 조회
-			statusCondition = reservation.status.eq(Status.PAID).or(reservation.status.eq(Status.MATCHED));
+			// PAID와 MATCHED 상태 함께 조회, 오늘 날짜 이상만 조회
+			LocalDate today = LocalDate.now();
+			LocalDateTime startOfToday = today.atStartOfDay();
+			statusCondition = (reservation.status.eq(Status.PAID).or(reservation.status.eq(Status.MATCHED)))
+				.and(reservation.reservationDate.goe(startOfToday));
 		} else if ("WORKING".equals(status)) {
 			statusCondition = reservation.status.eq(Status.WORKING);
 		} else if ("COMPLETED".equals(status)) {
