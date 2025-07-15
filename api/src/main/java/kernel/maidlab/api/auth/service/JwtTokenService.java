@@ -40,7 +40,7 @@ public class JwtTokenService {
 			return JwtDto.RefreshResult.failure("유효하지 않은 refresh token");
 		}
 
-		String userId = jwtProvider.getUserId(refreshToken);
+		String userId = jwtProvider.getUserKey(refreshToken);
 		UserType userType = jwtProvider.getUserType(refreshToken);
 
 		String storedRefreshToken = getStoredRefreshToken(userId, userType);
@@ -140,7 +140,7 @@ public class JwtTokenService {
 			return JwtDto.ValidationResult.failure("유효하지 않은 access token");
 		}
 
-		String userId = jwtProvider.getUserId(token);
+		String userId = jwtProvider.getUserKey(token);
 		UserType userType = jwtProvider.getUserType(token);
 
 		return JwtDto.ValidationResult.success(userId, userType);

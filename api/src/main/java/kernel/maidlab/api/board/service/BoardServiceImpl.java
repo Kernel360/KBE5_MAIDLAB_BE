@@ -50,7 +50,7 @@ public class BoardServiceImpl implements BoardService {
 		HttpServletRequest request,
 		BoardRequestDto boardRequestDto) {
 
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 		Object user = userValidator.findByUuid(userId, userType);
 
@@ -70,7 +70,7 @@ public class BoardServiceImpl implements BoardService {
 	@Transactional(readOnly = true)
 	public List<BoardResponseDto> getConsumerBoardList(HttpServletRequest request) {
 
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 		Object user = userValidator.findByUuid(userId, userType);
 
@@ -89,7 +89,7 @@ public class BoardServiceImpl implements BoardService {
 		Long boardId
 	) throws AccessDeniedException {
 
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 		Object user = userValidator.findByUuid(userId, userType);
 
@@ -157,10 +157,10 @@ public class BoardServiceImpl implements BoardService {
 	// 사용자 접근 검증
 	public boolean isUserBoardWriter(Board board, CustomUserDetails user) {
 		if (user.getUserType() == UserType.CONSUMER) {
-			Consumer consumer = userValidator.findByUuid(user.getUserId(), UserType.CONSUMER);
+			Consumer consumer = userValidator.findByUuid(user.getUserKey(), UserType.CONSUMER);
 			return board.getConsumer() != null && board.getConsumer().getId().equals(consumer.getId());
 		} else if (user.getUserType() == UserType.MANAGER) {
-			Manager manager = userValidator.findByUuid(user.getUserId(), UserType.MANAGER);
+			Manager manager = userValidator.findByUuid(user.getUserKey(), UserType.MANAGER);
 			return board.getManager() != null && board.getManager().getId().equals(manager.getId());
 		}
 		return false;
@@ -170,11 +170,11 @@ public class BoardServiceImpl implements BoardService {
 	public List<BoardQueryDto> getBoardQueryDtoList(CustomUserDetails user, UserType userType) {
 
 		if (userType == UserType.CONSUMER) {
-			Consumer consumer = userValidator.findByUuid(user.getUserId(), UserType.CONSUMER);
+			Consumer consumer = userValidator.findByUuid(user.getUserKey(), UserType.CONSUMER);
 			return boardRepository.findAllByUserIdIsDeletedFalse(consumer.getId(), userType);
 
 		} else if (userType == UserType.MANAGER) {
-			Manager manager = userValidator.findByUuid(user.getUserId(), UserType.MANAGER);
+			Manager manager = userValidator.findByUuid(user.getUserKey(), UserType.MANAGER);
 			return boardRepository.findAllByUserIdIsDeletedFalse(manager.getId(), userType);
 
 		}

@@ -36,7 +36,7 @@ public class AdminJwtTokenService {
             return JwtDto.RefreshResult.failure("유효하지 않은 refresh token");
         }
         
-        String adminKey = jwtProvider.getUserId(refreshToken);
+        String adminKey = jwtProvider.getUserKey(refreshToken);
         
         String storedRefreshToken = getStoredRefreshToken(adminKey);
         if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {

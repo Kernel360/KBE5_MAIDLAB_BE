@@ -72,7 +72,7 @@ public class NotificationController {
 	@PostMapping("/test")
 	public ResponseEntity<ResponseDto<String>> sendTestNotification(HttpServletRequest request) {
 		UserType type = AuthenticationHelper.getCurrentUserType();
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		Object user = userValidator.findByUuid(userId, type);
 		Long id = switch (type) {
 			case MANAGER -> ((Manager)user).getId();

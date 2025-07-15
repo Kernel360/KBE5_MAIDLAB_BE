@@ -9,13 +9,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.admin.auth.service.AdminTokenService;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.auth.JwtDto;
 import kernel.maidlab.common.dto.auth.request.AdminLoginRequestDto;
 import kernel.maidlab.common.dto.auth.response.LoginResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.exception.BaseException;
+import kernel.maidlab.core.exception.BaseException;
 import kernel.maidlab.common.util.CookieUtil;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.core.security.jwt.JwtProperties;
@@ -87,7 +85,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 	// 관리자 로그아웃
 	@Override
 	public ResponseEntity<ResponseDto<Void>> logout(HttpServletRequest req, HttpServletResponse res) {
-		String adminKey = AuthenticationHelper.getCurrentUserId();
+		String adminKey = AuthenticationHelper.getCurrentUserKey();
 
 		adminTokenService.removeAdminRefreshToken(adminKey);
 		cookieUtil.clearRefreshTokenCookie(res);

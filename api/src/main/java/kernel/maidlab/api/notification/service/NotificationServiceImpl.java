@@ -45,7 +45,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	private Long getCurrentUserId(HttpServletRequest request) {
 		UserType type = getCurrentUserType(request);
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		Object user = userValidator.findByUuid(userId, type);
 
 		return switch (type) {
@@ -57,7 +57,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	private NotificationConnectionKey createConnectionKey() {
 		UserType type = AuthenticationHelper.getCurrentUserType();
-		String uuid = AuthenticationHelper.getCurrentUserId();
+		String uuid = AuthenticationHelper.getCurrentUserKey();
 		Object user = userValidator.findByUuid(uuid, type);
 
 		return switch (type) {
