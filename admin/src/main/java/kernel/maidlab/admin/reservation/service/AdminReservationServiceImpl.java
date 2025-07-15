@@ -39,7 +39,7 @@ import kernel.maidlab.common.entity.reservation.ServiceDetailType;
 import kernel.maidlab.common.entity.reservation.Settlement;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
-import kernel.maidlab.common.exception.custom.ReservationException;
+import kernel.maidlab.core.exception.custom.ReservationException;
 import lombok.RequiredArgsConstructor;
 
 @Service
