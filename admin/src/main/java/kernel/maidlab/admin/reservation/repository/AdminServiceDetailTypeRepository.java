@@ -1,10 +1,11 @@
 package kernel.maidlab.admin.reservation.repository;
 
-import kernel.maidlab.domain.reservation.entity.ServiceDetailType;
-import kernel.maidlab.common.enums.ServiceType;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import kernel.maidlab.common.enums.ServiceType;
+import kernel.maidlab.domain.reservation.entity.ServiceDetailType;
 
 public interface AdminServiceDetailTypeRepository extends JpaRepository<ServiceDetailType, Long> {
 	List<ServiceDetailType> findByServiceType(ServiceType type);

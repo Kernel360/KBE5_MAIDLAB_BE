@@ -1,12 +1,7 @@
 package kernel.maidlab.admin.manager.service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.admin.manager.repository.AdminManagerRepository;
-import kernel.maidlab.domain.manager.dto.ManagerListResponseDto;
-import kernel.maidlab.domain.manager.dto.response.AdminManagerResponseDto;
-import kernel.maidlab.domain.manager.entity.Manager;
-import kernel.maidlab.common.enums.Status;
-import lombok.RequiredArgsConstructor;
+import java.util.Objects;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +9,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
+import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.admin.manager.repository.AdminManagerRepository;
+import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.domain.manager.dto.ManagerListResponseDto;
+import kernel.maidlab.domain.manager.dto.response.AdminManagerResponseDto;
+import kernel.maidlab.domain.manager.entity.Manager;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +46,7 @@ public class AdminManagerServiceImpl implements AdminManagerService {
 
 	@Override
 	public Page<ManagerListResponseDto> getManagerByPageWithStatus(int page, int size, Status status,
-																   boolean sortByRating, Boolean isDescending) {
+		boolean sortByRating, Boolean isDescending) {
 		Pageable pageable;
 
 		if (sortByRating) {
