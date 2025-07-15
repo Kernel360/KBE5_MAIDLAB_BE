@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.validation.BindException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -143,6 +144,16 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
+			.body(new ErrorResponseDto(ResponseType.VALIDATION_FAILED));
+	}
+
+	@ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+	public ResponseEntity<ErrorResponseDto> handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException e) {
+		log.warn("HTTP media type not acceptable: {}", e.getMessage());
+		trackException("HttpMediaTypeNotAcceptableException");
+
+		return ResponseEntity
+			.status(HttpStatus.NOT_ACCEPTABLE)
 			.body(new ErrorResponseDto(ResponseType.VALIDATION_FAILED));
 	}
 

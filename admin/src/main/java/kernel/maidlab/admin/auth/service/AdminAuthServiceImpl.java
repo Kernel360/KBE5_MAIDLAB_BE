@@ -8,8 +8,6 @@ import kernel.maidlab.admin.auth.repository.AdminRepository;
 import kernel.maidlab.api.auth.dto.request.AdminLoginRequestDto;
 import kernel.maidlab.api.auth.dto.response.LoginResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.auth.request.AdminLoginRequestDto;
-import kernel.maidlab.common.dto.auth.response.LoginResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.util.CookieUtil;
 import kernel.maidlab.core.exception.BaseException;

@@ -17,6 +17,7 @@ import kernel.maidlab.api.manager.entity.Manager;
 import kernel.maidlab.api.manager.repository.ManagerRepository;
 import kernel.maidlab.api.util.UserValidator;
 import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.enums.LogLevel;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.SocialType;
 import kernel.maidlab.common.enums.UserType;
