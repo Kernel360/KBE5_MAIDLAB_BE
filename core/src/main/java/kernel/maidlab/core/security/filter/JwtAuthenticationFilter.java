@@ -2,6 +2,7 @@ package kernel.maidlab.core.security.filter;
 
 import java.io.IOException;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -26,9 +27,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final JwtProperties jwtProperties;
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-		HttpServletResponse response,
-		FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(@NonNull HttpServletRequest request,
+		@NonNull HttpServletResponse response,
+		@NonNull FilterChain filterChain) throws ServletException, IOException {
 
 		try {
 			String jwt = extractTokenFromRequest(request);
@@ -41,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 
 					log.debug("JWT 토큰 인증 성공 - 사용자: {}, 타입: {}",
-						jwtProvider.getUserId(jwt),
+						jwtProvider.getUserKey(jwt),
 						jwtProvider.getUserType(jwt));
 				} else {
 					log.warn("Access Token이 아닌 토큰으로 인증 시도: {}", jwtProvider.getTokenType(jwt));
@@ -77,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	// path 필터
 	@Override
-	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+	protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
 		String path = request.getRequestURI();
 
 		return isPublicPath(path);

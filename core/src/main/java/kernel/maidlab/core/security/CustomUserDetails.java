@@ -15,7 +15,7 @@ import lombok.Getter;
 @Builder
 public class CustomUserDetails implements UserDetails {
 
-	private final String userId; // 사용자 고유 ID (consumerUuid, managerUuid, adminKey)
+	private final String userKey; // 사용자 고유 ID (consumerUuid, managerUuid, adminKey)
 	private final UserType userType; // 사용자 타입 (권한 구분용)
 
 	@Override
@@ -31,8 +31,8 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return userId; // username 으로 userId 사용
-	}
+		return userKey;
+	} // username 으로 userKey 사용
 
 	// JWT 기반에서는 토큰 자체가 유효성을 보장하므로 모두 true
 	@Override
