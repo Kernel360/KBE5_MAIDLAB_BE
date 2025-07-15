@@ -1,12 +1,12 @@
 package kernel.maidlab.domain.board.dto.response;
 
-import kernel.maidlab.domain.board.dto.BoardQueryDto;
+import java.time.LocalDateTime;
+
 import kernel.maidlab.common.enums.BoardType;
+import kernel.maidlab.domain.board.dto.BoardQueryDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor

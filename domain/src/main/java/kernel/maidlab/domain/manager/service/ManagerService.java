@@ -1,6 +1,12 @@
 package kernel.maidlab.domain.manager.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.domain.consumer.entity.Consumer;
 import kernel.maidlab.domain.manager.dto.request.ProfileRequestDto;
 import kernel.maidlab.domain.manager.dto.request.ProfileUpdateRequestDto;
@@ -9,11 +15,6 @@ import kernel.maidlab.domain.manager.dto.response.ProfileResponseDto;
 import kernel.maidlab.domain.manager.dto.response.ReviewListResponseDto;
 import kernel.maidlab.domain.manager.entity.Manager;
 import kernel.maidlab.domain.matching.dto.response.AvailableManagerResponseDto;
-import kernel.maidlab.common.dto.ResponseDto;
-import org.springframework.http.ResponseEntity;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 public interface ManagerService {
 

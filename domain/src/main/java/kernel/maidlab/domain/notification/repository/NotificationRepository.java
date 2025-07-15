@@ -1,8 +1,7 @@
 package kernel.maidlab.domain.notification.repository;
 
-import kernel.maidlab.domain.notification.entity.Notification;
-import kernel.maidlab.common.enums.NotificationType;
-import kernel.maidlab.common.enums.UserType;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import kernel.maidlab.common.enums.NotificationType;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.domain.notification.entity.Notification;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {

@@ -1,21 +1,29 @@
 package kernel.maidlab.board;
 
+import java.nio.file.AccessDeniedException;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
 import kernel.maidlab.domain.board.dto.request.BoardRequestDto;
 import kernel.maidlab.domain.board.dto.request.BoardUpdateRequestDto;
 import kernel.maidlab.domain.board.dto.response.BoardDetailResponseDto;
 import kernel.maidlab.domain.board.dto.response.BoardResponseDto;
 import kernel.maidlab.domain.board.service.BoardService;
-import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.nio.file.AccessDeniedException;
-import java.util.List;
 
 @Slf4j
 @RestController

@@ -1,18 +1,15 @@
 package kernel.maidlab.domain.manager.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.domain.auth.service.JwtTokenService;
-import kernel.maidlab.domain.consumer.entity.Consumer;
-import kernel.maidlab.domain.manager.dto.object.*;
-import kernel.maidlab.domain.manager.dto.request.ProfileRequestDto;
-import kernel.maidlab.domain.manager.dto.request.ProfileUpdateRequestDto;
-import kernel.maidlab.domain.manager.dto.response.MypageResponseDto;
-import kernel.maidlab.domain.manager.dto.response.ProfileResponseDto;
-import kernel.maidlab.domain.manager.dto.response.ReviewListResponseDto;
-import kernel.maidlab.domain.manager.entity.*;
-import kernel.maidlab.domain.manager.repository.*;
-import kernel.maidlab.domain.matching.dto.response.AvailableManagerResponseDto;
-import kernel.maidlab.domain.reservation.repository.ReviewRepository;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.ServiceType;
@@ -20,16 +17,34 @@ import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.exception.BaseException;
 import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.domain.auth.service.JwtTokenService;
+import kernel.maidlab.domain.consumer.entity.Consumer;
+import kernel.maidlab.domain.manager.dto.object.DocumentListItem;
+import kernel.maidlab.domain.manager.dto.object.RegionListItem;
+import kernel.maidlab.domain.manager.dto.object.ReviewListItem;
+import kernel.maidlab.domain.manager.dto.object.ScheduleListItem;
+import kernel.maidlab.domain.manager.dto.object.ServiceListItem;
+import kernel.maidlab.domain.manager.dto.request.ProfileRequestDto;
+import kernel.maidlab.domain.manager.dto.request.ProfileUpdateRequestDto;
+import kernel.maidlab.domain.manager.dto.response.MypageResponseDto;
+import kernel.maidlab.domain.manager.dto.response.ProfileResponseDto;
+import kernel.maidlab.domain.manager.dto.response.ReviewListResponseDto;
+import kernel.maidlab.domain.manager.entity.Manager;
+import kernel.maidlab.domain.manager.entity.ManagerDocument;
+import kernel.maidlab.domain.manager.entity.ManagerRegion;
+import kernel.maidlab.domain.manager.entity.ManagerSchedule;
+import kernel.maidlab.domain.manager.entity.ManagerServiceType;
+import kernel.maidlab.domain.manager.entity.Region;
+import kernel.maidlab.domain.manager.repository.ManagerDocumentRepository;
+import kernel.maidlab.domain.manager.repository.ManagerRegionRepository;
+import kernel.maidlab.domain.manager.repository.ManagerRepository;
+import kernel.maidlab.domain.manager.repository.ManagerScheduleRepository;
+import kernel.maidlab.domain.manager.repository.ManagerServiceTypeRepository;
+import kernel.maidlab.domain.manager.repository.RegionRepository;
+import kernel.maidlab.domain.matching.dto.response.AvailableManagerResponseDto;
+import kernel.maidlab.domain.reservation.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service

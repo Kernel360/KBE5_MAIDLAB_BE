@@ -148,7 +148,8 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
-	public ResponseEntity<ErrorResponseDto> handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException e) {
+	public ResponseEntity<ErrorResponseDto> handleHttpMediaTypeNotAcceptableException(
+		HttpMediaTypeNotAcceptableException e) {
 		log.warn("HTTP media type not acceptable: {}", e.getMessage());
 		trackException("HttpMediaTypeNotAcceptableException");
 

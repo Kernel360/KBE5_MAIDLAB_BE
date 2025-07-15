@@ -1,16 +1,16 @@
 package kernel.maidlab.domain.manager.dto.request;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
+import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.domain.manager.dto.object.RegionListItem;
 import kernel.maidlab.domain.manager.dto.object.ScheduleListItem;
 import kernel.maidlab.domain.manager.dto.object.ServiceListItem;
-import kernel.maidlab.common.enums.Gender;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Setter

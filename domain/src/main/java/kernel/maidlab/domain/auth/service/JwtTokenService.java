@@ -1,16 +1,17 @@
 package kernel.maidlab.domain.auth.service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.security.jwt.JwtProvider;
 import kernel.maidlab.domain.auth.dto.JwtDto;
 import kernel.maidlab.domain.consumer.entity.Consumer;
 import kernel.maidlab.domain.consumer.repository.ConsumerRepository;
 import kernel.maidlab.domain.manager.entity.Manager;
 import kernel.maidlab.domain.manager.repository.ManagerRepository;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.core.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service

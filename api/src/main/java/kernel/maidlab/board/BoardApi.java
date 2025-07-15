@@ -1,5 +1,9 @@
 package kernel.maidlab.board;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -10,14 +14,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.domain.board.dto.request.BoardRequestDto;
 import kernel.maidlab.domain.board.dto.request.BoardUpdateRequestDto;
 import kernel.maidlab.domain.board.dto.response.BoardDetailResponseDto;
 import kernel.maidlab.domain.board.dto.response.BoardResponseDto;
-import kernel.maidlab.common.dto.ResponseDto;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 @Tag(name = "Board API", description = "게시판 관련 API 명세입니다.")
 public interface BoardApi {

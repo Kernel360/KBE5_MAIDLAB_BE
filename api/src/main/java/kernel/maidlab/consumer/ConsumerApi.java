@@ -1,5 +1,9 @@
 package kernel.maidlab.consumer;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -9,16 +13,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.domain.consumer.dto.ConsumerMyPageDto;
 import kernel.maidlab.domain.consumer.dto.request.ConsumerProfileRequestDto;
 import kernel.maidlab.domain.consumer.dto.request.PreferenceRequestDto;
 import kernel.maidlab.domain.consumer.dto.response.BlackListedManagerResponseDto;
 import kernel.maidlab.domain.consumer.dto.response.ConsumerProfileResponseDto;
 import kernel.maidlab.domain.consumer.dto.response.LikedManagerResponseDto;
-import kernel.maidlab.common.dto.ResponseDto;
 import lombok.Generated;
-import org.springframework.http.ResponseEntity;
-import java.util.List;
 
 @Tag(name = "Consumer", description = "소비자(Consumer) 관련 API")
 @Generated

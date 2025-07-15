@@ -1,13 +1,13 @@
 package kernel.maidlab.domain.notification.dto;
 
-import kernel.maidlab.domain.notification.entity.Notification;
+import java.time.LocalDateTime;
+
 import kernel.maidlab.common.enums.NotificationType;
 import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.domain.notification.entity.Notification;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor

@@ -1,6 +1,17 @@
 package kernel.maidlab.domain.point.service;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.domain.consumer.entity.Consumer;
 import kernel.maidlab.domain.point.dto.request.PointChargeRequestDto;
 import kernel.maidlab.domain.point.dto.request.PointRecordRequestDto;
@@ -10,17 +21,7 @@ import kernel.maidlab.domain.point.dto.response.PointResponseDto;
 import kernel.maidlab.domain.point.entity.Point;
 import kernel.maidlab.domain.point.repository.PointRepository;
 import kernel.maidlab.domain.util.UserValidator;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

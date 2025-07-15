@@ -1,7 +1,20 @@
 package kernel.maidlab.domain.board.service;
 
+import java.nio.file.AccessDeniedException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.aop.aspect.auth.AuthenticationAspect;
+import kernel.maidlab.core.security.AuthenticationHelper;
+import kernel.maidlab.core.security.CustomUserDetails;
 import kernel.maidlab.domain.board.dto.BoardQueryDto;
 import kernel.maidlab.domain.board.dto.ImageDto;
 import kernel.maidlab.domain.board.dto.request.BoardRequestDto;
@@ -17,20 +30,8 @@ import kernel.maidlab.domain.consumer.repository.ConsumerRepository;
 import kernel.maidlab.domain.manager.entity.Manager;
 import kernel.maidlab.domain.manager.repository.ManagerRepository;
 import kernel.maidlab.domain.util.UserValidator;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.core.aop.aspect.auth.AuthenticationAspect;
-import kernel.maidlab.core.security.AuthenticationHelper;
-import kernel.maidlab.core.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.nio.file.AccessDeniedException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service

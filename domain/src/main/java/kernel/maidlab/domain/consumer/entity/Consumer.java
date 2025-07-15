@@ -1,17 +1,23 @@
 package kernel.maidlab.domain.consumer.entity;
 
-import jakarta.persistence.*;
-import kernel.maidlab.domain.consumer.dto.request.ConsumerProfileRequestDto;
-import kernel.maidlab.domain.consumer.dto.request.ConsumerProfileUpdateRequestDto;
+import java.time.LocalDate;
+import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Index;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import kernel.maidlab.common.entity.base.TimeBase;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.common.enums.SocialType;
+import kernel.maidlab.domain.consumer.dto.request.ConsumerProfileRequestDto;
+import kernel.maidlab.domain.consumer.dto.request.ConsumerProfileUpdateRequestDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.util.UUID;
 
 @Entity
 @Table(name = "consumer", indexes = {
