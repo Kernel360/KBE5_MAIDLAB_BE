@@ -35,6 +35,13 @@ public class SecurityConfig {
 		http
 			.csrf(AbstractHttpConfigurer::disable)
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+			.headers(headers -> headers
+				.frameOptions(frameOptions -> frameOptions.deny())
+				.httpStrictTransportSecurity(hstsConfig -> hstsConfig
+					.maxAgeInSeconds(31536000)
+					.includeSubDomains(true)
+				)
+			)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
@@ -56,7 +63,8 @@ public class SecurityConfig {
 					"/swagger-resources/**",
 					"/webjars/**",
 					"/favicon.ico",
-					"/error"
+					"/error",
+					"/admin/logs/stream"// WebSocket 엔드포인트
 				).permitAll()
 
 				// 관리자 전용 API
@@ -77,7 +85,8 @@ public class SecurityConfig {
 					"/api/matching/**",
 					"/api/reservations/**",
 					"/api/points/**",
-					"/api/aws/**"
+					"/api/aws/**",
+					"/api/notifications/**"
 				).hasAnyRole("CONSUMER", "MANAGER")
 
 				// 나머지 모든 요청은 인증 필요

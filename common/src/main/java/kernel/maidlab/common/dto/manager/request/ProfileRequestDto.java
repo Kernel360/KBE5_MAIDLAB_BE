@@ -2,7 +2,9 @@ package kernel.maidlab.common.dto.manager.request;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import kernel.maidlab.common.dto.manager.object.DocumentListItem;
 import kernel.maidlab.common.dto.manager.object.RegionListItem;
 import kernel.maidlab.common.dto.manager.object.ScheduleListItem;
@@ -18,18 +20,22 @@ public class ProfileRequestDto {
 
 	private String profileImage;
 
-	@NotBlank
+	@NotEmpty
+	@Valid
 	private List<ServiceListItem> serviceTypes;
 
-	@NotBlank
+	@NotEmpty
+	@Valid
 	private List<RegionListItem> regions;
 
-	@NotBlank
+	@NotEmpty
+	@Valid
 	private List<ScheduleListItem> availableTimes;
 
 	private String introduceText;
 
-	@NotBlank
+	@NotEmpty
+	@Valid
 	private List<DocumentListItem> documents;
 
 }

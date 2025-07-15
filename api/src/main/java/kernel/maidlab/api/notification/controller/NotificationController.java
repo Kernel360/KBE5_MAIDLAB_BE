@@ -2,6 +2,9 @@ package kernel.maidlab.api.notification.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -42,8 +46,8 @@ public class NotificationController {
 	@CrossOrigin(origins = {"http://localhost:5173", "https://kbe-5-maidlab-fe.vercel.app",
 		"https://api-maidlab.duckdns.org", "https://www.maidlab.site"})
 	@GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public SseEmitter connect(HttpServletRequest request) {
-		return notificationService.connect(request);
+	public SseEmitter connect() {
+		return notificationService.connect();
 	}
 
 	@Operation(summary = "SSE 연결 해제", description = "사용자의 SSE 연결을 해제합니다.")
@@ -57,6 +61,17 @@ public class NotificationController {
 	@GetMapping("/unread")
 	public ResponseEntity<ResponseDto<List<NotificationDto>>> getUnreadNotifications(HttpServletRequest request) {
 		List<NotificationDto> notifications = notificationService.getUnreadNotifications(request);
+		return ResponseDto.success(ResponseType.SUCCESS, notifications);
+	}
+
+	@Operation(summary = "전체 알림 조회", description = "사용자의 모든 알림 목록을 페이징으로 조회합니다.")
+	@GetMapping
+	public ResponseEntity<ResponseDto<Page<NotificationDto>>> getAllNotifications(
+		HttpServletRequest request,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<NotificationDto> notifications = notificationService.getAllNotifications(request, pageable);
 		return ResponseDto.success(ResponseType.SUCCESS, notifications);
 	}
 
