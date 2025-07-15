@@ -12,7 +12,6 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import kernel.maidlab.core.security.jwt.AdminJwtProvider;
-import kernel.maidlab.common.dto.auth.AdminJwtDto;
 
 @Component
 public class WebSocketAuthInterceptor implements HandshakeInterceptor {

@@ -21,8 +21,8 @@ import kernel.maidlab.common.dto.auth.request.SocialSignUpRequestDto;
 import kernel.maidlab.common.dto.auth.response.LoginResponseDto;
 import kernel.maidlab.common.dto.auth.response.SocialLoginResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.core.exception.BaseException;
 import kernel.maidlab.common.util.CookieUtil;
+import kernel.maidlab.core.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

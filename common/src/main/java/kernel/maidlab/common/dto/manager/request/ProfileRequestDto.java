@@ -3,7 +3,6 @@ package kernel.maidlab.common.dto.manager.request;
 import java.util.List;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import kernel.maidlab.common.dto.manager.object.DocumentListItem;
 import kernel.maidlab.common.dto.manager.object.RegionListItem;

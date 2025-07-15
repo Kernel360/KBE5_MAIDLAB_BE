@@ -2,7 +2,7 @@ package kernel.maidlab.common.enums;
 
 public enum LogLevel {
 	DEBUG,
-	INFO, 
+	INFO,
 	WARN,
 	ERROR
 }

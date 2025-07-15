@@ -80,25 +80,25 @@ public class AuthenticationHelper {
 	// 클라이언트 IP 주소 추출
 	private static String getClientIp() {
 		try {
-			ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			ServletRequestAttributes attributes = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
 			if (attributes == null) {
 				return "unknown";
 			}
-			
+
 			HttpServletRequest request = attributes.getRequest();
-			
+
 			// X-Forwarded-For 헤더 확인 (프록시 서버를 통한 요청)
 			String xForwardedFor = request.getHeader("X-Forwarded-For");
 			if (xForwardedFor != null && !xForwardedFor.isEmpty() && !"unknown".equalsIgnoreCase(xForwardedFor)) {
 				return xForwardedFor.split(",")[0].trim();
 			}
-			
+
 			// X-Real-IP 헤더 확인
 			String xRealIp = request.getHeader("X-Real-IP");
 			if (xRealIp != null && !xRealIp.isEmpty() && !"unknown".equalsIgnoreCase(xRealIp)) {
 				return xRealIp;
 			}
-			
+
 			// 기본 RemoteAddr 사용
 			return request.getRemoteAddr();
 		} catch (Exception e) {

@@ -31,11 +31,11 @@ public class FallbackAspect {
 		} catch (Throwable exception) {
 			if (shouldApplyFallback(exception, fallback.exceptions())) {
 				if (exception instanceof kernel.maidlab.core.exception.BaseException) {
-					log.warn("Fallback 적용 - {}#{}, 예외 정보: {}", 
-						className, methodName, 
-						ExceptionUtils.formatExceptionForLog((kernel.maidlab.core.exception.BaseException) exception));
+					log.warn("Fallback 적용 - {}#{}, 예외 정보: {}",
+						className, methodName,
+						ExceptionUtils.formatExceptionForLog((kernel.maidlab.core.exception.BaseException)exception));
 				} else {
-					log.warn("Fallback 적용 - {}#{}, 예외: {} - {}", 
+					log.warn("Fallback 적용 - {}#{}, 예외: {} - {}",
 						className, methodName, exception.getClass().getSimpleName(), exception.getMessage());
 				}
 				return executeFallback(joinPoint, fallback, exception);

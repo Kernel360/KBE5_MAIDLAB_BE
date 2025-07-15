@@ -165,7 +165,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 
 		BooleanExpression statusCondition = null;
 		BooleanExpression dateCondition = null;
-		
+
 		// 상태별 조건 처리
 		if (status != null) {
 			if (status == Status.PAID) {
@@ -174,7 +174,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 			} else {
 				statusCondition = reservation.status.eq(status);
 			}
-			
+
 			// MATCHED, PAID, PENDING 상태일 때는 오늘 날짜 이후의 예약만 조회
 			if (status == Status.MATCHED || status == Status.PAID || status == Status.PENDING) {
 				LocalDate today = LocalDate.now();
@@ -182,7 +182,7 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 				dateCondition = reservation.reservationDate.goe(startOfToday);
 			}
 		}
-		
+
 		// 조건들을 결합
 		BooleanExpression finalCondition = baseCondition;
 		if (statusCondition != null) {

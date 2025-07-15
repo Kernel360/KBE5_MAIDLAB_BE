@@ -55,8 +55,9 @@ public class RetryAspect {
 				if (!shouldRetry(exception, retryFor, noRetryFor)) {
 					if (exception instanceof kernel.maidlab.core.exception.BaseException) {
 						log.warn("재시도 제외 예외 발생 - {}#{}, 예외 정보: {}",
-							className, methodName, 
-							ExceptionUtils.formatExceptionForLog((kernel.maidlab.core.exception.BaseException) exception));
+							className, methodName,
+							ExceptionUtils.formatExceptionForLog(
+								(kernel.maidlab.core.exception.BaseException)exception));
 					} else {
 						log.warn("재시도 제외 예외 발생 - {}#{}, 예외: {} - {}",
 							className, methodName, exception.getClass().getSimpleName(), exception.getMessage());
@@ -66,11 +67,11 @@ public class RetryAspect {
 
 				if (exception instanceof kernel.maidlab.core.exception.BaseException) {
 					log.warn("재시도 대기 - {}#{}, 시도 횟수: {}/{}, 대기 시간: {}ms, 예외 정보: {}",
-						className, methodName, attempt, maxAttempts, currentDelay, 
-						ExceptionUtils.formatExceptionForLog((kernel.maidlab.core.exception.BaseException) exception));
+						className, methodName, attempt, maxAttempts, currentDelay,
+						ExceptionUtils.formatExceptionForLog((kernel.maidlab.core.exception.BaseException)exception));
 				} else {
 					log.warn("재시도 대기 - {}#{}, 시도 횟수: {}/{}, 대기 시간: {}ms, 예외: {} - {}",
-						className, methodName, attempt, maxAttempts, currentDelay, 
+						className, methodName, attempt, maxAttempts, currentDelay,
 						exception.getClass().getSimpleName(), exception.getMessage());
 				}
 

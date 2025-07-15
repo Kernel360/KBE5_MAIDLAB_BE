@@ -37,16 +37,16 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(BaseException.class)
 	public ResponseEntity<ErrorResponseDto> handleBaseException(BaseException e) {
 		ResponseType type = e.getResponseType();
-		
+
 		// 커스텀 메시지가 있으면 사용
 		String displayMessage = e.getDisplayMessage();
-		
+
 		// 로그 레벨 분리 (AUTH 관련은 WARN, 나머지는 ERROR)
 		if (type.name().contains("AUTH")) {
-			log.warn("BaseException [{}] - code: {}, message: {}, timestamp: {}", 
+			log.warn("BaseException [{}] - code: {}, message: {}, timestamp: {}",
 				e.getClass().getSimpleName(), type.getCode(), displayMessage, e.getTimestamp());
 		} else {
-			log.error("BaseException [{}] - code: {}, message: {}, timestamp: {}", 
+			log.error("BaseException [{}] - code: {}, message: {}, timestamp: {}",
 				e.getClass().getSimpleName(), type.getCode(), displayMessage, e.getTimestamp());
 		}
 
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
 		}
 
 		trackException(e.getClass().getSimpleName());
-		
+
 		return ResponseEntity
 			.status(type.getHttpStatus())
 			.body(new ErrorResponseDto(type));
@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponseDto> handleValidationException(MethodArgumentNotValidException e) {
 		log.warn("Validation failed: {}", e.getBindingResult().getAllErrors().getFirst().getDefaultMessage());
 		trackException("ValidationException");
-		
+
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponseDto(ResponseType.VALIDATION_FAILED));
@@ -77,7 +77,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponseDto> handleBindException(BindException e) {
 		log.warn("Bind exception: {}", e.getBindingResult().getAllErrors().getFirst().getDefaultMessage());
 		trackException("BindException");
-		
+
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponseDto(ResponseType.VALIDATION_FAILED));
@@ -87,7 +87,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponseDto> handleConstraintViolationException(ConstraintViolationException e) {
 		log.warn("Constraint violation: {}", e.getMessage());
 		trackException("ConstraintViolationException");
-		
+
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponseDto(ResponseType.VALIDATION_FAILED));
@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponseDto> handleMissingParameterException(MissingServletRequestParameterException e) {
 		log.warn("Missing parameter: {}", e.getParameterName());
 		trackException("MissingParameterException");
-		
+
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponseDto(ResponseType.VALIDATION_FAILED));
@@ -108,7 +108,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponseDto> handleTypeMismatchException(MethodArgumentTypeMismatchException e) {
 		log.warn("Type mismatch for parameter '{}': {}", e.getName(), e.getValue());
 		trackException("TypeMismatchException");
-		
+
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponseDto(ResponseType.VALIDATION_FAILED));
@@ -116,10 +116,11 @@ public class GlobalExceptionHandler {
 
 	// HTTP 관련 예외 처리
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-	public ResponseEntity<ErrorResponseDto> handleMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+	public ResponseEntity<ErrorResponseDto> handleMethodNotSupportedException(
+		HttpRequestMethodNotSupportedException e) {
 		log.warn("Method not supported: {}", e.getMethod());
 		trackException("MethodNotSupportedException");
-		
+
 		return ResponseEntity
 			.status(HttpStatus.METHOD_NOT_ALLOWED)
 			.body(new ErrorResponseDto(ResponseType.VALIDATION_FAILED));
@@ -129,7 +130,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponseDto> handleNoHandlerFoundException(NoHandlerFoundException e) {
 		log.warn("No handler found for {} {}", e.getHttpMethod(), e.getRequestURL());
 		trackException("NoHandlerFoundException");
-		
+
 		return ResponseEntity
 			.status(HttpStatus.NOT_FOUND)
 			.body(new ErrorResponseDto(ResponseType.VALIDATION_FAILED));
@@ -139,7 +140,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponseDto> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
 		log.warn("HTTP message not readable: {}", e.getMessage());
 		trackException("HttpMessageNotReadableException");
-		
+
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponseDto(ResponseType.VALIDATION_FAILED));
@@ -163,10 +164,10 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponseDto> handleUnknownException(Exception e) {
 		log.error("🚨 Unhandled Exception: {}", e.getMessage(), e);
 		trackException("UnknownException");
-		
+
 		// 중요한 예외이므로 Discord 알림 발송
 		notifyException(e);
-		
+
 		return ResponseEntity
 			.status(ResponseType.DATABASE_ERROR.getHttpStatus())
 			.body(new ErrorResponseDto(ResponseType.DATABASE_ERROR));
@@ -175,8 +176,8 @@ public class GlobalExceptionHandler {
 	// 예외 발생 빈도 추적
 	private void trackException(String exceptionType) {
 		exceptionCountMap.computeIfAbsent(exceptionType, k -> new AtomicInteger(0))
-						.incrementAndGet();
-		
+			.incrementAndGet();
+
 		// 10회마다 로그 출력
 		int count = exceptionCountMap.get(exceptionType).get();
 		if (count % 10 == 0) {

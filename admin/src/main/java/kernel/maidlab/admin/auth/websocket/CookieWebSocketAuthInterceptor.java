@@ -12,10 +12,9 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.core.security.jwt.AdminJwtProvider;
 import kernel.maidlab.admin.auth.service.AdminTokenService;
-import kernel.maidlab.common.dto.auth.AdminJwtDto;
 import kernel.maidlab.common.util.CookieUtil;
+import kernel.maidlab.core.security.jwt.AdminJwtProvider;
 
 @Component
 public class CookieWebSocketAuthInterceptor implements HandshakeInterceptor {
@@ -26,7 +25,8 @@ public class CookieWebSocketAuthInterceptor implements HandshakeInterceptor {
 	private final AdminTokenService adminTokenService;
 	private final CookieUtil cookieUtil;
 
-	public CookieWebSocketAuthInterceptor(AdminJwtProvider adminJwtProvider, AdminTokenService adminTokenService, CookieUtil cookieUtil) {
+	public CookieWebSocketAuthInterceptor(AdminJwtProvider adminJwtProvider, AdminTokenService adminTokenService,
+		CookieUtil cookieUtil) {
 		this.adminJwtProvider = adminJwtProvider;
 		this.adminTokenService = adminTokenService;
 		this.cookieUtil = cookieUtil;
@@ -60,7 +60,7 @@ public class CookieWebSocketAuthInterceptor implements HandshakeInterceptor {
 			}
 
 			String adminKey = adminJwtProvider.getAdminKey(cookieRefreshToken);
-			
+
 			// Check if token matches stored token in DB
 			String storedToken = adminTokenService.getStoredAdminRefreshToken(adminKey);
 			if (storedToken == null || !storedToken.equals(cookieRefreshToken)) {
