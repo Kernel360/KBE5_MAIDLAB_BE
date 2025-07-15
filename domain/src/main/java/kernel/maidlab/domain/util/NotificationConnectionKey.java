@@ -1,4 +1,4 @@
-package kernel.maidlab.domain.notification.util;
+package kernel.maidlab.domain.util;
 
 import kernel.maidlab.common.enums.UserType;
 import lombok.AllArgsConstructor;

@@ -6,7 +6,7 @@ import kernel.maidlab.domain.manager.entity.Manager;
 import kernel.maidlab.domain.notification.dto.NotificationDto;
 import kernel.maidlab.domain.notification.entity.Notification;
 import kernel.maidlab.domain.notification.repository.NotificationRepository;
-import kernel.maidlab.domain.notification.util.NotificationConnectionKey;
+import kernel.maidlab.domain.util.NotificationConnectionKey;
 import kernel.maidlab.domain.util.UserValidator;
 import kernel.maidlab.common.enums.NotificationType;
 import kernel.maidlab.common.enums.Status;
