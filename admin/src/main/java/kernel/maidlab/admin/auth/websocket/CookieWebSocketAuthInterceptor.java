@@ -59,7 +59,7 @@ public class CookieWebSocketAuthInterceptor implements HandshakeInterceptor {
 			}
 
 			String adminKey = adminJwtProvider.getAdminKey(cookieRefreshToken);
-			
+
 			// Check if token matches stored token in DB
 			String storedToken = adminTokenService.getStoredAdminRefreshToken(adminKey);
 			if (storedToken == null || !storedToken.equals(cookieRefreshToken)) {
