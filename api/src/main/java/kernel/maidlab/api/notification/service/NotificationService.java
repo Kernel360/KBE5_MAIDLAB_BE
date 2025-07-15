@@ -23,6 +23,8 @@ public interface NotificationService {
 	// 알림 조회
 	List<NotificationDto> getUnreadNotifications(HttpServletRequest request);
 
+	Page<NotificationDto> getAllNotifications(HttpServletRequest request, Pageable pageable);
+
 	Page<NotificationDto> getNotifications(HttpServletRequest request, Pageable pageable);
 
 	List<NotificationDto> getNotificationsByType(HttpServletRequest request, NotificationType type);

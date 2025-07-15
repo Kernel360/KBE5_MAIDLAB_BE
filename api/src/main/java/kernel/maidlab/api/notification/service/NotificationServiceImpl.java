@@ -197,6 +197,14 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
+	public Page<NotificationDto> getAllNotifications(HttpServletRequest request, Pageable pageable) {
+		Long id = getCurrentUserId(request);
+		UserType type = getCurrentUserType(request);
+		return notificationRepository.findByReceiverIdAndReceiverTypeOrderByCreatedAtDesc(id, type, pageable)
+			.map(NotificationDto::fromEntity);
+	}
+
+	@Override
 	public Page<NotificationDto> getNotifications(HttpServletRequest request, Pageable pageable) {
 		Long id = getCurrentUserId(request);
 		UserType type = getCurrentUserType(request);
