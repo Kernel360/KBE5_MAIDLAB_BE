@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static kernel.maidlab.api.reservation.entity.QReservation.reservation;
+import static kernel.maidlab.domain.reservation.entity.QReservation.reservation;
 
 @Repository
 @RequiredArgsConstructor

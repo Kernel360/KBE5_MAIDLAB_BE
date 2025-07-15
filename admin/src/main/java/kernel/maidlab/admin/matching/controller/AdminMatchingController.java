@@ -2,7 +2,7 @@ package kernel.maidlab.admin.matching.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.matching.service.AdminMatchingService;
-import kernel.maidlab.api.matching.dto.response.MatchingResponseDto;
+import kernel.maidlab.domain.matching.dto.response.MatchingResponseDto;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;

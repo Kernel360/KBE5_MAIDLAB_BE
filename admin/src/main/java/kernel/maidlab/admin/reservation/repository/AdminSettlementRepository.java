@@ -1,6 +1,6 @@
 package kernel.maidlab.admin.reservation.repository;
 
-import kernel.maidlab.api.reservation.entity.Settlement;
+import kernel.maidlab.domain.reservation.entity.Settlement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

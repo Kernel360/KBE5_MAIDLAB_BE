@@ -1,6 +1,6 @@
 package kernel.maidlab.admin.reservation.repository;
 
-import kernel.maidlab.api.reservation.entity.Reservation;
+import kernel.maidlab.domain.reservation.entity.Reservation;
 import kernel.maidlab.common.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

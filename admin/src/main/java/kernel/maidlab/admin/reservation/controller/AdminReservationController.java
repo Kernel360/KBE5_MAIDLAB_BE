@@ -2,9 +2,9 @@ package kernel.maidlab.admin.reservation.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.reservation.service.AdminReservationService;
-import kernel.maidlab.api.reservation.dto.response.*;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.domain.reservation.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,7 +25,7 @@ public class AdminReservationController implements AdminReservationApi {
 	@GetMapping
 	@Override
 	public ResponseEntity<ResponseDto<List<ReservationResponseDto>>> adminReservations(HttpServletRequest request,
-		@RequestParam int page, @RequestParam int size) {
+																					   @RequestParam int page, @RequestParam int size) {
 		List<ReservationResponseDto> response = adminReservationsService.adminReservations(request, page, size);
 		return ResponseDto.success(ResponseType.SUCCESS, response);
 	}

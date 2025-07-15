@@ -1,6 +1,6 @@
 package kernel.maidlab.admin.manager.repository;
 
-import kernel.maidlab.api.manager.entity.ManagerRegion;
+import kernel.maidlab.domain.manager.entity.ManagerRegion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

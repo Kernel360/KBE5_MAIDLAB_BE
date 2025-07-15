@@ -2,14 +2,14 @@ package kernel.maidlab.admin.board.repository.support.querydsl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityNotFoundException;
-import kernel.maidlab.api.board.entity.Board;
+import kernel.maidlab.domain.board.entity.Board;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-import static kernel.maidlab.api.board.entity.QAnswer.answer;
-import static kernel.maidlab.api.board.entity.QBoard.board;
+import static kernel.maidlab.domain.board.entity.QAnswer.answer;
+import static kernel.maidlab.domain.board.entity.QBoard.board;
 
 @Repository
 @RequiredArgsConstructor

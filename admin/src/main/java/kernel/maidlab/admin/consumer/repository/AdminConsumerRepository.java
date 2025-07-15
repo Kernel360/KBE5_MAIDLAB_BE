@@ -1,6 +1,6 @@
 package kernel.maidlab.admin.consumer.repository;
 
-import kernel.maidlab.api.consumer.entity.Consumer;
+import kernel.maidlab.domain.consumer.entity.Consumer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

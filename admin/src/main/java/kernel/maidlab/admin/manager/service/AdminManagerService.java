@@ -1,8 +1,8 @@
 package kernel.maidlab.admin.manager.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.api.manager.dto.ManagerListResponseDto;
-import kernel.maidlab.api.manager.dto.response.AdminManagerResponseDto;
+import kernel.maidlab.domain.manager.dto.ManagerListResponseDto;
+import kernel.maidlab.domain.manager.dto.response.AdminManagerResponseDto;
 import kernel.maidlab.common.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;

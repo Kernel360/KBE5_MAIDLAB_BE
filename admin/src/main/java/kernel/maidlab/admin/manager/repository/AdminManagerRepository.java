@@ -1,6 +1,6 @@
 package kernel.maidlab.admin.manager.repository;
 
-import kernel.maidlab.api.manager.entity.Manager;
+import kernel.maidlab.domain.manager.entity.Manager;
 import kernel.maidlab.common.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

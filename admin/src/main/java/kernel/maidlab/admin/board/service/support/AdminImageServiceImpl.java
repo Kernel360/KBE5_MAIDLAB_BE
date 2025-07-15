@@ -1,7 +1,7 @@
 package kernel.maidlab.admin.board.service.support;
 
-import kernel.maidlab.api.board.entity.BoardImage;
-import kernel.maidlab.api.board.repository.ImageRepository;
+import kernel.maidlab.domain.board.entity.BoardImage;
+import kernel.maidlab.domain.board.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -3,7 +3,7 @@ package kernel.maidlab.admin.service;
 
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.api.auth.dto.JwtDto;
+import kernel.maidlab.domain.auth.dto.JwtDto;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
