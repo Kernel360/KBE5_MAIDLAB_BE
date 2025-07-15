@@ -1,20 +1,21 @@
 package kernel.maidlab.admin.board.service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.domain.board.dto.request.AnswerRequestDto;
-import kernel.maidlab.domain.board.dto.response.AdminBoardDetailResponseDto;
-import kernel.maidlab.domain.board.dto.response.AdminBoardResponseDto;
-import kernel.maidlab.common.dto.ResponseDto;
+import java.nio.file.AccessDeniedException;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
-import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.domain.board.dto.request.AnswerRequestDto;
+import kernel.maidlab.domain.board.dto.response.AdminBoardDetailResponseDto;
+import kernel.maidlab.domain.board.dto.response.AdminBoardResponseDto;
 
 public interface AdminBoardService {
 
 	ResponseEntity<ResponseDto<List<AdminBoardResponseDto>>> getAllRefundBoardList(HttpServletRequest request, int page,
-																				   int size);
+		int size);
 
 	ResponseEntity<ResponseDto<AdminBoardDetailResponseDto>> adminGetConsumerBoard(
 		HttpServletRequest request,
@@ -25,7 +26,7 @@ public interface AdminBoardService {
 		int page, int size);
 
 	ResponseEntity<ResponseDto<Void>> createAnswer(AnswerRequestDto requestDto, HttpServletRequest request,
-												   Long boardId);
+		Long boardId);
 
 	@Transactional
 	ResponseEntity<ResponseDto<Void>> modifyAnswer(AnswerRequestDto requestDto, Long answerId);
