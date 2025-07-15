@@ -1,21 +1,23 @@
 package kernel.maidlab.domain.board.repository;
 
+import static kernel.maidlab.domain.board.entity.QAnswer.*;
+import static kernel.maidlab.domain.board.entity.QBoard.*;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Repository;
+
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.domain.board.dto.BoardQueryDto;
 import kernel.maidlab.domain.board.dto.QBoardQueryDto;
 import kernel.maidlab.domain.board.entity.Board;
 import kernel.maidlab.domain.board.entity.QAnswer;
 import kernel.maidlab.domain.board.entity.QBoard;
-import kernel.maidlab.common.enums.UserType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
-
-import static kernel.maidlab.domain.board.entity.QAnswer.answer;
-import static kernel.maidlab.domain.board.entity.QBoard.board;
 
 @Repository
 @RequiredArgsConstructor

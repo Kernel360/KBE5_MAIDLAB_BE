@@ -1,7 +1,21 @@
 package kernel.maidlab.domain.matching.service;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.exception.BaseException;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.domain.consumer.dto.response.LikedManagerResponseDto;
 import kernel.maidlab.domain.consumer.entity.Consumer;
 import kernel.maidlab.domain.consumer.service.ConsumerService;
@@ -19,21 +33,8 @@ import kernel.maidlab.domain.notification.service.NotificationService;
 import kernel.maidlab.domain.reservation.entity.Reservation;
 import kernel.maidlab.domain.reservation.repository.ReservationRepository;
 import kernel.maidlab.domain.util.UserValidator;
-import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.enums.Status;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.core.exception.BaseException;
-import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 @Service

@@ -1,6 +1,11 @@
 package kernel.maidlab.domain.manager.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import kernel.maidlab.common.entity.base.Base;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,7 +38,7 @@ public class ManagerSchedule extends Base {
 	}
 
 	public static ManagerSchedule managerSchedule(Manager manager, String availableDay, String availableStartTime,
-                                                  String availableEndTime) {
+		String availableEndTime) {
 		return new ManagerSchedule(manager, availableDay, availableStartTime, availableEndTime);
 	}
 }

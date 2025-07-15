@@ -1,9 +1,10 @@
 package kernel.maidlab.domain.consumer.repository;
 
-import kernel.maidlab.domain.consumer.entity.Consumer;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import kernel.maidlab.domain.consumer.entity.Consumer;
 
 public interface ConsumerRepository extends JpaRepository<Consumer, Long> {
 	Optional<Consumer> findByUuid(String uuid);
