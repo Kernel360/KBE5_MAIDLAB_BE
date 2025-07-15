@@ -1,12 +1,11 @@
 package kernel.maidlab.admin.board.repository;
 
-import java.util.List;
-
+import kernel.maidlab.admin.board.repository.support.querydsl.AdminBoardRepositoryCustom;
+import kernel.maidlab.domain.board.entity.Board;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import kernel.maidlab.admin.board.repository.support.querydsl.AdminBoardRepositoryCustom;
-import kernel.maidlab.common.entity.board.Board;
+import java.util.List;
 
 public interface AdminBoardRepository extends JpaRepository<Board, Long>, AdminBoardRepositoryCustom {
 
