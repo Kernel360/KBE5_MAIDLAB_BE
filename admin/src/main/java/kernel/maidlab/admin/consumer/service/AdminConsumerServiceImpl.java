@@ -6,9 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import kernel.maidlab.admin.consumer.repository.AdminConsumerRepository;
-import kernel.maidlab.common.dto.consumer.response.AdminConsumerProfileResponseDto;
-import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
-import kernel.maidlab.common.entity.consumer.Consumer;
+import kernel.maidlab.domain.consumer.dto.response.AdminConsumerProfileResponseDto;
+import kernel.maidlab.domain.consumer.dto.response.ConsumerListResponseDto;
+import kernel.maidlab.domain.consumer.entity.Consumer;
 import lombok.RequiredArgsConstructor;
 
 @Service

@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import kernel.maidlab.common.entity.reservation.Settlement;
+import kernel.maidlab.domain.reservation.entity.Settlement;
 
 public interface AdminSettlementRepository extends JpaRepository<Settlement, Long> {
 	List<Settlement> findByManagerIdAndCreatedAtBetween(Long managerId, LocalDateTime start, LocalDateTime end);

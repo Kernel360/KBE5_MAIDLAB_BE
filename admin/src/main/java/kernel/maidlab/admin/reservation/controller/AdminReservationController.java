@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.reservation.service.AdminReservationService;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
-import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.dto.reservation.response.SettlementGraphDataDto;
-import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.domain.reservation.dto.response.AdminReservationDetailResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.AdminWeeklySettlementResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.SettlementGraphDataDto;
+import kernel.maidlab.domain.reservation.dto.response.SettlementResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

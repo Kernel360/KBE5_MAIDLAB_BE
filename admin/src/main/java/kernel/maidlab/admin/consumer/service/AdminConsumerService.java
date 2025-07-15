@@ -2,8 +2,8 @@ package kernel.maidlab.admin.consumer.service;
 
 import org.springframework.data.domain.Page;
 
-import kernel.maidlab.common.dto.consumer.response.AdminConsumerProfileResponseDto;
-import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
+import kernel.maidlab.domain.consumer.dto.response.AdminConsumerProfileResponseDto;
+import kernel.maidlab.domain.consumer.dto.response.ConsumerListResponseDto;
 
 public interface AdminConsumerService {
 	// 관리자용 전체조회로직

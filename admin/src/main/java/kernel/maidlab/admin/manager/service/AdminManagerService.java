@@ -4,9 +4,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
-import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.domain.manager.dto.ManagerListResponseDto;
+import kernel.maidlab.domain.manager.dto.response.AdminManagerResponseDto;
 
 public interface AdminManagerService {
 	AdminManagerResponseDto getManager(Long id);

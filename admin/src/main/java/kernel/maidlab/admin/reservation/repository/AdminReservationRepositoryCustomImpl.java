@@ -1,6 +1,6 @@
 package kernel.maidlab.admin.reservation.repository;
 
-import static kernel.maidlab.common.entity.reservation.QReservation.*;
+import static kernel.maidlab.domain.reservation.entity.QReservation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

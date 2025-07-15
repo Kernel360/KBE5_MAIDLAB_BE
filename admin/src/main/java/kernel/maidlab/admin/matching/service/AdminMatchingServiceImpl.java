@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.admin.matching.repository.AdminMatchingRepository;
-import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
-import kernel.maidlab.common.entity.matching.Matching;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.domain.matching.dto.response.MatchingResponseDto;
+import kernel.maidlab.domain.matching.entity.Matching;
 import lombok.RequiredArgsConstructor;
 
 @Service

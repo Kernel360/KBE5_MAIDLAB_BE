@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import kernel.maidlab.admin.consumer.service.AdminConsumerService;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.consumer.response.AdminConsumerProfileResponseDto;
-import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.core.aop.annotation.auth.AdminRequired;
+import kernel.maidlab.domain.consumer.dto.response.AdminConsumerProfileResponseDto;
+import kernel.maidlab.domain.consumer.dto.response.ConsumerListResponseDto;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

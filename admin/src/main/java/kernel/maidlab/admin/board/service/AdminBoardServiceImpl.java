@@ -15,12 +15,12 @@ import kernel.maidlab.admin.board.repository.AdminBoardRepository;
 import kernel.maidlab.admin.board.service.support.AdminAnswerService;
 import kernel.maidlab.admin.board.service.support.AdminImageServiceImpl;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
-import kernel.maidlab.common.dto.board.response.AdminBoardDetailResponseDto;
-import kernel.maidlab.common.dto.board.response.AdminBoardResponseDto;
-import kernel.maidlab.common.entity.board.Answer;
-import kernel.maidlab.common.entity.board.Board;
-import kernel.maidlab.common.entity.board.BoardImage;
+import kernel.maidlab.domain.board.dto.request.AnswerRequestDto;
+import kernel.maidlab.domain.board.dto.response.AdminBoardDetailResponseDto;
+import kernel.maidlab.domain.board.dto.response.AdminBoardResponseDto;
+import kernel.maidlab.domain.board.entity.Answer;
+import kernel.maidlab.domain.board.entity.Board;
+import kernel.maidlab.domain.board.entity.BoardImage;
 import lombok.RequiredArgsConstructor;
 
 @Service

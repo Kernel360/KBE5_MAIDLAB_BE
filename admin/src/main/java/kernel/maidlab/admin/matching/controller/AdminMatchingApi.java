@@ -11,8 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.domain.matching.dto.response.MatchingResponseDto;
 
 @Tag(name = "Matching", description = "매칭 관련 API")
 public interface AdminMatchingApi {

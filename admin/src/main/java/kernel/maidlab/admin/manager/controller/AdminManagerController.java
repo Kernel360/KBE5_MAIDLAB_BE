@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.manager.service.AdminManagerService;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
-import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.core.aop.annotation.auth.AdminRequired;
+import kernel.maidlab.domain.manager.dto.ManagerListResponseDto;
+import kernel.maidlab.domain.manager.dto.response.AdminManagerResponseDto;
 import lombok.RequiredArgsConstructor;
 
 @RestController

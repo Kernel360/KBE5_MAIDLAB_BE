@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import kernel.maidlab.api.board.repository.ImageRepository;
-import kernel.maidlab.common.entity.board.BoardImage;
+import kernel.maidlab.domain.board.entity.BoardImage;
+import kernel.maidlab.domain.board.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service

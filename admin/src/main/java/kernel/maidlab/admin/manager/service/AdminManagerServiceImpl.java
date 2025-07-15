@@ -11,10 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.manager.repository.AdminManagerRepository;
-import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
-import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
-import kernel.maidlab.common.entity.manager.Manager;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.domain.manager.dto.ManagerListResponseDto;
+import kernel.maidlab.domain.manager.dto.response.AdminManagerResponseDto;
+import kernel.maidlab.domain.manager.entity.Manager;
 import lombok.RequiredArgsConstructor;
 
 @Service

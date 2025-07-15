@@ -45,6 +45,13 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    //aws
+    implementation group: 'software.amazon.awssdk', name: 's3', version: '2.31.48'
+    implementation group: 'software.amazon.awssdk', name: 'auth', version: '2.31.48'
+
+    //redis setting
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

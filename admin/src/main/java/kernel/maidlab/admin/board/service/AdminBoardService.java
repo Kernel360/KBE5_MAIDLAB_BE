@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.board.request.AnswerRequestDto;
-import kernel.maidlab.common.dto.board.response.AdminBoardDetailResponseDto;
-import kernel.maidlab.common.dto.board.response.AdminBoardResponseDto;
+import kernel.maidlab.domain.board.dto.request.AnswerRequestDto;
+import kernel.maidlab.domain.board.dto.response.AdminBoardDetailResponseDto;
+import kernel.maidlab.domain.board.dto.response.AdminBoardResponseDto;
 
 public interface AdminBoardService {
 

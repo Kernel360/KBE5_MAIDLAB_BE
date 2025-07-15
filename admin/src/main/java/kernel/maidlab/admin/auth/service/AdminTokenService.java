@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import kernel.maidlab.admin.auth.entity.Admin;
 import kernel.maidlab.admin.auth.repository.AdminRepository;
-import kernel.maidlab.common.dto.auth.AdminJwtDto;
 import kernel.maidlab.core.security.jwt.AdminJwtProvider;
+import kernel.maidlab.domain.auth.dto.AdminJwtDto;
 import lombok.RequiredArgsConstructor;
 
 @Service

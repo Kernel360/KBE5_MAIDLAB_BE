@@ -13,9 +13,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.manager.ManagerListResponseDto;
-import kernel.maidlab.common.dto.manager.response.AdminManagerResponseDto;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.domain.manager.dto.ManagerListResponseDto;
+import kernel.maidlab.domain.manager.dto.response.AdminManagerResponseDto;
 
 @Tag(name = "Manager", description = "Manager API")
 

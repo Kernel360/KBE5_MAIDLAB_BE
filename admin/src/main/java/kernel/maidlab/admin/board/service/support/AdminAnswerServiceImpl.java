@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import kernel.maidlab.admin.board.repository.support.AdminAnswerRepository;
-import kernel.maidlab.common.entity.board.Answer;
+import kernel.maidlab.domain.board.entity.Answer;
 import lombok.RequiredArgsConstructor;
 
 @Service

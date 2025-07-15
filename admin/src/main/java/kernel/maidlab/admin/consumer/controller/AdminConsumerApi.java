@@ -11,8 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.consumer.response.AdminConsumerProfileResponseDto;
-import kernel.maidlab.common.dto.consumer.response.ConsumerListResponseDto;
+import kernel.maidlab.domain.consumer.dto.response.AdminConsumerProfileResponseDto;
+import kernel.maidlab.domain.consumer.dto.response.ConsumerListResponseDto;
 
 @Tag(name = "Consumer", description = "Consumer API")
 

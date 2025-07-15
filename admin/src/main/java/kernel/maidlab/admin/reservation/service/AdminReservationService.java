@@ -6,11 +6,11 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import kernel.maidlab.common.dto.reservation.response.AdminReservationDetailResponseDto;
-import kernel.maidlab.common.dto.reservation.response.AdminWeeklySettlementResponseDto;
-import kernel.maidlab.common.dto.reservation.response.ReservationResponseDto;
-import kernel.maidlab.common.dto.reservation.response.SettlementGraphDataDto;
-import kernel.maidlab.common.dto.reservation.response.SettlementResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.AdminReservationDetailResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.AdminWeeklySettlementResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.SettlementGraphDataDto;
+import kernel.maidlab.domain.reservation.dto.response.SettlementResponseDto;
 
 public interface AdminReservationService {
 	List<ReservationResponseDto> adminReservations(HttpServletRequest request, int page, int size);

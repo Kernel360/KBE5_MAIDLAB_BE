@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import kernel.maidlab.common.entity.board.BoardImage;
+import kernel.maidlab.domain.board.entity.BoardImage;
 
 public interface AdminImageRepository extends JpaRepository<BoardImage, Long> {
 

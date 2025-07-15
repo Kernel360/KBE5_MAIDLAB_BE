@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.matching.service.AdminMatchingService;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.dto.matching.response.MatchingResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.domain.matching.dto.response.MatchingResponseDto;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
