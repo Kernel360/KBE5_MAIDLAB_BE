@@ -1,9 +1,8 @@
 package kernel.maidlab.domain.consumer.repository;
 
-import kernel.maidlab.domain.manager.entity.Manager;
-
 import java.util.List;
 
+import kernel.maidlab.domain.manager.entity.Manager;
 
 public interface ManagerPreferenceRepositoryCustom {
 

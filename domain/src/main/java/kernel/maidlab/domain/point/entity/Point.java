@@ -1,16 +1,23 @@
 package kernel.maidlab.domain.point.entity;
 
-import jakarta.persistence.*;
+import java.math.BigDecimal;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import kernel.maidlab.common.entity.TimeBase;
+import kernel.maidlab.domain.point.enums.PointType;
 import kernel.maidlab.domain.consumer.entity.Consumer;
 import kernel.maidlab.domain.reservation.entity.Reservation;
-import kernel.maidlab.common.entity.base.TimeBase;
-import kernel.maidlab.common.enums.PointType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 
 @Entity
 @Getter

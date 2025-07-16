@@ -1,35 +1,53 @@
 package kernel.maidlab.domain.manager.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.enums.LogLevel;
+
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.domain.manager.enums.ServiceType;
+import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.exception.BaseException;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.domain.auth.service.JwtTokenService;
 import kernel.maidlab.domain.consumer.entity.Consumer;
-import kernel.maidlab.domain.manager.dto.object.*;
+import kernel.maidlab.domain.manager.dto.object.DocumentListItem;
+import kernel.maidlab.domain.manager.dto.object.RegionListItem;
+import kernel.maidlab.domain.manager.dto.object.ReviewListItem;
+import kernel.maidlab.domain.manager.dto.object.ScheduleListItem;
+import kernel.maidlab.domain.manager.dto.object.ServiceListItem;
 import kernel.maidlab.domain.manager.dto.request.ProfileRequestDto;
 import kernel.maidlab.domain.manager.dto.request.ProfileUpdateRequestDto;
 import kernel.maidlab.domain.manager.dto.response.MypageResponseDto;
 import kernel.maidlab.domain.manager.dto.response.ProfileResponseDto;
 import kernel.maidlab.domain.manager.dto.response.ReviewListResponseDto;
-import kernel.maidlab.domain.manager.entity.*;
-import kernel.maidlab.domain.manager.repository.*;
+import kernel.maidlab.domain.manager.entity.Manager;
+import kernel.maidlab.domain.manager.entity.ManagerDocument;
+import kernel.maidlab.domain.manager.entity.ManagerRegion;
+import kernel.maidlab.domain.manager.entity.ManagerSchedule;
+import kernel.maidlab.domain.manager.entity.ManagerServiceType;
+import kernel.maidlab.domain.manager.entity.Region;
+import kernel.maidlab.domain.manager.repository.ManagerDocumentRepository;
+import kernel.maidlab.domain.manager.repository.ManagerRegionRepository;
+import kernel.maidlab.domain.manager.repository.ManagerRepository;
+import kernel.maidlab.domain.manager.repository.ManagerScheduleRepository;
+import kernel.maidlab.domain.manager.repository.ManagerServiceTypeRepository;
+import kernel.maidlab.domain.manager.repository.RegionRepository;
 import kernel.maidlab.domain.matching.dto.response.AvailableManagerResponseDto;
 import kernel.maidlab.domain.reservation.repository.ReviewRepository;
-import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.enums.ServiceType;
-import kernel.maidlab.common.enums.Status;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.exception.BaseException;
-import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -47,7 +65,7 @@ public class ManagerServiceImpl implements ManagerService {
 	private final JwtTokenService jwtTokenService;
 
 	private Manager getCurrentManager() {
-		String userUuid = AuthenticationHelper.getCurrentUserId();
+		String userUuid = AuthenticationHelper.getCurrentUserKey();
 		return managerRepository.findByUuid(userUuid)
 			.orElseThrow(() -> new BaseException(ResponseType.AUTHORIZATION_FAILED));
 	}
@@ -59,6 +77,12 @@ public class ManagerServiceImpl implements ManagerService {
 
 	// 최초 기본 프로필 생성
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class},
+		responseType = ResponseType.VALIDATION_FAILED,
+		message = "잘못된 서비스 타입입니다",
+		logLevel = LogLevel.WARN
+	)
 	public ResponseEntity<ResponseDto<Void>> createProfile(ProfileRequestDto req, HttpServletRequest httpReq) {
 		Manager manager = getCurrentManager();
 
@@ -72,15 +96,10 @@ public class ManagerServiceImpl implements ManagerService {
 
 		if (req.getServiceTypes() != null && !req.getServiceTypes().isEmpty()) {
 			for (ServiceListItem serviceItem : req.getServiceTypes()) {
-				try {
-					ServiceType serviceTypeEnum = ServiceType.valueOf(serviceItem.getServiceType());
-					ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager,
-						serviceTypeEnum);
-					managerServiceTypeRepository.save(managerServiceType);
-				} catch (IllegalArgumentException e) {
-					log.warn("잘못된 서비스 타입 - 매니저 ID: {}, 서비스 타입: {}", manager.getId(), serviceItem.getServiceType());
-					throw new BaseException(ResponseType.VALIDATION_FAILED);
-				}
+				ServiceType serviceTypeEnum = ServiceType.valueOf(serviceItem.getServiceType());
+				ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager,
+					serviceTypeEnum);
+				managerServiceTypeRepository.save(managerServiceType);
 			}
 			log.info("서비스 타입 등록 완료 - 매니저 ID: {}, 서비스 갯수: {}", manager.getId(), req.getServiceTypes().size());
 		}
@@ -192,6 +211,12 @@ public class ManagerServiceImpl implements ManagerService {
 
 	// 프로필 수정
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class},
+		responseType = ResponseType.VALIDATION_FAILED,
+		message = "프로필 수정 중 오류가 발생했습니다",
+		logLevel = LogLevel.WARN
+	)
 	public ResponseEntity<ResponseDto<Void>> updateProfile(ProfileUpdateRequestDto req, HttpServletRequest httpReq) {
 		Manager manager = getCurrentManager();
 
@@ -212,16 +237,10 @@ public class ManagerServiceImpl implements ManagerService {
 
 		if (req.getServiceTypes() != null && !req.getServiceTypes().isEmpty()) {
 			for (ServiceListItem serviceItem : req.getServiceTypes()) {
-				try {
-					ServiceType serviceTypeEnum = ServiceType.valueOf(serviceItem.getServiceType());
-					ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager,
-						serviceTypeEnum);
-					managerServiceTypeRepository.save(managerServiceType);
-				} catch (IllegalArgumentException e) {
-					log.warn("잘못된 서비스 타입 수정 시도 - 매니저 ID: {}, 서비스 타입: {}", manager.getId(),
-						serviceItem.getServiceType());
-					throw new BaseException(ResponseType.VALIDATION_FAILED);
-				}
+				ServiceType serviceTypeEnum = ServiceType.valueOf(serviceItem.getServiceType());
+				ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager,
+					serviceTypeEnum);
+				managerServiceTypeRepository.save(managerServiceType);
 			}
 			log.info("서비스 타입 수정 완료 - 매니저 ID: {}, 새 서비스 갯수: {}", manager.getId(), req.getServiceTypes().size());
 		}

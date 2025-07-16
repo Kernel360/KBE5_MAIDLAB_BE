@@ -5,3 +5,8 @@ spring:
       prod: "prod, localkey, swagger"
     active: prod
 
+# 알림 설정
+notification:
+  discord:
+    webhook-url: ${DISCORD_WEBHOOK_URL:}
+

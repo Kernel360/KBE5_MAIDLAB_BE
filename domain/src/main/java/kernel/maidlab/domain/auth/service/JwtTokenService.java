@@ -1,16 +1,17 @@
 package kernel.maidlab.domain.auth.service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.security.jwt.JwtProvider;
 import kernel.maidlab.domain.auth.dto.JwtDto;
 import kernel.maidlab.domain.consumer.entity.Consumer;
 import kernel.maidlab.domain.consumer.repository.ConsumerRepository;
 import kernel.maidlab.domain.manager.entity.Manager;
 import kernel.maidlab.domain.manager.repository.ManagerRepository;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.core.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -39,7 +40,7 @@ public class JwtTokenService {
 			return JwtDto.RefreshResult.failure("유효하지 않은 refresh token");
 		}
 
-		String userId = jwtProvider.getUserId(refreshToken);
+		String userId = jwtProvider.getUserKey(refreshToken);
 		UserType userType = jwtProvider.getUserType(refreshToken);
 
 		String storedRefreshToken = getStoredRefreshToken(userId, userType);
@@ -139,7 +140,7 @@ public class JwtTokenService {
 			return JwtDto.ValidationResult.failure("유효하지 않은 access token");
 		}
 
-		String userId = jwtProvider.getUserId(token);
+		String userId = jwtProvider.getUserKey(token);
 		UserType userType = jwtProvider.getUserType(token);
 
 		return JwtDto.ValidationResult.success(userId, userType);

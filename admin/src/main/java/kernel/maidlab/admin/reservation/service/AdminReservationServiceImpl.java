@@ -1,29 +1,5 @@
 package kernel.maidlab.admin.reservation.service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
-import kernel.maidlab.admin.consumer.repository.AdminConsumerRepository;
-import kernel.maidlab.admin.manager.repository.AdminManagerRepository;
-import kernel.maidlab.admin.reservation.repository.AdminReservationRepository;
-import kernel.maidlab.admin.reservation.repository.AdminReviewRepository;
-import kernel.maidlab.admin.reservation.repository.AdminServiceDetailTypeRepository;
-import kernel.maidlab.admin.reservation.repository.AdminSettlementRepository;
-import kernel.maidlab.domain.consumer.entity.Consumer;
-import kernel.maidlab.domain.manager.entity.Manager;
-import kernel.maidlab.domain.reservation.dto.response.*;
-import kernel.maidlab.domain.reservation.entity.Reservation;
-import kernel.maidlab.domain.reservation.entity.ServiceDetailType;
-import kernel.maidlab.domain.reservation.entity.Settlement;
-import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.enums.Status;
-import kernel.maidlab.common.exception.custom.ReservationException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -35,6 +11,41 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.annotation.exception.Retry;
+import kernel.maidlab.core.aop.annotation.exception.Fallback;
+import kernel.maidlab.core.aop.enums.LogLevel;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import kernel.maidlab.admin.consumer.repository.AdminConsumerRepository;
+import kernel.maidlab.admin.manager.repository.AdminManagerRepository;
+import kernel.maidlab.admin.reservation.repository.AdminReservationRepository;
+import kernel.maidlab.admin.reservation.repository.AdminReviewRepository;
+import kernel.maidlab.admin.reservation.repository.AdminServiceDetailTypeRepository;
+import kernel.maidlab.admin.reservation.repository.AdminSettlementRepository;
+import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.core.exception.custom.ReservationException;
+import kernel.maidlab.domain.consumer.entity.Consumer;
+import kernel.maidlab.domain.manager.entity.Manager;
+import kernel.maidlab.domain.reservation.dto.response.AdminReservationDetailResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.AdminSettlementResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.AdminWeeklySettlementResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.ReservationResponseDto;
+import kernel.maidlab.domain.reservation.dto.response.SettlementGraphDataDto;
+import kernel.maidlab.domain.reservation.dto.response.SettlementResponseDto;
+import kernel.maidlab.domain.reservation.entity.Reservation;
+import kernel.maidlab.domain.reservation.entity.ServiceDetailType;
+import kernel.maidlab.domain.reservation.entity.Settlement;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -66,15 +77,23 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 	}
 
 	@Override
+	@ExceptionHandler(
+		value = {ReservationException.class, java.util.NoSuchElementException.class},
+		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
+		message = "예약 상세 정보를 찾을 수 없습니다",
+		logLevel = LogLevel.WARN
+	)
 	public AdminReservationDetailResponseDto getReservationDetail(Long reservationId, HttpServletRequest request) {
 		Reservation reservation = adminReservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
-		Optional<Manager> manager = adminManagerRepository.findById(reservation.getManagerId());
+		Manager manager = adminManagerRepository.findById(reservation.getManagerId())
+			.orElseThrow(() -> new java.util.NoSuchElementException("매니저를 찾을 수 없습니다. ID: " + reservation.getManagerId()));
 
-		Optional<Consumer> consumer = adminConsumerRepository.findById(reservation.getConsumerId());
+		Consumer consumer = adminConsumerRepository.findById(reservation.getConsumerId())
+			.orElseThrow(() -> new java.util.NoSuchElementException("소비자를 찾을 수 없습니다. ID: " + reservation.getConsumerId()));
 
-		return AdminReservationDetailResponseDto.getInstance(reservationId, reservation, manager.get(), consumer.get());
+		return AdminReservationDetailResponseDto.getInstance(reservationId, reservation, manager, consumer);
 	}
 
 	@Override
@@ -137,32 +156,64 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 
 	@Transactional
 	@Override
+	@Retry(
+		maxAttempts = 3,
+		delay = 1000,
+		retryFor = {org.springframework.dao.DataAccessException.class}
+	)
+	@ExceptionHandler(
+		value = {java.util.NoSuchElementException.class, RuntimeException.class},
+		responseType = ResponseType.DATABASE_ERROR,
+		message = "정산 승인 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	public void settlementApprove(Long settlementId) {
-		Optional<Settlement> settlement = adminSettlementRepository.findById(settlementId);
-		settlement.get().approve();
+		Settlement settlement = adminSettlementRepository.findById(settlementId)
+			.orElseThrow(() -> new java.util.NoSuchElementException("정산 데이터를 찾을 수 없습니다. ID: " + settlementId));
+		settlement.approve();
 	}
 
 	@Transactional
 	@Override
+	@Retry(
+		maxAttempts = 3,
+		delay = 1000,
+		retryFor = {org.springframework.dao.DataAccessException.class}
+	)
+	@ExceptionHandler(
+		value = {java.util.NoSuchElementException.class, RuntimeException.class},
+		responseType = ResponseType.DATABASE_ERROR,
+		message = "정산 거절 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	public void settlementReject(Long settlementId) {
-		Optional<Settlement> settlement = adminSettlementRepository.findById(settlementId);
-		settlement.get().reject();
+		Settlement settlement = adminSettlementRepository.findById(settlementId)
+			.orElseThrow(() -> new java.util.NoSuchElementException("정산 데이터를 찾을 수 없습니다. ID: " + settlementId));
+		settlement.reject();
 	}
 
 	@Override
+	@ExceptionHandler(
+		value = {java.util.NoSuchElementException.class},
+		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
+		message = "정산 상세 정보를 찾을 수 없습니다",
+		logLevel = LogLevel.WARN
+	)
 	public SettlementResponseDto getSettlementDetail(Long settlementId, HttpServletRequest request) {
-		Optional<Settlement> settlement = adminSettlementRepository.findById(settlementId);
+		Settlement settlement = adminSettlementRepository.findById(settlementId)
+			.orElseThrow(() -> new java.util.NoSuchElementException("정산 데이터를 찾을 수 없습니다. ID: " + settlementId));
+
+		ServiceDetailType serviceDetail = adminServiceDetailTypeRepository.findById(settlement.getServiceDetailTypeId())
+			.orElseThrow(() -> new java.util.NoSuchElementException("서비스 데이터를 찾을 수 없습니다. ID: " + settlement.getServiceDetailTypeId()));
 
 		return new SettlementResponseDto(
-			settlement.get().getId(),
-			settlement.get().getReservationId(),
-			settlement.get().getServiceType(),
-			adminServiceDetailTypeRepository.findById(settlement.get().getServiceDetailTypeId())
-				.get()
-				.getServiceDetailType(),
-			settlement.get().getStatus(),
-			settlement.get().getPlatformFee(),
-			settlement.get().getAmount()
+			settlement.getId(),
+			settlement.getReservationId(),
+			settlement.getServiceType(),
+			serviceDetail.getServiceDetailType(),
+			settlement.getStatus(),
+			settlement.getPlatformFee(),
+			settlement.getAmount()
 		);
 	}
 
@@ -262,6 +313,16 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 	}
 
 	@Override
+	@Fallback(
+		method = "getSettlementGraphDataFallback",
+		exceptions = {Exception.class}
+	)
+	@ExceptionHandler(
+		value = {Exception.class},
+		responseType = ResponseType.DATABASE_ERROR,
+		message = "정산 그래프 데이터 조회 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	public SettlementGraphDataDto getSettlementGraphData(HttpServletRequest request, LocalDate startDate,
 		LocalDate endDate, String period) {
 		if (startDate == null) {
@@ -394,5 +455,20 @@ public class AdminReservationServiceImpl implements AdminReservationService {
 				return Integer.compare(a.getMonth(), b.getMonth());
 			})
 			.collect(Collectors.toList());
+	}
+
+	private SettlementGraphDataDto getSettlementGraphDataFallback(HttpServletRequest request, LocalDate startDate,
+		LocalDate endDate, String period) {
+		// Fallback: 빈 데이터 반환
+		return new SettlementGraphDataDto(
+			List.of(), // dailyData
+			List.of(), // weeklyData  
+			List.of(), // monthlyData
+			List.of(), // serviceTypeData
+			List.of(), // statusData
+			BigDecimal.ZERO, // totalAmount
+			BigDecimal.ZERO, // totalPlatformFee
+			0L // totalCount
+		);
 	}
 }

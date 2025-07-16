@@ -4,8 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import kernel.maidlab.common.entity.TimeBase;
 import kernel.maidlab.domain.board.dto.request.AnswerRequestDto;
-import kernel.maidlab.common.entity.base.TimeBase;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

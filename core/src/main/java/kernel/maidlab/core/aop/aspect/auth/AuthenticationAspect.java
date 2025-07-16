@@ -10,9 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.exception.custom.AuthException;
-import kernel.maidlab.core.aop.annotation.auth.AdminRequired;
 import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
+import kernel.maidlab.core.exception.custom.AuthException;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.core.security.CustomUserDetails;
 import lombok.extern.slf4j.Slf4j;
@@ -41,20 +40,18 @@ public class AuthenticationAspect {
 
 			if (authentication == null || !authentication.isAuthenticated()) {
 				log.warn("인증되지 않은 사용자 접근 시도 - {}#{}", className, methodName);
-				throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+				throw AuthException.unauthorized("인증되지 않은 사용자의 " + methodName + " 접근 시도");
 			}
 
 			if (authentication.getPrincipal().equals("anonymousUser")) {
 				log.warn("익명 사용자 접근 시도 - {}#{}", className, methodName);
-				throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+				throw AuthException.unauthorized("익명 사용자의 " + methodName + " 접근 시도");
 			}
 
-			if (!(authentication.getPrincipal() instanceof CustomUserDetails)) {
-				log.error("잘못된 인증 객체 타입 - {}#{}", className, methodName);
-				throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+			if (!(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
+				log.error("사용자 인증: Principal 객체가 CustomUserDetails 타입이 아닙니다. - {}#{}", className, methodName);
+				throw AuthException.unauthorized("잘못된 사용자 인증 객체 타입: " + methodName);
 			}
-
-			CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 
 			if (authRequired.roles().length > 0) {
 				boolean hasRole = userDetails.hasAnyRole(authRequired.roles());
@@ -66,7 +63,7 @@ public class AuthenticationAspect {
 						userDetails.getUserType(),
 						className, methodName);
 
-					throw new AuthException(ResponseType.DO_NOT_HAVE_PERMISSION);
+					throw AuthException.forbidden(userDetails.getUserKey(), methodName);
 				}
 			}
 
@@ -81,13 +78,12 @@ public class AuthenticationAspect {
 			throw e;
 		} catch (Exception e) {
 			log.error("인증 체크 중 예상치 못한 오류 발생 - {}#{}", className, methodName, e);
-			throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+			throw new AuthException(ResponseType.AUTHORIZATION_FAILED, "인증 체크 중 예상치 못한 오류 발생: " + methodName, e);
 		}
 	}
 
-	// @AdminRequired 어노테이션 권한 확인
-	@Around("@annotation(adminRequired)")
-	public Object authorizeAdmin(ProceedingJoinPoint joinPoint, AdminRequired adminRequired) throws Throwable {
+	@Around("@annotation(kernel.maidlab.core.aop.annotation.auth.AdminRequired)")
+	public Object authorizeAdmin(ProceedingJoinPoint joinPoint) throws Throwable {
 
 		String methodName = joinPoint.getSignature().getName();
 		String className = joinPoint.getTarget().getClass().getSimpleName();
@@ -99,15 +95,13 @@ public class AuthenticationAspect {
 
 			if (authentication == null || !authentication.isAuthenticated()) {
 				log.warn("인증되지 않은 사용자의 관리자 권한 접근 시도 - {}#{}", className, methodName);
-				throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+				throw AuthException.unauthorized("인증되지 않은 사용자의 관리자 권한 접근 시도: " + methodName);
 			}
 
-			if (!(authentication.getPrincipal() instanceof CustomUserDetails)) {
-				log.error("잘못된 인증 객체 타입 - {}#{}", className, methodName);
-				throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+			if (!(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
+				log.error("관리자 인증: Principal 객체가 CustomUserDetails 타입이 아닙니다. - {}#{}", className, methodName);
+				throw AuthException.unauthorized("잘못된 관리자 인증 객체 타입: " + methodName);
 			}
-
-			CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 
 			if (!userDetails.isAdmin()) {
 				log.warn("관리자 권한 부족 - 사용자: {}, 권한: {} - {}#{}",
@@ -115,7 +109,7 @@ public class AuthenticationAspect {
 					userDetails.getUserType(),
 					className, methodName);
 
-				throw new AuthException(ResponseType.DO_NOT_HAVE_PERMISSION);
+				throw AuthException.forbidden(userDetails.getUserKey(), methodName);
 			}
 
 			log.debug("관리자 권한 체크 성공 - 사용자: {} - {}#{}",
@@ -128,7 +122,7 @@ public class AuthenticationAspect {
 			throw e;
 		} catch (Exception e) {
 			log.error("관리자 권한 체크 중 예상치 못한 오류 발생 - {}#{}", className, methodName, e);
-			throw new AuthException(ResponseType.AUTHORIZATION_FAILED);
+			throw new AuthException(ResponseType.AUTHORIZATION_FAILED, "관리자 권한 체크 중 예상치 못한 오류 발생: " + methodName, e);
 		}
 	}
 

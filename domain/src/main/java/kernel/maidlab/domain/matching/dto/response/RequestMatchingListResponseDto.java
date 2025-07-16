@@ -1,10 +1,9 @@
 package kernel.maidlab.domain.matching.dto.response;
 
+import java.math.BigDecimal;
 
 import kernel.maidlab.domain.reservation.entity.Reservation;
 import lombok.Data;
-
-import java.math.BigDecimal;
 
 @Data
 public class RequestMatchingListResponseDto {

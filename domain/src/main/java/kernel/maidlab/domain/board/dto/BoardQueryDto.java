@@ -1,11 +1,12 @@
 package kernel.maidlab.domain.board.dto;
 
+import java.time.LocalDateTime;
+
 import com.querydsl.core.annotations.QueryProjection;
-import kernel.maidlab.common.enums.BoardType;
+
+import kernel.maidlab.domain.board.enums.BoardType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor

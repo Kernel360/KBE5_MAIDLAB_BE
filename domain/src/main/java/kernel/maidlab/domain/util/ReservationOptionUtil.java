@@ -1,10 +1,9 @@
 package kernel.maidlab.domain.util;
 
-
-import kernel.maidlab.domain.reservation.dto.request.ReservationRequestDto;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
+import kernel.maidlab.domain.reservation.dto.request.ReservationRequestDto;
 
 public class ReservationOptionUtil {
 

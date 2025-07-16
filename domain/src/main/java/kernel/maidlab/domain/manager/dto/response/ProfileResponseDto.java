@@ -1,15 +1,15 @@
 package kernel.maidlab.domain.manager.dto.response;
 
-import kernel.maidlab.domain.manager.dto.object.RegionListItem;
-import kernel.maidlab.domain.manager.dto.object.ScheduleListItem;
-import kernel.maidlab.common.enums.Gender;
-import kernel.maidlab.common.enums.ServiceType;
-import kernel.maidlab.common.enums.UserType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.time.LocalDate;
 import java.util.List;
+
+import kernel.maidlab.common.enums.Gender;
+import kernel.maidlab.domain.manager.enums.ServiceType;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.domain.manager.dto.object.RegionListItem;
+import kernel.maidlab.domain.manager.dto.object.ScheduleListItem;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Getter
 @AllArgsConstructor

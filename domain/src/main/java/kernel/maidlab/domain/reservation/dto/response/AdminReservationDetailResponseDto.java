@@ -1,14 +1,14 @@
 package kernel.maidlab.domain.reservation.dto.response;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.domain.consumer.entity.Consumer;
 import kernel.maidlab.domain.manager.entity.Manager;
 import kernel.maidlab.domain.reservation.entity.Reservation;
-import kernel.maidlab.common.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -16,7 +16,6 @@ public class AdminReservationDetailResponseDto {
 	private Long id;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
-
 
 	private String address;
 	private String addressDetail;
@@ -27,8 +26,6 @@ public class AdminReservationDetailResponseDto {
 
 	private LocalDateTime checkinTime;
 	private LocalDateTime checkoutTime;
-
-
 
 	private String housingInformation;
 	private String housingType;
@@ -58,7 +55,8 @@ public class AdminReservationDetailResponseDto {
 	private String consumerName;
 	private String consumerProfileImage;
 
-	public static AdminReservationDetailResponseDto getInstance(Long reservationId, Reservation reservation, Manager manager, Consumer consumer) {
+	public static AdminReservationDetailResponseDto getInstance(Long reservationId, Reservation reservation,
+		Manager manager, Consumer consumer) {
 		return new AdminReservationDetailResponseDto(
 			reservationId,
 			reservation.getCreatedAt(),

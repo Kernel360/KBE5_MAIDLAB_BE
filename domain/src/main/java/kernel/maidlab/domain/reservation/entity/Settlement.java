@@ -1,15 +1,20 @@
 package kernel.maidlab.domain.reservation.entity;
 
-import jakarta.persistence.*;
-import kernel.maidlab.common.entity.base.Base;
-import kernel.maidlab.common.enums.ServiceType;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import kernel.maidlab.common.entity.Base;
+import kernel.maidlab.domain.manager.enums.ServiceType;
 import kernel.maidlab.common.enums.Status;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "settlement")

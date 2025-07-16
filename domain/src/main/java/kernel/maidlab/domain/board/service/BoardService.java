@@ -1,13 +1,13 @@
 package kernel.maidlab.domain.board.service;
 
+import java.nio.file.AccessDeniedException;
+import java.util.List;
+
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.domain.board.dto.request.BoardRequestDto;
 import kernel.maidlab.domain.board.dto.request.BoardUpdateRequestDto;
 import kernel.maidlab.domain.board.dto.response.BoardDetailResponseDto;
 import kernel.maidlab.domain.board.dto.response.BoardResponseDto;
-
-import java.nio.file.AccessDeniedException;
-import java.util.List;
 
 public interface BoardService {
 

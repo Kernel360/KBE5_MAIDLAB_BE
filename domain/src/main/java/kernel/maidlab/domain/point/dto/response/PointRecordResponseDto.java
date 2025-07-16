@@ -1,12 +1,12 @@
 package kernel.maidlab.domain.point.dto.response;
 
+import java.time.LocalDateTime;
+
+import kernel.maidlab.domain.point.enums.PointType;
 import kernel.maidlab.domain.point.entity.Point;
-import kernel.maidlab.common.enums.PointType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Builder

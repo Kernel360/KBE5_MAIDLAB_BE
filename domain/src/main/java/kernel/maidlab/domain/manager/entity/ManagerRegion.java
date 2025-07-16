@@ -1,7 +1,11 @@
 package kernel.maidlab.domain.manager.entity;
 
-import jakarta.persistence.*;
-import kernel.maidlab.common.entity.base.Base;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import kernel.maidlab.common.entity.Base;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

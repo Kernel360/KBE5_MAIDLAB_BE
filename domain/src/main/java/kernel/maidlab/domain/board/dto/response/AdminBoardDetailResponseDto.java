@@ -1,15 +1,15 @@
 package kernel.maidlab.domain.board.dto.response;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import kernel.maidlab.domain.board.enums.BoardType;
 import kernel.maidlab.domain.board.dto.ImageDto;
 import kernel.maidlab.domain.board.entity.Board;
 import kernel.maidlab.domain.board.entity.BoardImage;
-import kernel.maidlab.common.enums.BoardType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor

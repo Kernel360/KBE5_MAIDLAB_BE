@@ -1,17 +1,24 @@
 package kernel.maidlab.domain.reservation.entity;
 
-import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import kernel.maidlab.common.entity.TimeBase;
+import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.domain.util.RoomSizeRuleUtil;
 import kernel.maidlab.domain.reservation.dto.request.ReservationRequestDto;
 import kernel.maidlab.domain.util.ReservationOptionUtil;
-import kernel.maidlab.common.entity.base.TimeBase;
-import kernel.maidlab.common.enums.Status;
-import kernel.maidlab.common.util.RoomSizeRuleUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reservation")
@@ -133,7 +140,7 @@ public class Reservation extends TimeBase {
 	}
 
 	public static Reservation of(ReservationRequestDto dto, Long consumerId, Long managerId,
-								 ServiceDetailType detailType) {
+		ServiceDetailType detailType) {
 		Integer roomSize = RoomSizeRuleUtil.resolveRoomSize(dto.getLifeCleaningRoomIdx());
 		String serializedOptions = ReservationOptionUtil.serializeOptions(dto.getServiceOptions());
 		return new Reservation(

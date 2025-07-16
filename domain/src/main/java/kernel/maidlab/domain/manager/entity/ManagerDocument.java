@@ -1,13 +1,19 @@
 package kernel.maidlab.domain.manager.entity;
 
-import jakarta.persistence.*;
-import kernel.maidlab.common.entity.base.Base;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import kernel.maidlab.common.entity.Base;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "manager_document")
@@ -40,7 +46,7 @@ public class ManagerDocument extends Base {
 	}
 
 	public static ManagerDocument managerDocument(Manager manager, String fileType, String fileName,
-                                                  String uploadedFileUrl) {
+		String uploadedFileUrl) {
 		return new ManagerDocument(manager, fileType, fileName, uploadedFileUrl);
 	}
 }

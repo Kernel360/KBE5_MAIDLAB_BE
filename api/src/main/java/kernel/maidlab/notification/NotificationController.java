@@ -19,16 +19,16 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import kernel.maidlab.common.dto.ResponseDto;
+import kernel.maidlab.domain.notification.enums.NotificationType;
+import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.domain.consumer.entity.Consumer;
 import kernel.maidlab.domain.manager.entity.Manager;
 import kernel.maidlab.domain.notification.dto.NotificationDto;
 import kernel.maidlab.domain.notification.service.NotificationService;
 import kernel.maidlab.domain.util.UserValidator;
-import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.enums.NotificationType;
-import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -87,7 +87,8 @@ public class NotificationController {
 	@PostMapping("/test")
 	public ResponseEntity<ResponseDto<String>> sendTestNotification(HttpServletRequest request) {
 		UserType type = AuthenticationHelper.getCurrentUserType();
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
+
 		Object user = userValidator.findByUuid(userId, type);
 		Long id = switch (type) {
 			case MANAGER -> ((Manager)user).getId();

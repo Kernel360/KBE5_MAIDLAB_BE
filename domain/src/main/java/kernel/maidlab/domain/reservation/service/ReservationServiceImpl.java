@@ -1,7 +1,36 @@
 package kernel.maidlab.domain.reservation.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.annotation.exception.Retry;
+import kernel.maidlab.core.aop.enums.LogLevel;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.domain.manager.enums.ServiceOptionType;
+import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.domain.util.RoomSizeRuleUtil;
+import kernel.maidlab.core.exception.custom.PointException;
+import kernel.maidlab.core.exception.custom.ReservationException;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.domain.consumer.entity.Consumer;
 import kernel.maidlab.domain.consumer.entity.ManagerPreference;
 import kernel.maidlab.domain.consumer.repository.ConsumerRepository;
@@ -15,35 +44,28 @@ import kernel.maidlab.domain.notification.dto.NotificationDto;
 import kernel.maidlab.domain.notification.service.NotificationService;
 import kernel.maidlab.domain.point.entity.Point;
 import kernel.maidlab.domain.point.repository.PointRepository;
-import kernel.maidlab.domain.reservation.dto.request.*;
+import kernel.maidlab.domain.reservation.dto.request.CheckInOutRequestDto;
+import kernel.maidlab.domain.reservation.dto.request.PaymentRequestDto;
+import kernel.maidlab.domain.reservation.dto.request.ReservationIsApprovedRequestDto;
+import kernel.maidlab.domain.reservation.dto.request.ReservationRequestDto;
+import kernel.maidlab.domain.reservation.dto.request.ReviewRegisterRequestDto;
 import kernel.maidlab.domain.reservation.dto.response.ReservationDetailResponseDto;
 import kernel.maidlab.domain.reservation.dto.response.ReservationResponseDto;
 import kernel.maidlab.domain.reservation.dto.response.SettlementResponseDto;
 import kernel.maidlab.domain.reservation.dto.response.WeeklySettlementResponseDto;
-import kernel.maidlab.domain.reservation.entity.*;
-import kernel.maidlab.domain.reservation.repository.*;
+import kernel.maidlab.domain.reservation.entity.Reservation;
+import kernel.maidlab.domain.reservation.entity.Review;
+import kernel.maidlab.domain.reservation.entity.ReviewKeyword;
+import kernel.maidlab.domain.reservation.entity.ServiceDetailType;
+import kernel.maidlab.domain.reservation.entity.Settlement;
+import kernel.maidlab.domain.reservation.repository.ReservationRepository;
+import kernel.maidlab.domain.reservation.repository.ReviewKeywordRepository;
+import kernel.maidlab.domain.reservation.repository.ReviewRepository;
+import kernel.maidlab.domain.reservation.repository.ServiceDetailTypeRepository;
+import kernel.maidlab.domain.reservation.repository.SettlementRepository;
 import kernel.maidlab.domain.util.UserValidator;
-import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.enums.ServiceOptionType;
-import kernel.maidlab.common.enums.Status;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.exception.custom.PointException;
-import kernel.maidlab.common.exception.custom.ReservationException;
-import kernel.maidlab.common.util.RoomSizeRuleUtil;
-import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +89,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public void registerReview(ReviewRegisterRequestDto dto, HttpServletRequest request) {
 		UserType userType = AuthenticationHelper.getCurrentUserType();
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 
 		Boolean isConsumerToManager = userType == UserType.CONSUMER;
 
@@ -209,13 +231,24 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Transactional
 	@Override
+	@Retry(
+		maxAttempts = 3,
+		delay = 1000,
+		retryFor = {org.springframework.dao.OptimisticLockingFailureException.class}
+	)
+	@ExceptionHandler(
+		value = {Exception.class},
+		responseType = ResponseType.DATABASE_ERROR,
+		message = "예약 생성 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	public Long createReservation(ReservationRequestDto dto, HttpServletRequest request) {
 		// 매칭된 매니저 존재 확인
 		if (dto.getManagerUuid().isEmpty() || dto.getManagerUuid().isBlank()) {
 			throw new ReservationException(ResponseType.AVAILABLE_MANAGER_DOES_NOT_EXIST);
 		}
 
-		String consumerUuid = AuthenticationHelper.getCurrentUserId();
+		String consumerUuid = AuthenticationHelper.getCurrentUserKey();
 		Consumer consumer = (Consumer)userValidator.findByUuid(consumerUuid, UserType.CONSUMER);
 		Long consumerId = consumer.getId();
 
@@ -277,9 +310,21 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Transactional
 	@Override
+	@Retry(
+		maxAttempts = 2,
+		delay = 500,
+		retryFor = {org.springframework.dao.DataIntegrityViolationException.class}
+	)
+	@ExceptionHandler(
+		value = {Exception.class},
+		responseType = ResponseType.PAYMENT_FAILED,
+		message = "결제 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
+	)
 	public void pay(PaymentRequestDto dto, HttpServletRequest request) {
 
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		Consumer consumer = userValidator.findByUuid(userId, UserType.CONSUMER);
 
 		Reservation reservation = reservationRepository.findById(dto.getReservationId())
@@ -485,7 +530,7 @@ public class ReservationServiceImpl implements ReservationService {
 	// }
 
 	private Long getCurrentUserEntityId() {
-		String userUuid = AuthenticationHelper.getCurrentUserId();
+		String userUuid = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 
 		Object user = userValidator.findByUuid(userUuid, userType);
@@ -493,12 +538,12 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	private Consumer getCurrentConsumer() {
-		String userUuid = AuthenticationHelper.getCurrentUserId();
+		String userUuid = AuthenticationHelper.getCurrentUserKey();
 		return (Consumer)userValidator.findByUuid(userUuid, UserType.CONSUMER);
 	}
 
 	private Manager getCurrentManager() {
-		String userUuid = AuthenticationHelper.getCurrentUserId();
+		String userUuid = AuthenticationHelper.getCurrentUserKey();
 		return (Manager)userValidator.findByUuid(userUuid, UserType.MANAGER);
 	}
 }

@@ -1,7 +1,26 @@
 package kernel.maidlab.domain.matching.service;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.annotation.exception.Fallback;
+import kernel.maidlab.core.aop.enums.LogLevel;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import kernel.maidlab.common.enums.ResponseType;
+import kernel.maidlab.common.enums.Status;
+import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.exception.BaseException;
+import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.domain.consumer.dto.response.LikedManagerResponseDto;
 import kernel.maidlab.domain.consumer.entity.Consumer;
 import kernel.maidlab.domain.consumer.service.ConsumerService;
@@ -19,21 +38,8 @@ import kernel.maidlab.domain.notification.service.NotificationService;
 import kernel.maidlab.domain.reservation.entity.Reservation;
 import kernel.maidlab.domain.reservation.repository.ReservationRepository;
 import kernel.maidlab.domain.util.UserValidator;
-import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.enums.Status;
-import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.exception.BaseException;
-import kernel.maidlab.core.security.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -84,7 +90,7 @@ public class MatchingServiceImpl implements MatchingService {
 	@Override
 	public List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size) {
 
-		String userId = AuthenticationHelper.getCurrentUserId();
+		String userId = AuthenticationHelper.getCurrentUserKey();
 		UserType userType = AuthenticationHelper.getCurrentUserType();
 		Manager me = userValidator.findByUuid(userId, userType);
 
@@ -164,69 +170,83 @@ public class MatchingServiceImpl implements MatchingService {
 	}
 
 	//매칭 신청 알림 전송
+	@Fallback(
+		method = "logMatchingNotificationFailure",
+		exceptions = {Exception.class}
+	)
+	@ExceptionHandler(
+		value = {Exception.class},
+		responseType = ResponseType.INTERNAL_SERVER_ERROR,
+		message = "매칭 알림 전송에 실패했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	private void sendMatchingNotification(Matching matching) {
-		try {
-			// 예약 정보 조회
-			Reservation reservation = reservationRepository.findById(matching.getReservationId())
-				.orElseThrow(
-					() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + matching.getReservationId()));
+		// 예약 정보 조회
+		Reservation reservation = reservationRepository.findById(matching.getReservationId())
+			.orElseThrow(
+				() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + matching.getReservationId()));
 
-			// 소비자 정보 조회
-			Consumer consumer = consumerService.findById(reservation.getConsumerId());
+		// 소비자 정보 조회
+		Consumer consumer = consumerService.findById(reservation.getConsumerId());
 
-			// 서비스 타입 정보
-			String serviceType = reservation.getServiceDetailType().getServiceDetailType();
+		// 서비스 타입 정보
+		String serviceType = reservation.getServiceDetailType().getServiceDetailType();
 
-			// 알림생성
-			NotificationDto notification = notificationService.createMatchingNotification(
-				matching.getManagerId(),
-				reservation.getId(),
-				consumer.getName(),
-				serviceType
-			);
-			log.info("매칭 알림 생성 완료 - 매니저 ID: {}, 예약 ID: {}",
-				notification.getReceiverId(), notification.getRelatedId());
+		// 알림생성
+		NotificationDto notification = notificationService.createMatchingNotification(
+			matching.getManagerId(),
+			reservation.getId(),
+			consumer.getName(),
+			serviceType
+		);
+		log.info("매칭 알림 생성 완료 - 매니저 ID: {}, 예약 ID: {}",
+			notification.getReceiverId(), notification.getRelatedId());
 
-			// DB 저장 및 실시간 전송
-			notificationService.sendNotification(notification);
-
-		} catch (Exception e) {
-			log.error("매칭 알림 전송 실패 - 매칭 ID: {}, 매니저 ID: {}",
-				matching.getId(), matching.getManagerId(), e);
-			// 알림 전송 실패는 매칭 생성을 롤백하지 않음
-		}
+		// DB 저장 및 실시간 전송
+		notificationService.sendNotification(notification);
 	}
 
 	//매칭 승인/거절 알림 전송
+	@Fallback(
+		method = "logStatusNotificationFailure",
+		exceptions = {Exception.class}
+	)
+	@ExceptionHandler(
+		value = {Exception.class},
+		responseType = ResponseType.INTERNAL_SERVER_ERROR,
+		message = "상태 알림 전송에 실패했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	private void sendStatusNotification(Matching matching, Status status) {
-		try {
-			// 예약 정보 조회
-			Reservation reservation = reservationRepository.findById(matching.getReservationId())
-				.orElseThrow(
-					() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + matching.getReservationId()));
+		// 예약 정보 조회
+		Reservation reservation = reservationRepository.findById(matching.getReservationId())
+			.orElseThrow(
+				() -> new IllegalArgumentException("예약 정보를 찾을 수 없습니다. ID: " + matching.getReservationId()));
 
-			// 소비자, 매니저 정보 조회
-			Consumer consumer = consumerService.findById(reservation.getConsumerId());
-			Manager manager = managerService.findById(reservation.getManagerId());
-			// 서비스 타입 정보
-			String serviceType = reservation.getServiceDetailType().getServiceDetailType();
+		// 소비자, 매니저 정보 조회
+		Consumer consumer = consumerService.findById(reservation.getConsumerId());
+		Manager manager = managerService.findById(reservation.getManagerId());
+		// 서비스 타입 정보
+		String serviceType = reservation.getServiceDetailType().getServiceDetailType();
 
-			// 새로운 알림 시스템 사용
-			NotificationDto notification = notificationService.createMatchingStatusNotification(
-				consumer.getId(),
-				matching.getId(),
-				manager.getName(),
-				status
-			);
+		// 새로운 알림 시스템 사용
+		NotificationDto notification = notificationService.createMatchingStatusNotification(
+			consumer.getId(),
+			matching.getId(),
+			manager.getName(),
+			status
+		);
 
-			// DB 저장 및 실시간 전송
-			notificationService.sendNotification(notification);
+		// DB 저장 및 실시간 전송
+		notificationService.sendNotification(notification);
+	}
 
-		} catch (Exception e) {
-			log.error("매칭 알림 전송 실패 - 매칭 ID: {}, 매니저 ID: {}",
-				matching.getId(), matching.getManagerId(), e);
-			// 알림 전송 실패는 매칭 생성을 롤백하지 않음
-		}
+	private void logMatchingNotificationFailure(Matching matching) {
+		log.error("매칭 알림 전송 실패로 인한 대체 처리 - 매칭 ID: {}", matching.getId());
+	}
+
+	private void logStatusNotificationFailure(Matching matching, Status status) {
+		log.error("상태 알림 전송 실패로 인한 대체 처리 - 매칭 ID: {}", matching.getId());
 	}
 
 }

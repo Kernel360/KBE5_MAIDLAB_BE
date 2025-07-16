@@ -1,17 +1,25 @@
 package kernel.maidlab.domain.board.entity;
 
-import jakarta.persistence.*;
+import java.util.Collections;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import kernel.maidlab.common.entity.TimeBase;
+import kernel.maidlab.domain.board.enums.BoardType;
 import kernel.maidlab.domain.board.dto.request.BoardRequestDto;
 import kernel.maidlab.domain.board.dto.request.BoardUpdateRequestDto;
 import kernel.maidlab.domain.consumer.entity.Consumer;
 import kernel.maidlab.domain.manager.entity.Manager;
-import kernel.maidlab.common.entity.base.TimeBase;
-import kernel.maidlab.common.enums.BoardType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Collections;
-import java.util.List;
 
 @Getter
 @Entity

@@ -1,12 +1,12 @@
 package kernel.maidlab.domain.board.dto.request;
 
+import java.util.List;
+
+import kernel.maidlab.domain.board.enums.BoardType;
 import kernel.maidlab.domain.board.dto.ImageDto;
-import kernel.maidlab.common.enums.BoardType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Getter
 @NoArgsConstructor

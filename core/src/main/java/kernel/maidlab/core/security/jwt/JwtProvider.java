@@ -16,7 +16,10 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.UserType;
+import kernel.maidlab.core.exception.custom.AuthException;
+import kernel.maidlab.core.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,12 +37,12 @@ public class JwtProvider {
 	}
 
 	// access 토큰 생성
-	public String generateAccessToken(String userId, UserType userType) {
+	public String generateAccessToken(String userKey, UserType userType) {
 		Date now = new Date();
 		Date expiry = new Date(now.getTime() + jwtProperties.getExpiration().getAccess());
 
 		var builder = Jwts.builder()
-			.setSubject(userId)
+			.setSubject(userKey)
 			.claim("userType", userType.name())
 			.claim("type", "ACCESS")
 			.setIssuedAt(now)
@@ -54,12 +57,12 @@ public class JwtProvider {
 	}
 
 	// refresh 토큰 생성
-	public String generateRefreshToken(String userId, UserType userType) {
+	public String generateRefreshToken(String userKey, UserType userType) {
 		Date now = new Date();
 		Date expiry = new Date(now.getTime() + jwtProperties.getExpiration().getRefresh());
 
 		var builder = Jwts.builder()
-			.setSubject(userId)
+			.setSubject(userKey)
 			.claim("userType", userType.name())
 			.claim("type", "REFRESH")
 			.setIssuedAt(now)
@@ -99,13 +102,13 @@ public class JwtProvider {
 				.parseClaimsJws(token);
 			return true;
 		} catch (SecurityException | MalformedJwtException e) {
-			log.error("잘못된 JWT 서명입니다.", e);
+			log.warn("잘못된 JWT 서명입니다: {}", e.getMessage());
 		} catch (ExpiredJwtException e) {
-			log.error("만료된 JWT 토큰입니다.", e);
+			log.warn("만료된 JWT 토큰입니다: {}", e.getMessage());
 		} catch (UnsupportedJwtException e) {
-			log.error("지원되지 않는 JWT 토큰입니다.", e);
+			log.warn("지원되지 않는 JWT 토큰입니다: {}", e.getMessage());
 		} catch (IllegalArgumentException e) {
-			log.error("JWT 토큰이 잘못되었습니다.", e);
+			log.warn("JWT 토큰이 잘못되었습니다: {}", e.getMessage());
 		}
 		return false;
 	}
@@ -114,18 +117,20 @@ public class JwtProvider {
 	public Authentication getAuthentication(String token) {
 		Claims claims = parseClaims(token);
 
-		String userId = claims.getSubject();
+		String userKey = claims.getSubject();
 		String userTypeStr = claims.get("userType", String.class);
 
-		if (userId == null || userTypeStr == null) {
-			throw new IllegalArgumentException("JWT 토큰에 필수 정보가 없습니다.");
+		if (userKey == null || userTypeStr == null) {
+			throw AuthException.builder(ResponseType.AUTHORIZATION_FAILED)
+				.message("JWT 토큰에 필수 정보가 없습니다")
+				.build();
 		}
 
 		UserType userType = UserType.valueOf(userTypeStr);
 
 		// DB 조회 없이 토큰 정보만으로 CustomUserDetails 생성
-		kernel.maidlab.core.security.CustomUserDetails userDetails = kernel.maidlab.core.security.CustomUserDetails.builder()
-			.userId(userId)
+		CustomUserDetails userDetails = CustomUserDetails.builder()
+			.userKey(userKey)
 			.userType(userType)
 			.build();
 
@@ -146,8 +151,8 @@ public class JwtProvider {
 		}
 	}
 
-	// 사용자 id 추출
-	public String getUserId(String token) {
+	// 사용자 key 추출
+	public String getUserKey(String token) {
 		return parseClaims(token).getSubject();
 	}
 

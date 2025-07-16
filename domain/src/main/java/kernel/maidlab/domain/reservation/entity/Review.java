@@ -1,13 +1,19 @@
 package kernel.maidlab.domain.reservation.entity;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import kernel.maidlab.common.entity.TimeBase;
 import kernel.maidlab.domain.reservation.dto.request.ReviewRegisterRequestDto;
-import kernel.maidlab.common.entity.base.TimeBase;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "review")
@@ -43,7 +49,7 @@ public class Review extends TimeBase {
 	}
 
 	private Review(Long reservationId, Long managerId, Long consumerId, float rating, String comment,
-                   ServiceDetailType serviceType, Boolean isConsumerToManager) {
+		ServiceDetailType serviceType, Boolean isConsumerToManager) {
 		this.reservationId = reservationId;
 		this.managerId = managerId;
 		this.consumerId = consumerId;

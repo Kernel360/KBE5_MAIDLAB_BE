@@ -1,17 +1,25 @@
 package kernel.maidlab.admin.board.controller;
 
+import java.nio.file.AccessDeniedException;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.board.service.AdminBoardServiceImpl;
+import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.domain.board.dto.request.AnswerRequestDto;
 import kernel.maidlab.domain.board.dto.response.AdminBoardDetailResponseDto;
 import kernel.maidlab.domain.board.dto.response.AdminBoardResponseDto;
-import kernel.maidlab.common.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.nio.file.AccessDeniedException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/board")
@@ -23,7 +31,7 @@ public class AdminBoardControllerImpl implements AdminBoardApi {
 	@GetMapping("/refund")
 	@Override
 	public ResponseEntity<ResponseDto<List<AdminBoardResponseDto>>> refund(HttpServletRequest request,
-																		   @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 		return adminBoardService.getAllRefundBoardList(request, page, size);
 	}
 
@@ -38,7 +46,7 @@ public class AdminBoardControllerImpl implements AdminBoardApi {
 	@GetMapping("/{boardId}")
 	@Override
 	public ResponseEntity<ResponseDto<AdminBoardDetailResponseDto>> detail(HttpServletRequest request,
-																		   @PathVariable Long boardId) throws AccessDeniedException {
+		@PathVariable Long boardId) throws AccessDeniedException {
 		return adminBoardService.adminGetConsumerBoard(request, boardId);
 	}
 
