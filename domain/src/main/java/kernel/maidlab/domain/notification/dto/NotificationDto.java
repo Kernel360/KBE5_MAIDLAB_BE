@@ -2,7 +2,7 @@ package kernel.maidlab.domain.notification.dto;
 
 import java.time.LocalDateTime;
 
-import kernel.maidlab.common.enums.NotificationType;
+import kernel.maidlab.domain.notification.enums.NotificationType;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.domain.notification.entity.Notification;
 import lombok.AllArgsConstructor;

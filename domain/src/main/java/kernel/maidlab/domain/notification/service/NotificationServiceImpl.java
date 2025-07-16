@@ -11,8 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.annotation.exception.Fallback;
+import kernel.maidlab.core.aop.annotation.exception.Retry;
+import kernel.maidlab.core.aop.enums.LogLevel;
+import kernel.maidlab.common.enums.ResponseType;
+
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.enums.NotificationType;
+import kernel.maidlab.domain.notification.enums.NotificationType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.security.AuthenticationHelper;
@@ -69,6 +75,12 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
+	@ExceptionHandler(
+		value = {IOException.class},
+		responseType = ResponseType.INTERNAL_SERVER_ERROR,
+		message = "SSE 연결 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.WARN
+	)
 	public SseEmitter connect() {
 		NotificationConnectionKey connectionKey = createConnectionKey();
 
@@ -76,13 +88,11 @@ public class NotificationServiceImpl implements NotificationService {
 
 		// 연결 완료 시 정리
 		emitter.onCompletion(() -> {
-			log.info("SSE 연결 완료 - 사용자: {}", connectionKey.toStringKey());
 			connections.remove(connectionKey, emitter);
 		});
 
 		// 연결 타임아웃 시 정리
 		emitter.onTimeout(() -> {
-			log.info("SSE 연결 타임아웃 - 사용자: {}", connectionKey.toStringKey());
 			connections.remove(connectionKey, emitter);
 		});
 
@@ -92,36 +102,24 @@ public class NotificationServiceImpl implements NotificationService {
 			connections.remove(connectionKey, emitter);
 		});
 
+		// 연결 확인을 위한 초기 메시지 전송
 		try {
-			// 연결 확인을 위한 초기 메시지 전송
 			emitter.send(SseEmitter.event()
 				.name("connect")
 				.data("Connected to notification service"));
-
-			// 초기 메시지 전송 성공 후에만 연결 저장
-			SseEmitter oldEmitter = connections.put(connectionKey, emitter);
-			if (oldEmitter != null) {
-				try {
-					oldEmitter.complete();
-				} catch (Exception e) {
-					log.debug("기존 SSE 연결 종료 중 오류 (정상) - 사용자: {}", connectionKey.toStringKey());
-				}
-			}
-
-			log.info("SSE 연결 성공 - 사용자: {}", connectionKey.toStringKey());
-
-			// 테스트용 즉시 메시지 전송
-			// emitter.send(SseEmitter.event()
-			// 	.name("test")
-			// 	.data("Test message from server 테스트 테스트"));
-
-			log.info("SSE 테스트 메시지 전송 완료 - 사용자: {}", connectionKey.toStringKey());
 		} catch (IOException e) {
-			log.error("SSE 초기 메시지 전송 실패 - 사용자: {}", connectionKey.toStringKey(), e);
-			connections.remove(connectionKey);
-			emitter.completeWithError(e);
+			throw new RuntimeException("SSE 연결 초기화 실패", e);
 		}
 
+		// 초기 메시지 전송 성공 후에만 연결 저장
+		SseEmitter oldEmitter = connections.put(connectionKey, emitter);
+		if (oldEmitter != null) {
+			try {
+				oldEmitter.complete();
+			} catch (Exception e) {
+				log.debug("기존 SSE 연결 종료 중 오류 (정상) - 사용자: {}", connectionKey.toStringKey());
+			}
+		}
 		return emitter;
 	}
 
@@ -132,12 +130,29 @@ public class NotificationServiceImpl implements NotificationService {
 		SseEmitter emitter = connections.remove(connectionKey);
 		if (emitter != null) {
 			emitter.complete();
-			log.info("SSE 연결 해제 - 사용자: {}", connectionKey.toStringKey());
+			
 		}
 	}
 
 	@Override
 	@Transactional
+	@Retry(
+		maxAttempts = 2,
+		delay = 500,
+		retryFor = {IOException.class},
+		noRetryFor = {IllegalArgumentException.class}
+	)
+	@Fallback(
+		method = "logNotificationFailure",
+		exceptions = {Exception.class}
+	)
+	@ExceptionHandler(
+		value = {Exception.class},
+		responseType = ResponseType.INTERNAL_SERVER_ERROR,
+		message = "알림 전송 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
+	)
 	public void sendNotification(NotificationDto notification) {
 		// DB에 알림 저장
 		Notification entity = notification.toEntity();
@@ -149,18 +164,11 @@ public class NotificationServiceImpl implements NotificationService {
 		UserType receiverType = notification.getReceiverType();
 		NotificationConnectionKey connectionKey = NotificationConnectionKey.of(receiverId, receiverType);
 
-		log.info("알림 전송 시도 -  실제 receiverId: {}, receiverType: {}",
-			receiverId, receiverType);
+		
 
 		// SSE로 실시간 알림 전송
 		SseEmitter emitter = connections.get(connectionKey);
-		log.info("SSE 연결 상태 확인 - 연결 키: {}, 연결 존재: {}, 전체 연결 수: {}",
-			connectionKey.toStringKey(), emitter != null, connections.size());
 		//System.out.println(emitter.toString());
-		log.info("현재 저장된 모든 연결 키: {}",
-			connections.keySet().stream()
-				.map(NotificationConnectionKey::toStringKey)
-				.collect(Collectors.toList()));
 
 		if (emitter != null) {
 			try {
@@ -168,21 +176,11 @@ public class NotificationServiceImpl implements NotificationService {
 				emitter.send(SseEmitter.event()
 					.name("notification")
 					.data(forNotification));
-
-				log.info("알림 전송 성공 - 사용자: {}, 알림 ID: {}, 타입: {}",
-					connectionKey.toStringKey(), savedNotification.getId(), notification.getNotificationType());
 			} catch (IOException e) {
-				log.debug("SSE 알림 전송 실패 (클라이언트 연결 끊김) - 사용자: {}", connectionKey.toStringKey());
-				connections.remove(connectionKey);
-			} catch (Exception e) {
-				log.error("SSE 알림 전송 중 예상치 못한 오류 발생 - 사용자: {}", connectionKey.toStringKey(), e);
-				connections.remove(connectionKey);
+				throw new RuntimeException("SSE 알림 전송 실패", e);
 			}
 		} else {
 			log.warn("SSE 연결 없음 - 사용자: {}, 알림은 DB에 저장됨", connectionKey.toStringKey());
-			log.info("현재 활성 연결 목록: {}", connections.keySet().stream()
-				.map(NotificationConnectionKey::toStringKey)
-				.toList());
 		}
 	}
 
@@ -238,7 +236,6 @@ public class NotificationServiceImpl implements NotificationService {
 			.ifPresent(notification -> {
 				notification.markAsRead();
 				notificationRepository.save(notification);
-				log.info("알림 읽음 처리 - 사용자: {}, 알림 ID: {}", connectionKey.toStringKey(), notificationId);
 			});
 	}
 
@@ -250,7 +247,6 @@ public class NotificationServiceImpl implements NotificationService {
 		UserType type = getCurrentUserType(request);
 
 		int updatedCount = notificationRepository.markAllAsReadByReceiverIdAndType(id, type);
-		log.info("모든 알림 읽음 처리 - 사용자: {}, 처리된 알림 수: {}", connectionKey.toStringKey(), updatedCount);
 	}
 
 	@Override
@@ -339,6 +335,11 @@ public class NotificationServiceImpl implements NotificationService {
 			message,
 			reservationId
 		);
+	}
+
+	private void logNotificationFailure(NotificationDto notification) {
+		log.error("알림 전송 실패로 인한 대체 처리 - 수신자 ID: {}, 타입: {}", 
+			notification.getReceiverId(), notification.getNotificationType());
 	}
 
 }

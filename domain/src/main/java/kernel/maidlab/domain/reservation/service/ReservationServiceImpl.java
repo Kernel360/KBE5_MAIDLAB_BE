@@ -17,13 +17,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.annotation.exception.Retry;
+import kernel.maidlab.core.aop.enums.LogLevel;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.enums.ServiceOptionType;
+import kernel.maidlab.domain.manager.enums.ServiceOptionType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
-import kernel.maidlab.common.util.RoomSizeRuleUtil;
+import kernel.maidlab.domain.util.RoomSizeRuleUtil;
 import kernel.maidlab.core.exception.custom.PointException;
 import kernel.maidlab.core.exception.custom.ReservationException;
 import kernel.maidlab.core.security.AuthenticationHelper;
@@ -227,6 +231,17 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Transactional
 	@Override
+	@Retry(
+		maxAttempts = 3,
+		delay = 1000,
+		retryFor = {org.springframework.dao.OptimisticLockingFailureException.class}
+	)
+	@ExceptionHandler(
+		value = {Exception.class},
+		responseType = ResponseType.DATABASE_ERROR,
+		message = "예약 생성 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	public Long createReservation(ReservationRequestDto dto, HttpServletRequest request) {
 		// 매칭된 매니저 존재 확인
 		if (dto.getManagerUuid().isEmpty() || dto.getManagerUuid().isBlank()) {
@@ -295,6 +310,18 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Transactional
 	@Override
+	@Retry(
+		maxAttempts = 2,
+		delay = 500,
+		retryFor = {org.springframework.dao.DataIntegrityViolationException.class}
+	)
+	@ExceptionHandler(
+		value = {Exception.class},
+		responseType = ResponseType.PAYMENT_FAILED,
+		message = "결제 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
+	)
 	public void pay(PaymentRequestDto dto, HttpServletRequest request) {
 
 		String userId = AuthenticationHelper.getCurrentUserKey();

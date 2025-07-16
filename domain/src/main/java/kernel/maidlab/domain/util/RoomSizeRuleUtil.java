@@ -1,4 +1,4 @@
-package kernel.maidlab.common.util;
+package kernel.maidlab.domain.util;
 
 import java.math.BigDecimal;
 

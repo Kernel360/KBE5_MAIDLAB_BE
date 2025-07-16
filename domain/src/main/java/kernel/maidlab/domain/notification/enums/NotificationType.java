@@ -1,4 +1,4 @@
-package kernel.maidlab.common.enums;
+package kernel.maidlab.domain.notification.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -7,6 +7,10 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.annotation.exception.Retry;
+import kernel.maidlab.core.aop.enums.LogLevel;
+import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.core.aws.dto.PresignedFileResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +30,17 @@ public class S3ServiceImpl implements S3Service {
 	private String bucketName;
 
 	@Override
+	@Retry(
+		maxAttempts = 3,
+		delay = 1000,
+		retryFor = {Exception.class}
+	)
+	@ExceptionHandler(
+		value = {RuntimeException.class, IllegalArgumentException.class},
+		responseType = ResponseType.EXTERNAL_SERVICE_ERROR,
+		message = "파일 업로드 URL 생성 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	public List<PresignedFileResponseDto> uploadFile(List<String> filenames, String prefix) {
 		return filenames.stream().map(filename -> {
 			String key = prefix + "/" + UUID.randomUUID() + "_" + filename;
@@ -44,13 +59,18 @@ public class S3ServiceImpl implements S3Service {
 				.build();
 
 			PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
-			log.info("Presigned URL 생성 완료 - 파일명: {}, URL 길이: {}", filename, presignedRequest.url().toString().length());
 
 			return new PresignedFileResponseDto(key, presignedRequest.url().toString());
 		}).toList();
 	}
 
 	// 파일 확장자에 따른 Content-Type 결정
+	@ExceptionHandler(
+		value = {StringIndexOutOfBoundsException.class, NullPointerException.class},
+		responseType = ResponseType.VALIDATION_FAILED,
+		message = "잘못된 파일명입니다",
+		logLevel = LogLevel.WARN
+	)
 	private String getContentType(String filename) {
 		String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
 

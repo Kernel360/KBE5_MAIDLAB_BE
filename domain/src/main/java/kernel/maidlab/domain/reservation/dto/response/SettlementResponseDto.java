@@ -2,7 +2,7 @@ package kernel.maidlab.domain.reservation.dto.response;
 
 import java.math.BigDecimal;
 
-import kernel.maidlab.common.enums.ServiceType;
+import kernel.maidlab.domain.manager.enums.ServiceType;
 import kernel.maidlab.common.enums.Status;
 import lombok.Getter;
 

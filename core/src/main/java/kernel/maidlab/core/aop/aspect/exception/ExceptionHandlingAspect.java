@@ -17,7 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import kernel.maidlab.common.enums.LogLevel;
+import kernel.maidlab.core.aop.enums.LogLevel;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
 import kernel.maidlab.core.exception.BaseException;

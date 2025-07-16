@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import kernel.maidlab.common.enums.ServiceType;
+import kernel.maidlab.domain.manager.enums.ServiceType;
 import kernel.maidlab.domain.manager.entity.ManagerServiceType;
 
 @Repository

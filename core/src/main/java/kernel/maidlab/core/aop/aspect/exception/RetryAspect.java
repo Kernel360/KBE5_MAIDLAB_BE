@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-import kernel.maidlab.common.enums.RetryStrategy;
+import kernel.maidlab.core.aop.enums.RetryStrategy;
 import kernel.maidlab.core.aop.annotation.exception.Retry;
 import kernel.maidlab.core.exception.util.ExceptionUtils;
 import lombok.extern.slf4j.Slf4j;

@@ -134,7 +134,7 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity
 			.status(HttpStatus.NOT_FOUND)
-			.body(new ErrorResponseDto(ResponseType.VALIDATION_FAILED));
+			.body(new ErrorResponseDto(ResponseType.THIS_RESOURCE_DOES_NOT_EXIST));
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)

@@ -9,6 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.annotation.exception.Retry;
+import kernel.maidlab.core.aop.enums.LogLevel;
+import kernel.maidlab.common.enums.ResponseType;
+
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.security.AuthenticationHelper;
@@ -83,6 +88,18 @@ public class PointServiceImpl implements PointService {
 			.build();
 	}
 
+	@Retry(
+		maxAttempts = 3,
+		delay = 1000,
+		retryFor = {org.springframework.dao.DataIntegrityViolationException.class}
+	)
+	@ExceptionHandler(
+		value = {Exception.class},
+		responseType = ResponseType.PAYMENT_FAILED,
+		message = "포인트 충전 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
+	)
 	public void chargePoint(
 		HttpServletRequest request,
 		PointChargeRequestDto pointChargeRequestDto
@@ -91,14 +108,15 @@ public class PointServiceImpl implements PointService {
 
 		Consumer consumer = userValidator.findByUuid(userId, UserType.CONSUMER);
 
-		if (pointChargeRequestDto.getChargeAmount() > 0) {
-			Point chargedPoint = Point.createChargePoint(
-				consumer,
-				pointChargeRequestDto.getChargeAmount());
-
-			pointRepository.save(chargedPoint);
+		if (pointChargeRequestDto.getChargeAmount() <= 0) {
+			throw new IllegalArgumentException("충전 금액이 유효하지 않습니다: " + pointChargeRequestDto.getChargeAmount());
 		}
 
+		Point chargedPoint = Point.createChargePoint(
+			consumer,
+			pointChargeRequestDto.getChargeAmount());
+
+		pointRepository.save(chargedPoint);
 	}
 
 }

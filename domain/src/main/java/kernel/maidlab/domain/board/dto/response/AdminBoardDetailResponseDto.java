@@ -3,7 +3,7 @@ package kernel.maidlab.domain.board.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import kernel.maidlab.common.enums.BoardType;
+import kernel.maidlab.domain.board.enums.BoardType;
 import kernel.maidlab.domain.board.dto.ImageDto;
 import kernel.maidlab.domain.board.entity.Board;
 import kernel.maidlab.domain.board.entity.BoardImage;

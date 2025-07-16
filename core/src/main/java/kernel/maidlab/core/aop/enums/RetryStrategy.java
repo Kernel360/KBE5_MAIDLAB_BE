@@ -1,4 +1,4 @@
-package kernel.maidlab.common.enums;
+package kernel.maidlab.core.aop.enums;
 
 public enum RetryStrategy {
 	FIXED,

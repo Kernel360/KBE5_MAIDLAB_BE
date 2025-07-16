@@ -9,6 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.annotation.exception.Retry;
+import kernel.maidlab.core.aop.enums.LogLevel;
+import kernel.maidlab.common.enums.ResponseType;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.admin.board.repository.AdminBoardRepository;
@@ -43,12 +48,21 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 	}
 
 	@Override
+	@ExceptionHandler(
+		value = {EntityNotFoundException.class, AccessDeniedException.class},
+		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
+		message = "게시글을 찾을 수 없거나 접근 권한이 없습니다",
+		logLevel = LogLevel.WARN
+	)
 	public ResponseEntity<ResponseDto<AdminBoardDetailResponseDto>> adminGetConsumerBoard(
 		HttpServletRequest request,
 		Long boardId
 	) throws AccessDeniedException {
 
 		Board board = adminBoardRepository.findByIdAndIsDeletedFalse(boardId);
+		if (board == null) {
+			throw new EntityNotFoundException("게시글을 찾을 수 없습니다. ID: " + boardId);
+		}
 
 		// 답변여부가 true면 답변까지 조회
 		if (board.getIsAnswered()) {
@@ -73,6 +87,17 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 	}
 
 	@Override
+	@Retry(
+		maxAttempts = 2,
+		delay = 500,
+		retryFor = {org.springframework.dao.DataAccessException.class}
+	)
+	@ExceptionHandler(
+		value = {EntityNotFoundException.class, RuntimeException.class},
+		responseType = ResponseType.DATABASE_ERROR,
+		message = "답변 생성 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	public ResponseEntity<ResponseDto<Void>> createAnswer(AnswerRequestDto requestDto, HttpServletRequest request,
 		Long boardId) {
 		Board board = adminBoardRepository.findById(boardId)
@@ -85,6 +110,12 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 
 	@Transactional
 	@Override
+	@ExceptionHandler(
+		value = {EntityNotFoundException.class, RuntimeException.class},
+		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
+		message = "답변 수정 중 오류가 발생했습니다",
+		logLevel = LogLevel.WARN
+	)
 	public ResponseEntity<ResponseDto<Void>> modifyAnswer(AnswerRequestDto requestDto, Long boardId) {
 		Board board = adminBoardRepository.findById(boardId)
 			.orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다. boardId: " + boardId));

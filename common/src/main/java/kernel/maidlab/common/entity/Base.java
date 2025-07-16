@@ -1,4 +1,4 @@
-package kernel.maidlab.common.entity.base;
+package kernel.maidlab.common.entity;
 
 import com.querydsl.core.annotations.QuerySupertype;
 

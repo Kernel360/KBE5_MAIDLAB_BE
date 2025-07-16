@@ -7,7 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import kernel.maidlab.common.entity.base.TimeBase;
+import kernel.maidlab.common.entity.TimeBase;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

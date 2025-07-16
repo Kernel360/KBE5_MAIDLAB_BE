@@ -9,7 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import kernel.maidlab.common.entity.base.TimeBase;
+import kernel.maidlab.common.entity.TimeBase;
 import kernel.maidlab.domain.reservation.dto.request.ReviewRegisterRequestDto;
 import lombok.AccessLevel;
 import lombok.Getter;

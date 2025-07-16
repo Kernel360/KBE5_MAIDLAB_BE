@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import kernel.maidlab.common.enums.RetryStrategy;
+import kernel.maidlab.core.aop.enums.RetryStrategy;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
