@@ -8,11 +8,7 @@ MaidLab은 바쁜 현대인의 일상을 지원하기 위해 청소, 베이비�
 
 ## 🌐 배포 사이트
 
-**프로덕션 URL**: https://www.maidlab.site/
-
-## 🔗 GitHub Repository
-
-https://github.com/Kernel360/KBE5_MAIDLAB_BE
+**배포 URL**: https://www.maidlab.site/ (현재 개발 중)
 
 ## 🛠️ 기술 스택
 
@@ -26,7 +22,6 @@ https://github.com/Kernel360/KBE5_MAIDLAB_BE
 
 ### Database & Storage
 - **MySQL** - 메인 데이터베이스
-- **Redis** - 캐시 및 세션 스토리지
 - **AWS S3** - 파일 저장소
 - **AWS CloudFront** - CDN
 
@@ -39,7 +34,6 @@ https://github.com/Kernel360/KBE5_MAIDLAB_BE
 ### 사전 요구사항
 - Java 21
 - MySQL 8.0+
-- Redis
 - Git
 
 ### 1. 프로젝트 클론
@@ -67,13 +61,17 @@ export AWS_S3_SECRETKEY=your_aws_secret_key
 
 export JWT_SECRET_KEY=your-super-secret-jwt-key-256-bits-minimum
 export JWT_HEADER=Authorization
-export JWT_PREFIX="Bearer "
+export JWT_PREFIX=Bearer
 export JWT_EXPIRATION_ACCESS=3600000
 export JWT_EXPIRATION_REFRESH=604800000
 
 export GOOGLE_CLIENT_ID=your_google_oauth_client_id
 export GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
 export GOOGLE_REDIRECT_URL=http://localhost:8080/api/auth/oauth/google
+
+# 운영 환경 추가 변수 (선택)
+export DB_PROD_HOST=your_prod_db_host
+export DISCORD_WEBHOOK_URL=your_discord_webhook_url
 ```
 
 ### 4. 애플리케이션 실행
@@ -100,22 +98,22 @@ export GOOGLE_REDIRECT_URL=http://localhost:8080/api/auth/oauth/google
 - 실시간 알림 수신
 
 ### 🧹 매니저 (Manager) 기능
+- 일반/소셜 회원가입 및 로그인 (Google OAuth)
 - 프로필 등록 및 인증 서류 제출
-- 서비스 가능 지역 및 시간 설정
+- 서비스 가능 지역 및 시간 설정 (서울 지역별)
 - 예약 요청 승인/거절
 - 체크인/체크아웃 처리
-- 정산 내역 조회
+- 정산 내역 조회 (주간 정산)
 - 고객 리뷰 관리
 - 실시간 알림 수신
 
 ### 👨‍💼 관리자 (Admin) 기능
-- 대시보드 및 통계 조회
 - 고객/매니저 계정 관리
 - 예약 및 매칭 현황 모니터링
 - 정산 관리 및 승인
-- 이벤트 및 공지사항 관리
+- 이벤트 관리
 - 게시판 관리 및 답변
-- 실시간 로그 모니터링
+- 실시간 로그 모니터링 
 
 ## 📝 API 엔드포인트
 
@@ -133,7 +131,9 @@ export GOOGLE_REDIRECT_URL=http://localhost:8080/api/auth/oauth/google
 | 게시판 | `/api/board` | 문의, 답변 | JWT |
 | 파일 | `/api/files` | S3 업로드 | JWT |
 
-**상세 API 문서**: [Swagger UI](http://localhost:8080/swagger-ui/index.html)
+**상세 API 문서**: 
+- **로컬**: http://localhost:8080/swagger-ui/index.html
+- **배포**: https://api-maidlab.duckdns.org/swagger-ui/index.html
 
 ## 📂 프로젝트 구조
 
@@ -184,7 +184,7 @@ KBE5_MAIDLAB_BE/
 │   │   ├── point/         # 포인트 도메인
 │   │   └── reservation/   # 예약 도메인
 │   └── build.gradle
-├── core/                   # 공통 기능 모듈
+├── core/                   # 공통 기능 및 횡단 관심사
 │   ├── src/main/java/kernel/maidlab/core/
 │   │   ├── aop/           # AOP 설정
 │   │   ├── aws/           # AWS 설정
@@ -210,49 +210,33 @@ KBE5_MAIDLAB_BE/
 - **admin**: 관리자 전용 기능 및 API
 - **api**: REST API 컨트롤러 계층
 - **domain**: 비즈니스 로직 및 도메인 엔티티
-- **core**: 공통 기능 (보안, AOP, 예외처리 등)
+- **core**: 공통 기능 및 횡단 관심사(보안, AOP, 예외처리 등)
 - **common**: 공통 유틸리티 및 설정
 
-## 🧪 테스트 방법
+## 🧪 API 테스트
 
-### 단위 테스트 실행
-```bash
-# 전체 테스트 실행
-./gradlew test
-
-# 특정 모듈 테스트 실행
-./gradlew :domain:test
-./gradlew :api:test
-```
-
-**참고**: 현재 `app` 모듈의 테스트는 비활성화되어 있습니다.
-
-### API 테스트
-- **Swagger UI**: http://localhost:8080/swagger-ui/index.html
+### Swagger UI를 통한 API 테스트
+- **로컬**: http://localhost:8080/swagger-ui/index.html
+- **배포**: https://api-maidlab.duckdns.org/swagger-ui/index.html
 - 애플리케이션 실행 후 Swagger UI에서 각 API 엔드포인트를 테스트할 수 있습니다.
 
-### 테스트 데이터
-- `app/src/main/resources/data.sql` 파일에 초기 데이터가 정의되어 있습니다.
 
 ## 💡 향후 개선사항
 
 ### 기능 개선
-- [ ] 실시간 채팅 기능 추가
-- [ ] 매니저 위치 기반 추천 시스템
 - [ ] 고급 매칭 알고리즘 개발
-- [ ] 모바일 앱 푸시 알림 연동
-- [ ] 결제 시스템 다양화
+- [ ] admin 대시보드 도식화
 
 ### 성능 개선
 - [ ] 데이터베이스 쿼리 최적화
-- [ ] 캐싱 전략 개선
+- [ ] Redis 캐싱 전략 도입 
 - [ ] API 응답 시간 최적화
 - [ ] 대용량 트래픽 처리 개선
+- [ ] 매칭 로직에 메세지 큐 사용으로 이벤트 드리븐으로 성능 최적화
+- [ ] 배치 시스템 도입, DB 월별 파티셔닝, 통계 테이블 구현
 
 ### 보안 강화
-- [ ] API Rate Limiting 구현
 - [ ] 민감 정보 암호화 강화
-- [ ] CORS 정책 세밀화
 - [ ] 보안 감사 로그 추가
 
 ## 👥 개발팀
