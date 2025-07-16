@@ -40,6 +40,11 @@ MaidLab은 바쁜 현대인의 일상을 지원하기 위해 청소, 베이비�
 - **GitHub Actions** - CI/CD 파이프라인
 - **AWS EC2** - 배포 환경
 
+### Monitoring & Observability
+- **Spring Boot Actuator** - 애플리케이션 메트릭 및 상태 모니터링
+- **Prometheus** - 메트릭 수집 및 저장
+- **Grafana** - 메트릭 시각화 및 대시보드
+
 ### Build & Project Management
 - **Gradle** - 빌드 도구
 - **멀티모듈 프로젝트** - 모듈별 관심사 분리
