@@ -39,7 +39,8 @@ public class S3ServiceImpl implements S3Service {
 		value = {RuntimeException.class, IllegalArgumentException.class},
 		responseType = ResponseType.EXTERNAL_SERVICE_ERROR,
 		message = "파일 업로드 URL 생성 중 오류가 발생했습니다",
-		logLevel = LogLevel.ERROR
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
 	)
 	public List<PresignedFileResponseDto> uploadFile(List<String> filenames, String prefix) {
 		return filenames.stream().map(filename -> {
@@ -69,7 +70,8 @@ public class S3ServiceImpl implements S3Service {
 		value = {StringIndexOutOfBoundsException.class, NullPointerException.class},
 		responseType = ResponseType.VALIDATION_FAILED,
 		message = "잘못된 파일명입니다",
-		logLevel = LogLevel.WARN
+		logLevel = LogLevel.WARN,
+		enableNotification = true
 	)
 	private String getContentType(String filename) {
 		String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();

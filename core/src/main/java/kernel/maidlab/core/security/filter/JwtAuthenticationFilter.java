@@ -95,6 +95,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			"/api/auth/social-signup",
 			"/api/admin/auth/login",
 			"/api/events",
+			"/api/events/**",
 			"/swagger-ui",
 			"/v3/api-docs",
 			"/swagger-resources",

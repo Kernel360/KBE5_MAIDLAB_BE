@@ -58,7 +58,7 @@ public class SecurityConfig {
 					"/api/auth/refresh",
 					"/api/admin/auth/login",
 					"/api/admin/auth/refresh",
-					"/api/events",
+					"/api/events/**",
 					"/swagger-ui/**",
 					"/v3/api-docs/**",
 					"/swagger-resources/**",

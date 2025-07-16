@@ -91,7 +91,8 @@ public class ConsumerServiceImpl implements ConsumerService {
 		value = {IllegalArgumentException.class},
 		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
 		message = "매니저를 찾을 수 없습니다",
-		logLevel = LogLevel.WARN
+		logLevel = LogLevel.WARN,
+		enableNotification = true
 	)
 	public void saveLikedOrBlackListedManager(String managerUuid, boolean preference) {
 		Consumer consumer = getConsumer();
@@ -107,7 +108,8 @@ public class ConsumerServiceImpl implements ConsumerService {
 		value = {IllegalArgumentException.class},
 		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
 		message = "매니저를 찾을 수 없습니다",
-		logLevel = LogLevel.WARN
+		logLevel = LogLevel.WARN,
+		enableNotification = true
 	)
 	public long deleteLikedAOrBlackListManager(String managerUuid) {
 		Consumer consumer = getConsumer();

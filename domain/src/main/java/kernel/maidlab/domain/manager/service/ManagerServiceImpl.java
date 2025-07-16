@@ -81,7 +81,8 @@ public class ManagerServiceImpl implements ManagerService {
 		value = {IllegalArgumentException.class},
 		responseType = ResponseType.VALIDATION_FAILED,
 		message = "잘못된 서비스 타입입니다",
-		logLevel = LogLevel.WARN
+		logLevel = LogLevel.WARN,
+		enableNotification = true
 	)
 	public ResponseEntity<ResponseDto<Void>> createProfile(ProfileRequestDto req, HttpServletRequest httpReq) {
 		Manager manager = getCurrentManager();
@@ -215,7 +216,8 @@ public class ManagerServiceImpl implements ManagerService {
 		value = {IllegalArgumentException.class},
 		responseType = ResponseType.VALIDATION_FAILED,
 		message = "프로필 수정 중 오류가 발생했습니다",
-		logLevel = LogLevel.WARN
+		logLevel = LogLevel.WARN,
+		enableNotification = true
 	)
 	public ResponseEntity<ResponseDto<Void>> updateProfile(ProfileUpdateRequestDto req, HttpServletRequest httpReq) {
 		Manager manager = getCurrentManager();
