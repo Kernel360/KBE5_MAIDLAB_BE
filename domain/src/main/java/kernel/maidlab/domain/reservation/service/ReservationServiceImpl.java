@@ -240,7 +240,8 @@ public class ReservationServiceImpl implements ReservationService {
 		value = {Exception.class},
 		responseType = ResponseType.DATABASE_ERROR,
 		message = "예약 생성 중 오류가 발생했습니다",
-		logLevel = LogLevel.ERROR
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
 	)
 	public Long createReservation(ReservationRequestDto dto, HttpServletRequest request) {
 		// 매칭된 매니저 존재 확인

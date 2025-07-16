@@ -47,7 +47,8 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 		value = {IllegalArgumentException.class, RuntimeException.class},
 		responseType = ResponseType.LOGIN_FAILED,
 		message = "관리자 로그인 처리 중 오류가 발생했습니다",
-		logLevel = LogLevel.WARN
+		logLevel = LogLevel.WARN,
+		enableNotification = true
 	)
 	public ResponseEntity<ResponseDto<LoginResponseDto>> adminLogin(AdminLoginRequestDto req, HttpServletResponse res) {
 		Admin admin = adminRepository.findByAdminKey(req.getAdminKey())
@@ -82,7 +83,8 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 		value = {IllegalArgumentException.class, RuntimeException.class},
 		responseType = ResponseType.INVALID_REFRESH_TOKEN,
 		message = "관리자 토큰 갱신 처리 중 오류가 발생했습니다",
-		logLevel = LogLevel.ERROR
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
 	)
 	public ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(String refreshToken, HttpServletResponse res) {
 		kernel.maidlab.domain.auth.dto.AdminJwtDto.AdminRefreshResult result = adminTokenService.refreshAdminTokens(

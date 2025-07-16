@@ -33,7 +33,7 @@ public class EventController implements EventApi {
 	}
 
 	@Override
-	@GetMapping("/event/{eventId}")
+	@GetMapping("/events/{eventId}")
 	public ResponseEntity<ResponseDto<EventResponseDto>> getEventById(@PathVariable Long eventId) {
 		return eventService.getEvent(eventId);
 	}
