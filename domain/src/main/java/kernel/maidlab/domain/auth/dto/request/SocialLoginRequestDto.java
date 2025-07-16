@@ -1,6 +1,6 @@
 package kernel.maidlab.domain.auth.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import kernel.maidlab.common.enums.SocialType;
 import kernel.maidlab.common.enums.UserType;
 import lombok.Getter;
@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SocialLoginRequestDto {
 
-	@NotBlank
+	@NotNull
 	private UserType userType;
 
-	@NotBlank
+	@NotNull
 	private SocialType socialType;
 
 	private String code;
