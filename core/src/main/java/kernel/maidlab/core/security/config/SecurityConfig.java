@@ -65,7 +65,8 @@ public class SecurityConfig {
 					"/webjars/**",
 					"/favicon.ico",
 					"/error",
-					"/admin/logs/stream"// WebSocket 엔드포인트
+					"/admin/logs/stream", //websocket 엔드포인트
+					"/actuator/**" //spring actuator 엔드포인트
 				).permitAll()
 
 				// 관리자 전용 API
