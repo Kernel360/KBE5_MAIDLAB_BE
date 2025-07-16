@@ -12,79 +12,38 @@ MaidLab은 바쁜 현대인의 일상을 지원하기 위해 청소, 베이비�
 
 ## 🛠️ 기술 스택
 
-### Backend
+### Backend Core
 - **Java 21** - 최신 LTS 버전
 - **Spring Boot 3.4.5** - 웹 애플리케이션 프레임워크
 - **Spring Security** - JWT 기반 인증 및 보안
-- **Spring AOP** - 횡단 관심사 처리
+- **Spring AOP** - 횡단 관심사 처리 (로깅, 예외처리)
+
+### Data & Persistence
 - **Spring Data JPA** - ORM 및 데이터 접근
-- **QueryDSL** - 타입 안전한 쿼리 작성
+- **QueryDSL** - 타입 안전한 동적 쿼리 작성
+- **MySQL** - 데이터베이스
+- **HikariCP** - 커넥션 풀링
 
-### Database & Storage
-- **MySQL** - 메인 데이터베이스
-- **AWS S3** - 파일 저장소
-- **AWS CloudFront** - CDN
+### Authentication & Security
+- **JWT (JSON Web Token)** - 토큰 기반 인증
+- **Google OAuth 2.0** - 소셜 로그인
 
-### Architecture
-- **멀티모듈 아키텍처** - 모듈별 관심사 분리
-- **RESTful API** - HTTP 기반 API 설계
+### Cloud & Storage
+- **AWS S3** - 파일 저장소 (이미지, 문서)
+- **AWS CloudFront** - CDN (콘텐츠 배포)
 
-## ⚙️ 설치 및 실행 방법
+### API & Documentation
+- **SpringDoc OpenAPI 3** - API 문서화 (Swagger)
+- **Server-Sent Events (SSE)** - 실시간 알림
 
-### 사전 요구사항
-- Java 21
-- MySQL 8.0+
-- Git
+### DevOps & Infrastructure
+- **GitHub Actions** - CI/CD 파이프라인
+- **AWS EC2** - 배포 환경
 
-### 1. 프로젝트 클론
-```bash
-git clone https://github.com/Kernel360/KBE5_MAIDLAB_BE.git
-cd KBE5_MAIDLAB_BE
-```
+### Build & Project Management
+- **Gradle** - 빌드 도구
+- **멀티모듈 프로젝트** - 모듈별 관심사 분리
 
-### 2. 데이터베이스 설정
-```sql
--- MySQL 데이터베이스 생성
-CREATE DATABASE maidlab CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-### 3. 환경 변수 설정
-```bash
-# 로컬 개발 환경 변수
-export DB_LOCAL_USERNAME=your_username
-export DB_LOCAL_PASSWORD=your_password
-export DB_LOCAL_DATABASE=maidlab
-export DB_LOCAL_PORT=3306
-
-export AWS_S3_ACCESSKEY=your_aws_access_key
-export AWS_S3_SECRETKEY=your_aws_secret_key
-
-export JWT_SECRET_KEY=your-super-secret-jwt-key-256-bits-minimum
-export JWT_HEADER=Authorization
-export JWT_PREFIX=Bearer
-export JWT_EXPIRATION_ACCESS=3600000
-export JWT_EXPIRATION_REFRESH=604800000
-
-export GOOGLE_CLIENT_ID=your_google_oauth_client_id
-export GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
-export GOOGLE_REDIRECT_URL=http://localhost:8080/api/auth/oauth/google
-
-# 운영 환경 추가 변수 (선택)
-export DB_PROD_HOST=your_prod_db_host
-export DISCORD_WEBHOOK_URL=your_discord_webhook_url
-```
-
-### 4. 애플리케이션 실행
-```bash
-# 프로젝트 빌드
-./gradlew build
-
-# 애플리케이션 실행
-./gradlew :app:bootRun
-```
-
-### 5. API 문서 확인
-- **Swagger UI**: http://localhost:8080/swagger-ui/index.html
 
 ## 🚀 주요 기능
 
@@ -119,21 +78,20 @@ export DISCORD_WEBHOOK_URL=your_discord_webhook_url
 
 ### 주요 API 개요
 
-| 카테고리 | 기본 경로 | 주요 기능 | 인증 |
-|---------|----------|----------|------|
-| 인증 | `/api/auth` | 회원가입, 로그인, OAuth | JWT |
-| 고객 | `/api/consumers` | 프로필, 선호도 관리 | CONSUMER |
-| 매니저 | `/api/manager` | 프로필, 스케줄 관리 | MANAGER |
-| 예약 | `/api/reservations` | 예약 생성, 관리, 리뷰 | JWT |
-| 매칭 | `/api/matching` | 매니저 매칭 | JWT |
-| 포인트 | `/api/point` | 충전, 사용, 이력 | JWT |
-| 알림 | `/api/notifications` | 실시간 알림 (SSE) | JWT |
-| 게시판 | `/api/board` | 문의, 답변 | JWT |
-| 파일 | `/api/files` | S3 업로드 | JWT |
+| 카테고리 | 기본 경로 | 주요 기능 |
+|---------|----------|----------|
+| 인증 | `/api/auth` | 회원가입, 로그인, OAuth |
+| 고객 | `/api/consumers` | 프로필, 선호도 관리 |
+| 매니저 | `/api/manager` | 프로필, 스케줄 관리 |
+| 예약 | `/api/reservations` | 예약 생성, 관리, 리뷰 |
+| 매칭 | `/api/matching` | 매니저 매칭 |
+| 포인트 | `/api/point` | 충전, 사용, 이력 |
+| 알림 | `/api/notifications` | 실시간 알림 (SSE) |
+| 게시판 | `/api/board` | 문의, 답변 |
+| 파일 | `/api/files` | S3 업로드 |
 
 **상세 API 문서**: 
-- **로컬**: http://localhost:8080/swagger-ui/index.html
-- **배포**: https://api-maidlab.duckdns.org/swagger-ui/index.html
+- **배포**: https://api-maidlab.duckdns.org/
 
 ## 📂 프로젝트 구조
 
@@ -205,18 +163,27 @@ KBE5_MAIDLAB_BE/
 └── README.md
 ```
 
-### 모듈별 역할
-- **app**: 메인 애플리케이션, 모든 모듈을 조합하여 실행
-- **admin**: 관리자 전용 기능 및 API
-- **api**: REST API 컨트롤러 계층
-- **domain**: 비즈니스 로직 및 도메인 엔티티
-- **core**: 공통 기능 및 횡단 관심사(보안, AOP, 예외처리 등)
-- **common**: 공통 유틸리티 및 설정
+### 모듈별 역할 및 의존성
+
+#### 모듈 설계 원칙
+- **모듈 간 의존성 최소화**: 각 모듈은 명확한 책임을 가지며 필요한 모듈만 의존
+- **계층형 아키텍처**: 상위 모듈이 하위 모듈을 의존하는 단방향 구조
+- **공통 기능 분리**: 횡단 관심사는 core 모듈에서 관리
+
+#### 모듈별 역할
+
+| 모듈 | 역할 | 의존성 | 주요 기능 |
+|------|------|--------|----------|
+| **app** | 메인 애플리케이션 | admin, api, domain, core, common | 전체 모듈 통합 실행 |
+| **admin** | 관리자 시스템 | core, common | 관리자 대시보드, 계정 관리 |
+| **api** | REST API 계층 | domain, core, common | 컨트롤러, API 엔드포인트 |
+| **domain** | 비즈니스 로직 | core, common | 도메인 엔티티, 서비스 로직 |
+| **core** | 공통 핵심 기능 | common | 보안, AOP, 예외처리, AWS |
+| **common** | 공통 유틸리티 | 없음 | 설정, DTO, 열거형, 유틸리티 |
 
 ## 🧪 API 테스트
 
 ### Swagger UI를 통한 API 테스트
-- **로컬**: http://localhost:8080/swagger-ui/index.html
 - **배포**: https://api-maidlab.duckdns.org/swagger-ui/index.html
 - 애플리케이션 실행 후 Swagger UI에서 각 API 엔드포인트를 테스트할 수 있습니다.
 
@@ -255,8 +222,12 @@ KBE5_MAIDLAB_BE/
 
 ## 👥 개발팀
 
-**MaidLab Backend Team**  
-Kernel360 5기 - KBE5 팀
+**MAIDLAB Backend Team**  
+Kernel360 5기
+
+### 팀원 구성
+- **팀장**: 이소은
+- **팀원**: 김진성, 조승현, 변재호
 
 ---
 
