@@ -178,7 +178,8 @@ public class MatchingServiceImpl implements MatchingService {
 		value = {Exception.class},
 		responseType = ResponseType.INTERNAL_SERVER_ERROR,
 		message = "매칭 알림 전송에 실패했습니다",
-		logLevel = LogLevel.ERROR
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
 	)
 	private void sendMatchingNotification(Matching matching) {
 		// 예약 정보 조회
@@ -215,7 +216,8 @@ public class MatchingServiceImpl implements MatchingService {
 		value = {Exception.class},
 		responseType = ResponseType.INTERNAL_SERVER_ERROR,
 		message = "상태 알림 전송에 실패했습니다",
-		logLevel = LogLevel.ERROR
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
 	)
 	private void sendStatusNotification(Matching matching, Status status) {
 		// 예약 정보 조회

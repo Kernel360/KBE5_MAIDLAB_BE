@@ -121,7 +121,8 @@ public class BoardServiceImpl implements BoardService {
 		value = {EntityNotFoundException.class, RuntimeException.class},
 		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
 		message = "게시글 처리 중 오류가 발생했습니다",
-		logLevel = LogLevel.WARN
+		logLevel = LogLevel.WARN,
+		enableNotification = true
 	)
 	public void modifyBoard(
 		HttpServletRequest request,
@@ -152,7 +153,8 @@ public class BoardServiceImpl implements BoardService {
 		value = {EntityNotFoundException.class},
 		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
 		message = "게시글을 찾을 수 없습니다",
-		logLevel = LogLevel.WARN
+		logLevel = LogLevel.WARN,
+		enableNotification = true
 	)
 	public void deleteBoard(
 		HttpServletRequest request,
@@ -207,7 +209,8 @@ public class BoardServiceImpl implements BoardService {
 		value = {IllegalArgumentException.class},
 		responseType = ResponseType.VALIDATION_FAILED,
 		message = "잘못된 이미지 정보입니다",
-		logLevel = LogLevel.WARN
+		logLevel = LogLevel.WARN,
+		enableNotification = true
 	)
 	public void updateImages(List<BoardImage> currentBoardImages, List<ImageDto> newImageDataList, Board board) {
 

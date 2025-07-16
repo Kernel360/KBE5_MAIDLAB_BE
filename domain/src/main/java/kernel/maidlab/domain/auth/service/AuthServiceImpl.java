@@ -71,7 +71,8 @@ public class AuthServiceImpl implements AuthService {
 		value = {IllegalArgumentException.class, RuntimeException.class},
 		responseType = ResponseType.VALIDATION_FAILED,
 		message = "회원가입 처리 중 오류가 발생했습니다",
-		logLevel = LogLevel.ERROR
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
 	)
 	public ResponseEntity<ResponseDto<Void>> signUp(SignUpRequestDto req) {
 		userValidator.validatePhoneNumberDuplication(req.getPhoneNumber(), req.getUserType());
@@ -109,7 +110,8 @@ public class AuthServiceImpl implements AuthService {
 		value = {IllegalArgumentException.class, RuntimeException.class},
 		responseType = ResponseType.LOGIN_FAILED,
 		message = "로그인 처리 중 오류가 발생했습니다",
-		logLevel = LogLevel.WARN
+		logLevel = LogLevel.WARN,
+		enableNotification = true
 	)
 	public ResponseEntity<ResponseDto<LoginResponseDto>> login(LoginRequestDto req, HttpServletResponse res) {
 		Object user = userValidator.validateLoginCredentials(req.getPhoneNumber(), req.getPassword(),
@@ -143,7 +145,8 @@ public class AuthServiceImpl implements AuthService {
 		value = {IllegalArgumentException.class, RuntimeException.class},
 		responseType = ResponseType.LOGIN_FAILED,
 		message = "소셜 로그인 처리 중 오류가 발생했습니다",
-		logLevel = LogLevel.WARN
+		logLevel = LogLevel.WARN,
+		enableNotification = true
 	)
 	public ResponseEntity<ResponseDto<SocialLoginResponseDto>> socialLogin(
 		SocialLoginRequestDto req,
@@ -242,7 +245,8 @@ public class AuthServiceImpl implements AuthService {
 		value = {IllegalArgumentException.class, RuntimeException.class},
 		responseType = ResponseType.VALIDATION_FAILED,
 		message = "소셜 회원가입 처리 중 오류가 발생했습니다",
-		logLevel = LogLevel.ERROR
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
 	)
 	public ResponseEntity<ResponseDto<Void>> socialSignUp(SocialSignUpRequestDto req, HttpServletRequest req2) {
 		JwtDto.TempTokenInfo googleInfo = extractGoogleInfo(req2);
@@ -294,7 +298,8 @@ public class AuthServiceImpl implements AuthService {
 		value = {IllegalArgumentException.class, RuntimeException.class},
 		responseType = ResponseType.INVALID_REFRESH_TOKEN,
 		message = "토큰 갱신 처리 중 오류가 발생했습니다",
-		logLevel = LogLevel.ERROR
+		logLevel = LogLevel.ERROR,
+		enableNotification = true
 	)
 	public ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(String refreshToken, HttpServletResponse res) {
 		JwtDto.RefreshResult result = jwtTokenService.refreshTokens(refreshToken);
