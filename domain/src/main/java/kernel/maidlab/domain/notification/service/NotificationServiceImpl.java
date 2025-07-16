@@ -88,13 +88,11 @@ public class NotificationServiceImpl implements NotificationService {
 
 		// 연결 완료 시 정리
 		emitter.onCompletion(() -> {
-			log.info("SSE 연결 완료 - 사용자: {}", connectionKey.toStringKey());
 			connections.remove(connectionKey, emitter);
 		});
 
 		// 연결 타임아웃 시 정리
 		emitter.onTimeout(() -> {
-			log.info("SSE 연결 타임아웃 - 사용자: {}", connectionKey.toStringKey());
 			connections.remove(connectionKey, emitter);
 		});
 
@@ -122,10 +120,6 @@ public class NotificationServiceImpl implements NotificationService {
 				log.debug("기존 SSE 연결 종료 중 오류 (정상) - 사용자: {}", connectionKey.toStringKey());
 			}
 		}
-
-		log.info("SSE 연결 성공 - 사용자: {}", connectionKey.toStringKey());
-		log.info("SSE 테스트 메시지 전송 완료 - 사용자: {}", connectionKey.toStringKey());
-
 		return emitter;
 	}
 
@@ -136,7 +130,7 @@ public class NotificationServiceImpl implements NotificationService {
 		SseEmitter emitter = connections.remove(connectionKey);
 		if (emitter != null) {
 			emitter.complete();
-			log.info("SSE 연결 해제 - 사용자: {}", connectionKey.toStringKey());
+			
 		}
 	}
 
@@ -170,18 +164,11 @@ public class NotificationServiceImpl implements NotificationService {
 		UserType receiverType = notification.getReceiverType();
 		NotificationConnectionKey connectionKey = NotificationConnectionKey.of(receiverId, receiverType);
 
-		log.info("알림 전송 시도 -  실제 receiverId: {}, receiverType: {}",
-			receiverId, receiverType);
+		
 
 		// SSE로 실시간 알림 전송
 		SseEmitter emitter = connections.get(connectionKey);
-		log.info("SSE 연결 상태 확인 - 연결 키: {}, 연결 존재: {}, 전체 연결 수: {}",
-			connectionKey.toStringKey(), emitter != null, connections.size());
 		//System.out.println(emitter.toString());
-		log.info("현재 저장된 모든 연결 키: {}",
-			connections.keySet().stream()
-				.map(NotificationConnectionKey::toStringKey)
-				.collect(Collectors.toList()));
 
 		if (emitter != null) {
 			try {
@@ -192,14 +179,8 @@ public class NotificationServiceImpl implements NotificationService {
 			} catch (IOException e) {
 				throw new RuntimeException("SSE 알림 전송 실패", e);
 			}
-
-			log.info("알림 전송 성공 - 사용자: {}, 알림 ID: {}, 타입: {}",
-				connectionKey.toStringKey(), savedNotification.getId(), notification.getNotificationType());
 		} else {
 			log.warn("SSE 연결 없음 - 사용자: {}, 알림은 DB에 저장됨", connectionKey.toStringKey());
-			log.info("현재 활성 연결 목록: {}", connections.keySet().stream()
-				.map(NotificationConnectionKey::toStringKey)
-				.toList());
 		}
 	}
 
@@ -255,7 +236,6 @@ public class NotificationServiceImpl implements NotificationService {
 			.ifPresent(notification -> {
 				notification.markAsRead();
 				notificationRepository.save(notification);
-				log.info("알림 읽음 처리 - 사용자: {}, 알림 ID: {}", connectionKey.toStringKey(), notificationId);
 			});
 	}
 
@@ -267,7 +247,6 @@ public class NotificationServiceImpl implements NotificationService {
 		UserType type = getCurrentUserType(request);
 
 		int updatedCount = notificationRepository.markAllAsReadByReceiverIdAndType(id, type);
-		log.info("모든 알림 읽음 처리 - 사용자: {}, 처리된 알림 수: {}", connectionKey.toStringKey(), updatedCount);
 	}
 
 	@Override
