@@ -184,8 +184,8 @@ KBE5_MAIDLAB_BE/
 ## 🧪 API 테스트
 
 ### Swagger UI를 통한 API 테스트
-- **배포**: https://api-maidlab.duckdns.org/swagger-ui/index.html
-- 애플리케이션 실행 후 Swagger UI에서 각 API 엔드포인트를 테스트할 수 있습니다.
+- https://api-maidlab.duckdns.org/swagger-ui/index.html
+- Swagger UI에서 각 API 엔드포인트를 테스트할 수 있습니다.
 
 
 ## 💡 향후 개선사항
@@ -217,8 +217,6 @@ KBE5_MAIDLAB_BE/
 
 ### 보안 강화
 - [ ] 민감 정보 암호화 강화
-- [ ] 보안 감사 로그 추가
-- [ ] API Rate Limiting 구현
 
 ## 👥 개발팀
 
