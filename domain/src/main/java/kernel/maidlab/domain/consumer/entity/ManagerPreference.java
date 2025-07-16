@@ -3,7 +3,7 @@ package kernel.maidlab.domain.consumer.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import kernel.maidlab.common.entity.base.Base;
+import kernel.maidlab.common.entity.Base;
 import kernel.maidlab.domain.manager.entity.Manager;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

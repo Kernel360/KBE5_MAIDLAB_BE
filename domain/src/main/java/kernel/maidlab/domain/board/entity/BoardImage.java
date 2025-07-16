@@ -4,7 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import kernel.maidlab.common.entity.base.Base;
+import kernel.maidlab.common.entity.Base;
 import kernel.maidlab.domain.board.dto.ImageDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

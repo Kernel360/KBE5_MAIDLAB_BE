@@ -2,7 +2,7 @@ package kernel.maidlab.domain.board.dto.request;
 
 import java.util.List;
 
-import kernel.maidlab.common.enums.BoardType;
+import kernel.maidlab.domain.board.enums.BoardType;
 import kernel.maidlab.domain.board.dto.ImageDto;
 import lombok.Getter;
 

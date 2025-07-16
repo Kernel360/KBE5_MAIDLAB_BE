@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import kernel.maidlab.common.enums.FallbackType;
+import kernel.maidlab.core.aop.enums.FallbackType;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

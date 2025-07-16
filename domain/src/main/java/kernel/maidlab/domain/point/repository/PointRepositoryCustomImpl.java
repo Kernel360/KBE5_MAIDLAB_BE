@@ -18,7 +18,7 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import kernel.maidlab.common.enums.PointType;
+import kernel.maidlab.domain.point.enums.PointType;
 import kernel.maidlab.domain.point.dto.response.PointRecordResponseDto;
 import kernel.maidlab.domain.point.entity.Point;
 import kernel.maidlab.domain.point.entity.QPoint;

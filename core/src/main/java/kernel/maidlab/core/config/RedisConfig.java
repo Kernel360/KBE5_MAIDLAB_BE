@@ -1,4 +1,4 @@
-package kernel.maidlab.common.config;
+package kernel.maidlab.core.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

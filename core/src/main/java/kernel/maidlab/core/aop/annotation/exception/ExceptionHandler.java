@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import kernel.maidlab.common.enums.LogLevel;
+import kernel.maidlab.core.aop.enums.LogLevel;
 import kernel.maidlab.common.enums.ResponseType;
 
 @Target(ElementType.METHOD)

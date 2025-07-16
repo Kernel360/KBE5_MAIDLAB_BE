@@ -1,5 +1,6 @@
 package kernel.maidlab.domain.notification.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -7,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kernel.maidlab.common.enums.NotificationType;
+import kernel.maidlab.domain.notification.enums.NotificationType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.domain.notification.dto.NotificationDto;
 

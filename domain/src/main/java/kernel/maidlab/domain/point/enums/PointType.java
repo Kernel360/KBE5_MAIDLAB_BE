@@ -1,4 +1,4 @@
-package kernel.maidlab.common.enums;
+package kernel.maidlab.domain.point.enums;
 
 import lombok.Getter;
 

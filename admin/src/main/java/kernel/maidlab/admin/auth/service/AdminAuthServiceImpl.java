@@ -4,6 +4,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.annotation.exception.Retry;
+import kernel.maidlab.core.aop.enums.LogLevel;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -34,11 +38,20 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
 	// 관리자 로그인
 	@Override
+	@Retry(
+		maxAttempts = 2,
+		delay = 1000,
+		retryFor = {org.springframework.dao.DataAccessException.class}
+	)
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class, RuntimeException.class},
+		responseType = ResponseType.LOGIN_FAILED,
+		message = "관리자 로그인 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.WARN
+	)
 	public ResponseEntity<ResponseDto<LoginResponseDto>> adminLogin(AdminLoginRequestDto req, HttpServletResponse res) {
 		Admin admin = adminRepository.findByAdminKey(req.getAdminKey())
-			.orElseThrow(() -> {
-				throw new BaseException(ResponseType.LOGIN_FAILED);
-			});
+			.orElseThrow(() -> new BaseException(ResponseType.LOGIN_FAILED));
 
 		if (admin.getIsDeleted()) {
 			throw new BaseException(ResponseType.ACCOUNT_DELETED);
@@ -59,11 +72,18 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 			expirationTime
 		);
 
+		log.info("관리자 로그인 성공 - Admin Key: {}", req.getAdminKey());
 		return ResponseDto.success(responseDto);
 	}
 
 	// 관리자 토큰 갱신
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class, RuntimeException.class},
+		responseType = ResponseType.INVALID_REFRESH_TOKEN,
+		message = "관리자 토큰 갱신 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.ERROR
+	)
 	public ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(String refreshToken, HttpServletResponse res) {
 		kernel.maidlab.domain.auth.dto.AdminJwtDto.AdminRefreshResult result = adminTokenService.refreshAdminTokens(
 			refreshToken);
@@ -81,6 +101,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 			expirationTime
 		);
 
+		log.info("관리자 토큰 갱신 성공");
 		return ResponseDto.success(responseDto);
 	}
 

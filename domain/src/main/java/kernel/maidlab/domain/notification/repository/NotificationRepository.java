@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import kernel.maidlab.common.enums.NotificationType;
+import kernel.maidlab.domain.notification.enums.NotificationType;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.domain.notification.entity.Notification;
 

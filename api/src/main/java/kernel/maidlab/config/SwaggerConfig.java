@@ -1,4 +1,4 @@
-package kernel.maidlab.common.config;
+package kernel.maidlab.config;
 
 import java.util.List;
 

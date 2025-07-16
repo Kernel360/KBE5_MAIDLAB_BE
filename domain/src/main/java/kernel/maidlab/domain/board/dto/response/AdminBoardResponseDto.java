@@ -2,7 +2,7 @@ package kernel.maidlab.domain.board.dto.response;
 
 import java.time.LocalDateTime;
 
-import kernel.maidlab.common.enums.BoardType;
+import kernel.maidlab.domain.board.enums.BoardType;
 import kernel.maidlab.domain.board.dto.AdminBoardQueryDto;
 import kernel.maidlab.domain.board.entity.Board;
 import lombok.AllArgsConstructor;

@@ -9,10 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.enums.LogLevel;
+
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.enums.ServiceType;
+import kernel.maidlab.domain.manager.enums.ServiceType;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.exception.BaseException;
@@ -74,6 +77,12 @@ public class ManagerServiceImpl implements ManagerService {
 
 	// 최초 기본 프로필 생성
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class},
+		responseType = ResponseType.VALIDATION_FAILED,
+		message = "잘못된 서비스 타입입니다",
+		logLevel = LogLevel.WARN
+	)
 	public ResponseEntity<ResponseDto<Void>> createProfile(ProfileRequestDto req, HttpServletRequest httpReq) {
 		Manager manager = getCurrentManager();
 
@@ -87,15 +96,10 @@ public class ManagerServiceImpl implements ManagerService {
 
 		if (req.getServiceTypes() != null && !req.getServiceTypes().isEmpty()) {
 			for (ServiceListItem serviceItem : req.getServiceTypes()) {
-				try {
-					ServiceType serviceTypeEnum = ServiceType.valueOf(serviceItem.getServiceType());
-					ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager,
-						serviceTypeEnum);
-					managerServiceTypeRepository.save(managerServiceType);
-				} catch (IllegalArgumentException e) {
-					log.warn("잘못된 서비스 타입 - 매니저 ID: {}, 서비스 타입: {}", manager.getId(), serviceItem.getServiceType());
-					throw new BaseException(ResponseType.VALIDATION_FAILED);
-				}
+				ServiceType serviceTypeEnum = ServiceType.valueOf(serviceItem.getServiceType());
+				ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager,
+					serviceTypeEnum);
+				managerServiceTypeRepository.save(managerServiceType);
 			}
 			log.info("서비스 타입 등록 완료 - 매니저 ID: {}, 서비스 갯수: {}", manager.getId(), req.getServiceTypes().size());
 		}
@@ -207,6 +211,12 @@ public class ManagerServiceImpl implements ManagerService {
 
 	// 프로필 수정
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class},
+		responseType = ResponseType.VALIDATION_FAILED,
+		message = "프로필 수정 중 오류가 발생했습니다",
+		logLevel = LogLevel.WARN
+	)
 	public ResponseEntity<ResponseDto<Void>> updateProfile(ProfileUpdateRequestDto req, HttpServletRequest httpReq) {
 		Manager manager = getCurrentManager();
 
@@ -227,16 +237,10 @@ public class ManagerServiceImpl implements ManagerService {
 
 		if (req.getServiceTypes() != null && !req.getServiceTypes().isEmpty()) {
 			for (ServiceListItem serviceItem : req.getServiceTypes()) {
-				try {
-					ServiceType serviceTypeEnum = ServiceType.valueOf(serviceItem.getServiceType());
-					ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager,
-						serviceTypeEnum);
-					managerServiceTypeRepository.save(managerServiceType);
-				} catch (IllegalArgumentException e) {
-					log.warn("잘못된 서비스 타입 수정 시도 - 매니저 ID: {}, 서비스 타입: {}", manager.getId(),
-						serviceItem.getServiceType());
-					throw new BaseException(ResponseType.VALIDATION_FAILED);
-				}
+				ServiceType serviceTypeEnum = ServiceType.valueOf(serviceItem.getServiceType());
+				ManagerServiceType managerServiceType = ManagerServiceType.managerServiceType(manager,
+					serviceTypeEnum);
+				managerServiceTypeRepository.save(managerServiceType);
 			}
 			log.info("서비스 타입 수정 완료 - 매니저 ID: {}, 새 서비스 갯수: {}", manager.getId(), req.getServiceTypes().size());
 		}

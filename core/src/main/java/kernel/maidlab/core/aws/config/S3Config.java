@@ -1,4 +1,4 @@
-package kernel.maidlab.common.config;
+package kernel.maidlab.core.aws.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

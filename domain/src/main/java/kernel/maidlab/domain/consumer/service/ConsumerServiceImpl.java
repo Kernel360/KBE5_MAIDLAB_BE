@@ -5,6 +5,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.enums.LogLevel;
+import kernel.maidlab.common.enums.ResponseType;
+
 import kernel.maidlab.common.enums.UserType;
 import kernel.maidlab.core.security.AuthenticationHelper;
 import kernel.maidlab.domain.consumer.dto.ConsumerMyPageDto;
@@ -83,20 +87,35 @@ public class ConsumerServiceImpl implements ConsumerService {
 	}
 
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class},
+		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
+		message = "매니저를 찾을 수 없습니다",
+		logLevel = LogLevel.WARN
+	)
 	public void saveLikedOrBlackListedManager(String managerUuid, boolean preference) {
 		Consumer consumer = getConsumer();
 		Manager manager = managerRepository.findByUuid(managerUuid)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저 입니다."));
 		ManagerPreference managerPreference = new ManagerPreference(consumer, manager, preference);
 		managerPreferenceRepository.save(managerPreference);
+		log.info("매니저 선호도 저장 - Consumer ID: {}, Manager UUID: {}, 선호도: {}", consumer.getId(), managerUuid, preference);
 	}
 
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class},
+		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
+		message = "매니저를 찾을 수 없습니다",
+		logLevel = LogLevel.WARN
+	)
 	public long deleteLikedAOrBlackListManager(String managerUuid) {
 		Consumer consumer = getConsumer();
 		Manager manager = managerRepository.findByUuid(managerUuid)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매니저입니다."));
-		return managerPreferenceRepository.deleteByConsumerIdAndManagerId(consumer.getId(), manager.getId());
+		long deletedCount = managerPreferenceRepository.deleteByConsumerIdAndManagerId(consumer.getId(), manager.getId());
+		log.info("매니저 선호도 삭제 - Consumer ID: {}, Manager UUID: {}, 삭제된 레코드 수: {}", consumer.getId(), managerUuid, deletedCount);
+		return deletedCount;
 	}
 
 	@Override
@@ -107,6 +126,12 @@ public class ConsumerServiceImpl implements ConsumerService {
 
 	@Transactional(readOnly = true)
 	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class},
+		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
+		message = "소비자를 찾을 수 없습니다",
+		logLevel = LogLevel.WARN
+	)
 	public Consumer findById(Long consumerId) {
 		return consumerRepository.findById(consumerId)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 소비자입니다. ID: " + consumerId));

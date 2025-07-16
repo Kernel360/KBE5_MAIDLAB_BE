@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import kernel.maidlab.common.dto.ResponseDto;
-import kernel.maidlab.common.enums.LogLevel;
+import kernel.maidlab.core.aop.enums.LogLevel;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.common.enums.SocialType;
 import kernel.maidlab.common.enums.UserType;

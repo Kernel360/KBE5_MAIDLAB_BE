@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
+import kernel.maidlab.core.aop.enums.LogLevel;
+import kernel.maidlab.common.enums.ResponseType;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -114,18 +117,24 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	// 수정
+	@ExceptionHandler(
+		value = {EntityNotFoundException.class, RuntimeException.class},
+		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
+		message = "게시글 처리 중 오류가 발생했습니다",
+		logLevel = LogLevel.WARN
+	)
 	public void modifyBoard(
 		HttpServletRequest request,
 		Long boardId,
 		BoardUpdateRequestDto boardUpdateRequestDto) {
 
 		Board board = boardRepository.findByIdAndIsDeletedFalse(boardId)
-			.orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+			.orElseThrow(() -> new EntityNotFoundException("게시글이 존재하지 않습니다."));
 
 		// 사용자 검증
 		CustomUserDetails user = getUser(request);
 		if (!isUserBoardWriter(board, user)) {
-			throw new RuntimeException("수정 권한이 없습니다.");
+			throw new EntityNotFoundException("수정 권한이 없습니다.");
 		}
 
 		board.boardUpdate(boardUpdateRequestDto);
@@ -139,6 +148,12 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	// 게시글 삭제
+	@ExceptionHandler(
+		value = {EntityNotFoundException.class},
+		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
+		message = "게시글을 찾을 수 없습니다",
+		logLevel = LogLevel.WARN
+	)
 	public void deleteBoard(
 		HttpServletRequest request,
 		Long boardId
@@ -188,6 +203,12 @@ public class BoardServiceImpl implements BoardService {
 
 	// 이미지 수정 로직
 	// todo:너무 많은 역할을 담담하고 있음 - 추후 리펙토링 필요
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class},
+		responseType = ResponseType.VALIDATION_FAILED,
+		message = "잘못된 이미지 정보입니다",
+		logLevel = LogLevel.WARN
+	)
 	public void updateImages(List<BoardImage> currentBoardImages, List<ImageDto> newImageDataList, Board board) {
 
 		// 사용자가 images null을 보낸 경우 기존 이미지만 삭제후 리턴
@@ -210,6 +231,7 @@ public class BoardServiceImpl implements BoardService {
 			.toList();
 
 		if (!invalidIds.isEmpty()) {
+			log.warn("잘못된 이미지 ID 감지 - 게시글 ID: {}, 잘못된 ID들: {}", board.getId(), invalidIds);
 			throw new IllegalArgumentException("잘못된 이미지 ID가 포함되어 있습니다: " + invalidIds);
 		}
 

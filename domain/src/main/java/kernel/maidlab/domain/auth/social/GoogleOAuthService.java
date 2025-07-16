@@ -1,6 +1,6 @@
 package kernel.maidlab.domain.auth.social;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -11,9 +11,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import kernel.maidlab.common.enums.LogLevel;
+import kernel.maidlab.core.aop.enums.LogLevel;
 import kernel.maidlab.common.enums.ResponseType;
-import kernel.maidlab.common.enums.RetryStrategy;
+import kernel.maidlab.core.aop.enums.RetryStrategy;
 import kernel.maidlab.core.aop.annotation.exception.ExceptionHandler;
 import kernel.maidlab.core.aop.annotation.exception.Retry;
 import kernel.maidlab.core.exception.BaseException;
@@ -21,10 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class GoogleOAuthService {
 
-	@Autowired
-	private RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 
 	@Retry(
 		maxAttempts = 3,
