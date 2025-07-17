@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ManagerListResponseDto {
-	private String name;
-	private String uuid;
-	private Long id;
+    private String name;
+    private String uuid;
+    private Long id;
 }

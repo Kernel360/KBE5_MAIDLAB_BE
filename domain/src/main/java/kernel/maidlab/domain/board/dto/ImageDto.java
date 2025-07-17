@@ -10,24 +10,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ImageDto {
 
-	private Long id;
-	private String imagePath;
-	private String name;
+    private Long id;
+    private String imagePath;
+    private String name;
 
-	public static ImageDto from(BoardImage boardImage) {
-		return new ImageDto(
-			boardImage.getId(),
-			boardImage.getImagePath(),
-			boardImage.getName()
-		);
-	}
+    public static ImageDto from(BoardImage boardImage) {
+        return new ImageDto(
+                boardImage.getId(),
+                boardImage.getImagePath(),
+                boardImage.getName()
+        );
+    }
 
-	@Override
-	public String toString() {
-		return "ImageDto{" +
-			"id=" + id +
-			", imagePath='" + imagePath + '\'' +
-			", name='" + name + '\'' +
-			'}';
-	}
+    @Override
+    public String toString() {
+        return "ImageDto{" +
+                "id=" + id +
+                ", imagePath='" + imagePath + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

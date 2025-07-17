@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginRequestDto {
 
-	@NotNull
-	private UserType userType;
+    @NotNull
+    private UserType userType;
 
-	@NotBlank
-	private String phoneNumber;
+    @NotBlank
+    private String phoneNumber;
 
-	@NotBlank
-	private String password;
+    @NotBlank
+    private String password;
 
 }

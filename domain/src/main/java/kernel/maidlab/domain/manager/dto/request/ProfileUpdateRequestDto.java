@@ -1,8 +1,5 @@
 package kernel.maidlab.domain.manager.dto.request;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import jakarta.validation.constraints.NotBlank;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.domain.manager.dto.object.RegionListItem;
@@ -12,28 +9,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class ProfileUpdateRequestDto {
 
-	private String profileImage;
+    private String profileImage;
 
-	@NotBlank
-	private String name;
+    @NotBlank
+    private String name;
 
-	private LocalDate birth;
+    private LocalDate birth;
 
-	private Gender gender;
+    private Gender gender;
 
-	private List<ServiceListItem> serviceTypes;
+    private List<ServiceListItem> serviceTypes;
 
-	@NotBlank
-	private List<RegionListItem> regions;
+    @NotBlank
+    private List<RegionListItem> regions;
 
-	@NotBlank
-	private List<ScheduleListItem> availableTimes;
+    @NotBlank
+    private List<ScheduleListItem> availableTimes;
 
-	private String introduceText;
+    private String introduceText;
 
 }

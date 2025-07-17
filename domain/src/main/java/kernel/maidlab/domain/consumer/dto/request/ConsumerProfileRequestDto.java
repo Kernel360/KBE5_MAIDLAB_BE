@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ConsumerProfileRequestDto {
-	private String profileImage;
-	private String address;
-	private String detailAddress;
+    private String profileImage;
+    private String address;
+    private String detailAddress;
 }

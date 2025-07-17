@@ -1,10 +1,6 @@
 package kernel.maidlab.domain.matching.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import kernel.maidlab.common.entity.TimeBase;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.domain.matching.dto.response.MatchingResponseDto;
@@ -18,41 +14,41 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Matching extends TimeBase {
 
-	@Column
-	private Long reservationId;
+    @Column
+    private Long reservationId;
 
-	@Setter
-	@Column
-	private Long managerId;
+    @Setter
+    @Column
+    private Long managerId;
 
-	@Setter
-	@Column
-	@Enumerated(EnumType.STRING)
-	private Status matchingStatus;
+    @Setter
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Status matchingStatus;
 
-	@Setter
-	@Column
-	private Integer matchingCount;
+    @Setter
+    @Column
+    private Integer matchingCount;
 
-	private Matching(
-		Long reservationId,
-		Long managerId,
-		Status matchingStatus,
-		Integer matchingCount
-	) {
-		this.reservationId = reservationId;
-		this.managerId = managerId;
-		this.matchingStatus = matchingStatus;
-		this.matchingCount = matchingCount;
-	}
+    private Matching(
+            Long reservationId,
+            Long managerId,
+            Status matchingStatus,
+            Integer matchingCount
+    ) {
+        this.reservationId = reservationId;
+        this.managerId = managerId;
+        this.matchingStatus = matchingStatus;
+        this.matchingCount = matchingCount;
+    }
 
-	public static Matching of(MatchingResponseDto dto) {
-		return new Matching(
-			dto.getReservationId(),
-			dto.getManagerId(),
-			dto.getMatchingStatus(),
-			dto.getMatchingCount()
-		);
-	}
+    public static Matching of(MatchingResponseDto dto) {
+        return new Matching(
+                dto.getReservationId(),
+                dto.getManagerId(),
+                dto.getMatchingStatus(),
+                dto.getMatchingCount()
+        );
+    }
 
 }

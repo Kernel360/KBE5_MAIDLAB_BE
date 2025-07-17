@@ -1,24 +1,23 @@
 package kernel.maidlab.domain.manager.repository;
 
-import java.util.List;
-
+import kernel.maidlab.domain.manager.entity.ManagerServiceType;
+import kernel.maidlab.domain.manager.enums.ServiceType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import kernel.maidlab.domain.manager.enums.ServiceType;
-import kernel.maidlab.domain.manager.entity.ManagerServiceType;
+import java.util.List;
 
 @Repository
 public interface ManagerServiceTypeRepository extends JpaRepository<ManagerServiceType, Long> {
-	List<ManagerServiceType> findByManagerId(Long managerId);
+    List<ManagerServiceType> findByManagerId(Long managerId);
 
-	@Query("SELECT ms.serviceType FROM ManagerServiceType ms WHERE ms.manager.id = :managerId")
-	List<ServiceType> findServiceTypesByManagerId(@Param("managerId") Long managerId);
+    @Query("SELECT ms.serviceType FROM ManagerServiceType ms WHERE ms.manager.id = :managerId")
+    List<ServiceType> findServiceTypesByManagerId(@Param("managerId") Long managerId);
 
-	@Modifying
-	@Query("DELETE FROM ManagerServiceType ms WHERE ms.manager.id = :managerId")
-	void deleteByManagerId(@Param("managerId") Long managerId);
+    @Modifying
+    @Query("DELETE FROM ManagerServiceType ms WHERE ms.manager.id = :managerId")
+    void deleteByManagerId(@Param("managerId") Long managerId);
 }

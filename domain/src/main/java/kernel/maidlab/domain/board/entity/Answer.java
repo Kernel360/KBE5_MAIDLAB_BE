@@ -14,26 +14,26 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Answer extends TimeBase {
 
-	@OneToOne
-	@JoinColumn(name = "board_id")
-	private Board board;
+    @OneToOne
+    @JoinColumn(name = "board_id")
+    private Board board;
 
-	@Column(nullable = false, columnDefinition = "TEXT")
-	private String content;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String content;
 
-	public Answer(Board board, String content) {
-		this.board = board;
-		this.content = content;
-	}
+    public Answer(Board board, String content) {
+        this.board = board;
+        this.content = content;
+    }
 
-	public static Answer createAnswer(AnswerRequestDto requestDto, Board board) {
-		return new Answer(
-			board,
-			requestDto.getContent()
-		);
-	}
+    public static Answer createAnswer(AnswerRequestDto requestDto, Board board) {
+        return new Answer(
+                board,
+                requestDto.getContent()
+        );
+    }
 
-	public void setContent(AnswerRequestDto requestDto) {
-		this.content = requestDto.getContent();
-	}
+    public void setContent(AnswerRequestDto requestDto) {
+        this.content = requestDto.getContent();
+    }
 }

@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DocumentListItem {
 
-	@NotBlank
-	private String fileType;
+    @NotBlank
+    private String fileType;
 
-	@NotBlank
-	private String fileName;
+    @NotBlank
+    private String fileName;
 
-	@NotBlank
-	private String uploadedFileUrl;
+    @NotBlank
+    private String uploadedFileUrl;
 
 }

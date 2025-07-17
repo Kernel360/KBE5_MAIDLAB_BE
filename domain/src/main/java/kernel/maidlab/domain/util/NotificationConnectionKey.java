@@ -11,14 +11,14 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class NotificationConnectionKey {
-	private final Long userId;
-	private final UserType userType;
+    private final Long userId;
+    private final UserType userType;
 
-	public static NotificationConnectionKey of(Long userId, UserType userType) {
-		return new NotificationConnectionKey(userId, userType);
-	}
+    public static NotificationConnectionKey of(Long userId, UserType userType) {
+        return new NotificationConnectionKey(userId, userType);
+    }
 
-	public String toStringKey() {
-		return userId + "_" + userType.name();
-	}
+    public String toStringKey() {
+        return userId + "_" + userType.name();
+    }
 }

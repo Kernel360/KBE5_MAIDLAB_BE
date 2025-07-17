@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class PointChargeRequestDto {
-	private Integer chargeAmount;
+    private Integer chargeAmount;
 
 }

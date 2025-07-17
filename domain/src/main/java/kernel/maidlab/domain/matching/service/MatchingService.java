@@ -1,8 +1,5 @@
 package kernel.maidlab.domain.matching.service;
 
-import java.io.IOException;
-import java.util.List;
-
 import jakarta.servlet.http.HttpServletRequest;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.domain.consumer.dto.response.LikedManagerResponseDto;
@@ -12,17 +9,19 @@ import kernel.maidlab.domain.matching.dto.response.AvailableManagerResponseDto;
 import kernel.maidlab.domain.matching.dto.response.MatchingResponseDto;
 import kernel.maidlab.domain.matching.dto.response.RequestMatchingListResponseDto;
 
+import java.util.List;
+
 public interface MatchingService {
 
-	List<AvailableManagerResponseDto> findAvailableManagers(MatchingRequestDto dto);
+    List<AvailableManagerResponseDto> findAvailableManagers(MatchingRequestDto dto);
 
-	void createMatching(MatchingResponseDto dto);
+    void createMatching(MatchingResponseDto dto);
 
-	void changeStatus(Long reservationId, Status status);
+    void changeStatus(Long reservationId, Status status);
 
-	List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size);
+    List<RequestMatchingListResponseDto> myMatching(HttpServletRequest request, int page, int size);
 
-	List<LikedManagerResponseDto> preferenceManager(HttpServletRequest request);
+    List<LikedManagerResponseDto> preferenceManager(HttpServletRequest request);
 
-	List<AvailableManagerResponseDto> previousManager(Consumer consumer);
+    List<AvailableManagerResponseDto> previousManager(Consumer consumer);
 }

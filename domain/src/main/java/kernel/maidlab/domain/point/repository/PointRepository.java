@@ -1,8 +1,7 @@
 package kernel.maidlab.domain.point.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import kernel.maidlab.domain.point.entity.Point;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PointRepository extends JpaRepository<Point, Long>, PointRepositoryCustom {
 

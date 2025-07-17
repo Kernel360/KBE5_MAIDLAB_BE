@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class ReservationIsApprovedRequestDto {
-	private Boolean status; // true : approved, false : rejected
+    private Boolean status; // true : approved, false : rejected
 }

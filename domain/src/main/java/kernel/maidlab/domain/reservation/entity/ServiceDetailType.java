@@ -1,11 +1,6 @@
 package kernel.maidlab.domain.reservation.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import kernel.maidlab.domain.manager.enums.ServiceType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,14 +14,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ServiceDetailType {
-	@Id
-	private Long id;
+    @Id
+    private Long id;
 
-	@Column(nullable = false)
-	private String serviceDetailType;
+    @Column(nullable = false)
+    private String serviceDetailType;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private ServiceType serviceType;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ServiceType serviceType;
 
 }
