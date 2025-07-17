@@ -1,6 +1,7 @@
 package kernel.maidlab.domain.manager.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import kernel.maidlab.common.enums.Gender;
 import kernel.maidlab.domain.manager.dto.object.RegionListItem;
 import kernel.maidlab.domain.manager.dto.object.ScheduleListItem;
@@ -28,10 +29,10 @@ public class ProfileUpdateRequestDto {
 
     private List<ServiceListItem> serviceTypes;
 
-    @NotBlank
+    @NotEmpty
     private List<RegionListItem> regions;
 
-    @NotBlank
+    @NotEmpty
     private List<ScheduleListItem> availableTimes;
 
     private String introduceText;
