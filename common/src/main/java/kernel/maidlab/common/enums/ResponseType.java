@@ -20,6 +20,7 @@ public enum ResponseType {
 	ALREADY_WORKING_OR_COMPLETED("AWC", "Already working or completed.", HttpStatus.BAD_REQUEST),
 	INVALID_USER_TYPE("IUT", "Invalid user_type or None user_type.", HttpStatus.BAD_REQUEST),
 	INSUFFICIENT_POINT("IP", "사용 가능한 포인트가 부족합니다.", HttpStatus.BAD_REQUEST),
+	ALREADY_REVIEWED("AR", "Review already exists for this reservation.", HttpStatus.BAD_REQUEST),
 
 	// 401 Unauthorized - 인증 실패
 	AUTHORIZATION_FAILED("AF", "Authorization Failed.", HttpStatus.UNAUTHORIZED),

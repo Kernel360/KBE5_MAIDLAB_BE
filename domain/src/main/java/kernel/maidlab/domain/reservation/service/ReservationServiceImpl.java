@@ -77,6 +77,11 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationRepository.findById(dto.getReservationId())
                 .orElseThrow(() -> new ReservationException(ResponseType.DATABASE_ERROR));
 
+        // 중복 리뷰 검사
+        if (reviewRepository.existsReviewsByReservationId(dto.getReservationId())) {
+            throw new ReservationException(ResponseType.ALREADY_REVIEWED);
+        }
+
         if (userType == UserType.CONSUMER) {
             Consumer consumer = (Consumer) userValidator.findByUuid(userId, userType);
             Manager manager = managerRepository.findById(reservation.getManagerId())
