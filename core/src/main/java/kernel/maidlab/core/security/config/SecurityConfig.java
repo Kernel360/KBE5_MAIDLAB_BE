@@ -49,6 +49,8 @@ public class SecurityConfig {
 
 			// API 경로별 접근 권한 설정
 			.authorizeHttpRequests(auth -> auth
+				// Preflight 요청은 인증 없이 허용
+				.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
 				// 공개 API (인증 불필요)
 				.requestMatchers(
 					"/api/auth/login",
