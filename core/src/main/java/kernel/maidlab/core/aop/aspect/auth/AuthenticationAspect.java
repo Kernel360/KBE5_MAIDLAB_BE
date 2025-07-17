@@ -5,10 +5,12 @@ import java.util.Arrays;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import jakarta.persistence.EntityNotFoundException;
 import kernel.maidlab.common.enums.ResponseType;
 import kernel.maidlab.core.aop.annotation.auth.AuthRequired;
 import kernel.maidlab.core.exception.custom.AuthException;
@@ -76,6 +78,9 @@ public class AuthenticationAspect {
 
 		} catch (AuthException e) {
 			throw e;
+		} catch (EntityNotFoundException | AccessDeniedException e) {
+			log.debug("사용자 비즈니스 예외 발생 - {}#{}: {}", className, methodName, e.getMessage());
+			throw e;
 		} catch (Exception e) {
 			log.error("인증 체크 중 예상치 못한 오류 발생 - {}#{}", className, methodName, e);
 			throw new AuthException(ResponseType.AUTHORIZATION_FAILED, "인증 체크 중 예상치 못한 오류 발생: " + methodName, e);
@@ -119,6 +124,9 @@ public class AuthenticationAspect {
 			return joinPoint.proceed();
 
 		} catch (AuthException e) {
+			throw e;
+		} catch (EntityNotFoundException | AccessDeniedException e) {
+			log.debug("관리자 비즈니스 예외 발생 - {}#{}: {}", className, methodName, e.getMessage());
 			throw e;
 		} catch (Exception e) {
 			log.error("관리자 권한 체크 중 예상치 못한 오류 발생 - {}#{}", className, methodName, e);
