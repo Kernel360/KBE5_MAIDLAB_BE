@@ -1,5 +1,6 @@
 name: Deploy Spring Boot to EC2
 
+
 on:
   push:
     branches: 'chore/be/#'  # dev 브랜치 push 시 작동
