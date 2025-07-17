@@ -50,7 +50,7 @@ MaidLab은 바쁜 현대인의 일상을 지원하기 위해 청소, 베이비�
 - **멀티모듈 프로젝트** - 모듈별 관심사 분리
 
 ## ☁️ 아키텍처
-<img width="800" alt="Architecture" src="https://github.com/user-attachments/assets/9cf94548-3ad9-4c98-a304-659878c3e60b" />
+<img width="800" alt="Architecture" src="https://github.com/user-attachments/assets/8af9342a-b00f-41ff-83f1-72033d873b85" />
 
 ## 🚀 주요 기능
 
