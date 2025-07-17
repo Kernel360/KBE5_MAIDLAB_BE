@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SocialLoginRequestDto {
 
-	@NotNull
-	private UserType userType;
+    @NotNull
+    private UserType userType;
 
-	@NotNull
-	private SocialType socialType;
+    @NotNull
+    private SocialType socialType;
 
-	private String code;
+    private String code;
 
 }

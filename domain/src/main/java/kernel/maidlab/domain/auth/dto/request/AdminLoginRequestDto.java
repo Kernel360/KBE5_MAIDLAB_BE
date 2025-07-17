@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AdminLoginRequestDto {
 
-	@NotBlank
-	private String adminKey;
+    @NotBlank
+    private String adminKey;
 
-	@NotBlank
-	private String password;
+    @NotBlank
+    private String password;
 
 }

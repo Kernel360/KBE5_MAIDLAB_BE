@@ -1,7 +1,5 @@
 package kernel.maidlab.domain.auth.dto.request;
 
-import java.time.LocalDate;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -12,29 +10,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class SignUpRequestDto {
 
-	@NotNull
-	private UserType userType;
+    @NotNull
+    private UserType userType;
 
-	@NotBlank
-	@Pattern(regexp = "^01[0-9]{8,9}$")
-	private String phoneNumber;
+    @NotBlank
+    @Pattern(regexp = "^01[0-9]{8,9}$")
+    private String phoneNumber;
 
-	@NotBlank
-	@Size(min = 8, max = 20)
-	private String password;
+    @NotBlank
+    @Size(min = 8, max = 20)
+    private String password;
 
-	@NotBlank
-	private String name;
+    @NotBlank
+    private String name;
 
-	@NotNull
-	private LocalDate birth;
+    @NotNull
+    private LocalDate birth;
 
-	@NotNull
-	private Gender gender;
+    @NotNull
+    private Gender gender;
 
 }

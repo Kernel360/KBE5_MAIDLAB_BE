@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegionListItem {
 
-	@NotBlank
-	private String region;
+    @NotBlank
+    private String region;
 
 }

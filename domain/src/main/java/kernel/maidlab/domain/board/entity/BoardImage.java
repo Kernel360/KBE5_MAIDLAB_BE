@@ -16,22 +16,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BoardImage extends Base {
 
-	@ManyToOne
-	@JoinColumn(name = "board_id")
-	private Board board;
+    @ManyToOne
+    @JoinColumn(name = "board_id")
+    private Board board;
 
-	@Column(name = "image_path", nullable = false)
-	private String imagePath;
+    @Column(name = "image_path", nullable = false)
+    private String imagePath;
 
-	@Column(nullable = false)
-	private String name;
+    @Column(nullable = false)
+    private String name;
 
-	public void changeBoard(Board board) {
-		this.board = board;
-	}
+    public void changeBoard(Board board) {
+        this.board = board;
+    }
 
-	public void updateImage(ImageDto imageDto) {
-		this.name = imageDto.getName();
-		this.imagePath = imageDto.getImagePath();
-	}
+    public void updateImage(ImageDto imageDto) {
+        this.name = imageDto.getName();
+        this.imagePath = imageDto.getImagePath();
+    }
 }

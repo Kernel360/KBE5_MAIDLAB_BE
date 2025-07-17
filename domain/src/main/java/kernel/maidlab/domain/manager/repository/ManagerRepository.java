@@ -1,14 +1,13 @@
 package kernel.maidlab.domain.manager.repository;
 
-import java.util.Optional;
-
+import kernel.maidlab.domain.manager.entity.Manager;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import kernel.maidlab.domain.manager.entity.Manager;
+import java.util.Optional;
 
 public interface ManagerRepository extends JpaRepository<Manager, Long>, ManagerRepositoryCustom {
-	Optional<Manager> findByUuid(String uuid);
+    Optional<Manager> findByUuid(String uuid);
 
-	Optional<Manager> findByPhoneNumber(String phoneNumber);
+    Optional<Manager> findByPhoneNumber(String phoneNumber);
 
 }

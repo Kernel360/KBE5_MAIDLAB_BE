@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class PreferenceRequestDto {
-	private boolean preference;
+    private boolean preference;
 }

@@ -16,14 +16,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ManagerPreference extends Base {
 
-	@ManyToOne
-	@JoinColumn(name = "consumer_id", nullable = false)
-	private Consumer consumer;
+    @ManyToOne
+    @JoinColumn(name = "consumer_id", nullable = false)
+    private Consumer consumer;
 
-	@ManyToOne
-	@JoinColumn(name = "manager_id", nullable = false)
-	private Manager manager;
+    @ManyToOne
+    @JoinColumn(name = "manager_id", nullable = false)
+    private Manager manager;
 
-	private boolean preference;
+    private boolean preference;
 
 }

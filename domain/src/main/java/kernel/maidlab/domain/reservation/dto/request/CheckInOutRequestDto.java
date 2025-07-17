@@ -1,10 +1,10 @@
 package kernel.maidlab.domain.reservation.dto.request;
 
-import java.time.LocalDateTime;
-
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 public class CheckInOutRequestDto {
-	LocalDateTime checkTime;
+    LocalDateTime checkTime;
 }

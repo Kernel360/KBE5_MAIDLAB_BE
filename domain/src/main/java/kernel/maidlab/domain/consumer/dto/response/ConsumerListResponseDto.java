@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class ConsumerListResponseDto {
-	private Long id;
-	private String phoneNumber;
-	private String name;
-	private String uuid;
+    private Long id;
+    private String phoneNumber;
+    private String name;
+    private String uuid;
 }

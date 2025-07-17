@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ServiceListItem {
 
-	@NotBlank
-	private String serviceType;
+    @NotBlank
+    private String serviceType;
 
 }

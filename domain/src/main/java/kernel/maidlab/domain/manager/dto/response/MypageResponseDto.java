@@ -9,11 +9,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public class MypageResponseDto {
 
-	private long userid;
-	private UserType userType;
-	private String profileImage;
-	private String name;
-	private Boolean isVerified;
-	private SocialType socialType;
+    private long userid;
+    private UserType userType;
+    private String profileImage;
+    private String name;
+    private Boolean isVerified;
+    private SocialType socialType;
 
 }

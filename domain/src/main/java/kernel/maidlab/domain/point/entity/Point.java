@@ -1,23 +1,15 @@
 package kernel.maidlab.domain.point.entity;
 
-import java.math.BigDecimal;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import kernel.maidlab.common.entity.TimeBase;
-import kernel.maidlab.domain.point.enums.PointType;
 import kernel.maidlab.domain.consumer.entity.Consumer;
-import kernel.maidlab.domain.reservation.entity.Reservation;
+import kernel.maidlab.domain.point.enums.PointType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @Entity
 @Getter
@@ -26,111 +18,92 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Point extends TimeBase {
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "consumer_id", nullable = false)
-	private Consumer consumer;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "consumer_id", nullable = false)
+    private Consumer consumer;
 
-	@Column
-	private Long eventId;
+    @Column(nullable = false)
+    private Integer amount;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "reservation_id")
-	private Reservation reservation;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PointType pointType;
 
-	@Column(nullable = false)
-	private Integer amount;
+    @Column(nullable = false)
+    private String description;
 
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private PointType pointType;
+    public static Integer calculateEarnedPoint(int paymentAmount) {
 
-	@Column(nullable = false)
-	private String description;
+        int earnedPoint = (int) Math.floor(paymentAmount * 0.01); // 결제금액의 1%
+        return Math.max(earnedPoint, 0);
+    }
 
-	public static Integer calculateEarnedPoint(int paymentAmount) {
+    public enum PointAction {
+        EARN("결제 적립 포인트", true),
+        USE("결제 사용 포인트", false),
+        CHARGE("포인트 충전", true);
 
-		int earnedPoint = (int)Math.floor(paymentAmount * 0.01); // 결제금액의 1%
-		return Math.max(earnedPoint, 0);
-	}
+        private final String description;
+        private final boolean isPositive;
 
-	public enum PointAction {
-		EARN("결제 적립 포인트", true),
-		USE("결제 사용 포인트", false),
-		CHARGE("포인트 충전", true);
+        PointAction(String description, boolean isPositive) {
+            this.description = description;
+            this.isPositive = isPositive;
+        }
 
-		private final String description;
-		private final boolean isPositive;
+        public String getDescription() {
+            return description;
+        }
 
-		PointAction(String description, boolean isPositive) {
-			this.description = description;
-			this.isPositive = isPositive;
-		}
+        public boolean isPositive() {
+            return isPositive;
+        }
+    }
 
-		public String getDescription() {
-			return description;
-		}
+    private static Point createPoint(
+            Consumer consumer,
+            Integer amount,
+            PointType pointType,
+            PointAction action) {
+        Integer finalAmount = action.isPositive() ? amount : -Math.abs(amount);
+        return new Point(
+                consumer,
+                finalAmount,
+                pointType,
+                action.getDescription());
+    }
 
-		public boolean isPositive() {
-			return isPositive;
-		}
-	}
+    public static Point createEarnPointOnPayment(
+            Consumer consumer,
+            BigDecimal totalPrice) {
+        int payAmount = totalPrice.intValue();
+        Integer earnedPoint = calculateEarnedPoint(payAmount);
 
-	private static Point createPoint(
-		Consumer consumer,
-		Long eventId,
-		Reservation reservation,
-		Integer amount,
-		PointType pointType,
-		PointAction action) {
-		Integer finalAmount = action.isPositive() ? amount : -Math.abs(amount);
-		return new Point(
-			consumer,
-			eventId,
-			reservation,
-			finalAmount,
-			pointType,
-			action.getDescription());
-	}
+        return createPoint(
+                consumer,
+                earnedPoint,
+                PointType.PAYMENT,
+                PointAction.EARN);
+    }
 
-	public static Point createEarnPointOnPayment(
-		Consumer consumer,
-		Reservation reservation,
-		BigDecimal totalPrice) {
-		int payAmount = totalPrice.intValue();
-		Integer earnedPoint = calculateEarnedPoint(payAmount);
+    public static Point createUsagePoint(
+            Consumer consumer,
+            Integer usageAmountPoint) {
+        return createPoint(
+                consumer,
+                usageAmountPoint,
+                PointType.PAYMENT,
+                PointAction.USE);
+    }
 
-		return createPoint(
-			consumer,
-			null,
-			reservation,
-			earnedPoint,
-			PointType.PAYMENT,
-			PointAction.EARN);
-	}
-
-	public static Point createUsagePoint(
-		Consumer consumer,
-		Reservation reservation,
-		Integer usageAmountPoint) {
-		return createPoint(
-			consumer,
-			null,
-			reservation,
-			usageAmountPoint,
-			PointType.PAYMENT,
-			PointAction.USE);
-	}
-
-	public static Point createChargePoint(
-		Consumer consumer,
-		Integer chargeAmount) {
-		return createPoint(
-			consumer,
-			null,
-			null,
-			chargeAmount,
-			PointType.CHARGE,
-			PointAction.CHARGE);
-	}
+    public static Point createChargePoint(
+            Consumer consumer,
+            Integer chargeAmount) {
+        return createPoint(
+                consumer,
+                chargeAmount,
+                PointType.CHARGE,
+                PointAction.CHARGE);
+    }
 }
 

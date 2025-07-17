@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class AnswerRequestDto {
-	;
-	private String content;
+    ;
+    private String content;
 }
