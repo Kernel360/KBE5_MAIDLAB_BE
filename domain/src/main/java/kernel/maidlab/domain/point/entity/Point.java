@@ -1,23 +1,15 @@
 package kernel.maidlab.domain.point.entity;
 
-import java.math.BigDecimal;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import kernel.maidlab.common.entity.TimeBase;
-import kernel.maidlab.domain.point.enums.PointType;
 import kernel.maidlab.domain.consumer.entity.Consumer;
-import kernel.maidlab.domain.reservation.entity.Reservation;
+import kernel.maidlab.domain.point.enums.PointType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @Entity
 @Getter
@@ -29,13 +21,6 @@ public class Point extends TimeBase {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "consumer_id", nullable = false)
 	private Consumer consumer;
-
-	@Column
-	private Long eventId;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "reservation_id")
-	private Reservation reservation;
 
 	@Column(nullable = false)
 	private Integer amount;
@@ -77,16 +62,12 @@ public class Point extends TimeBase {
 
 	private static Point createPoint(
 		Consumer consumer,
-		Long eventId,
-		Reservation reservation,
 		Integer amount,
 		PointType pointType,
 		PointAction action) {
 		Integer finalAmount = action.isPositive() ? amount : -Math.abs(amount);
 		return new Point(
 			consumer,
-			eventId,
-			reservation,
 			finalAmount,
 			pointType,
 			action.getDescription());
@@ -94,15 +75,12 @@ public class Point extends TimeBase {
 
 	public static Point createEarnPointOnPayment(
 		Consumer consumer,
-		Reservation reservation,
 		BigDecimal totalPrice) {
 		int payAmount = totalPrice.intValue();
 		Integer earnedPoint = calculateEarnedPoint(payAmount);
 
 		return createPoint(
 			consumer,
-			null,
-			reservation,
 			earnedPoint,
 			PointType.PAYMENT,
 			PointAction.EARN);
@@ -110,12 +88,9 @@ public class Point extends TimeBase {
 
 	public static Point createUsagePoint(
 		Consumer consumer,
-		Reservation reservation,
 		Integer usageAmountPoint) {
 		return createPoint(
 			consumer,
-			null,
-			reservation,
 			usageAmountPoint,
 			PointType.PAYMENT,
 			PointAction.USE);
@@ -126,8 +101,6 @@ public class Point extends TimeBase {
 		Integer chargeAmount) {
 		return createPoint(
 			consumer,
-			null,
-			null,
 			chargeAmount,
 			PointType.CHARGE,
 			PointAction.CHARGE);
