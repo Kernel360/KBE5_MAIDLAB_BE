@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import kernel.maidlab.common.enums.Status;
 import kernel.maidlab.domain.manager.entity.Manager;
 
-public interface AdminManagerRepository extends JpaRepository<Manager, Long> {
+public interface AdminManagerRepository extends JpaRepository<Manager, Long>, AdminManagerRepositoryCustom {
 
 	Page<Manager> findAllByIsVerified(Status status, Pageable pageable);
 

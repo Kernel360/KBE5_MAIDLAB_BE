@@ -125,6 +125,23 @@ public class AdminManagerServiceImpl implements AdminManagerService {
 	@ExceptionHandler(
 		value = {IllegalArgumentException.class},
 		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
+		message = "해당 지역의 매니저를 찾을 수 없습니다",
+		logLevel = LogLevel.WARN
+	)
+	public Page<ManagerListResponseDto> getManagersByRegion(Long regionId, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		return adminManagerRepository.findManagersByRegionId(regionId, pageable)
+			.map(manager -> new ManagerListResponseDto(
+				manager.getName(),
+				manager.getUuid(),
+				manager.getId()
+			));
+	}
+
+	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class},
+		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
 		message = "매니저를 찾을 수 없습니다",
 		logLevel = LogLevel.WARN
 	)

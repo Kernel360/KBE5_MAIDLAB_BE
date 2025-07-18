@@ -28,5 +28,7 @@ public interface AdminManagerService {
 
 	Long newManagerCount(HttpServletRequest request);
 
+	Page<ManagerListResponseDto> getManagersByRegion(Long regionId, int page, int size);
+
 	void deleteManager(Long managerId);
 }

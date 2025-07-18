@@ -82,6 +82,16 @@ public interface AdminManagerApi {
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<Long>> newManagerCount(HttpServletRequest request);
 
+	@GetMapping("/region/{regionId}")
+	@Operation(summary = "지역별 매니저 조회", description = "지역 ID로 매니저 목록을 조회합니다")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
+		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
+		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
+	ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagersByRegion(
+		@PathVariable Long regionId,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size);
+
 	@DeleteMapping("/{managerId}")
 	@Operation(summary = "매니저 계정 삭제", description = "매니저 계정 소프트 삭제 API")
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "삭제 성공 (SU)"),
