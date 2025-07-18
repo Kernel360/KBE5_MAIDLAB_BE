@@ -37,4 +37,6 @@ public class ProfileUpdateRequestDto {
 
     private String introduceText;
 
+    private String emergencyCall;
+
 }

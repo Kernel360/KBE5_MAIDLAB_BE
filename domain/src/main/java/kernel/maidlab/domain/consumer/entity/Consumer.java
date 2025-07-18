@@ -87,6 +87,7 @@ public class Consumer extends UserBase {
                 consumerProfileUpdateRequestDto.getBirth(),
                 consumerProfileUpdateRequestDto.getGender()
         );
+        super.updateEmergencyCall(consumerProfileUpdateRequestDto.getEmergencyCall());
         this.address = consumerProfileUpdateRequestDto.getAddress();
         this.detailAddress = consumerProfileUpdateRequestDto.getDetailAddress();
     }

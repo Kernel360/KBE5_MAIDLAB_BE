@@ -1,6 +1,7 @@
 package kernel.maidlab.domain.consumer.dto.response;
 
 import kernel.maidlab.common.enums.Gender;
+import kernel.maidlab.common.enums.SocialType;
 import kernel.maidlab.domain.consumer.entity.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,7 @@ public class ConsumerProfileResponseDto {
     private Gender gender;
     private String address;
     private String detailAddress;
+    private String emergencyCall;
 
     public static ConsumerProfileResponseDto from(Consumer consumer) {
 
@@ -30,7 +32,9 @@ public class ConsumerProfileResponseDto {
                 consumer.getBirth(),
                 consumer.getGender(),
                 consumer.getAddress(),
-                consumer.getDetailAddress()
+                consumer.getDetailAddress(),
+                // 소셜 로그인 사용자만 emergencyCall 표시
+                consumer.isSocialAccount() ? consumer.getEmergencyCall() : null
         );
     }
 

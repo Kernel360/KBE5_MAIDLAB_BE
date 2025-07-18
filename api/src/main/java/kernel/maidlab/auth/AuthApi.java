@@ -20,6 +20,7 @@ import kernel.maidlab.domain.auth.dto.request.SocialLoginRequestDto;
 import kernel.maidlab.domain.auth.dto.request.SocialSignUpRequestDto;
 import kernel.maidlab.domain.auth.dto.response.LoginResponseDto;
 import kernel.maidlab.domain.auth.dto.response.SocialLoginResponseDto;
+import kernel.maidlab.domain.auth.dto.response.SocialSignUpResponseDto;
 import lombok.Generated;
 
 @Tag(name = "Auth", description = "인증(Auth) 관련 API")
@@ -53,8 +54,8 @@ public interface AuthApi {
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "소셜 회원가입 성공 (SU)"),
 		@ApiResponse(responseCode = "400", description = "Validation failed (VF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
-	ResponseEntity<ResponseDto<Void>> socialSignUp(
-		@RequestBody(description = "소셜 회원가입 요청 DTO", required = true, content = @Content(schema = @Schema(implementation = SocialSignUpRequestDto.class), examples = @ExampleObject(value = "{\"birth\":\"1990-01-01\",\"gender\":\"FEMALE\"}"))) SocialSignUpRequestDto req,
+	ResponseEntity<ResponseDto<SocialSignUpResponseDto>> socialSignUp(
+		@RequestBody(description = "소셜 회원가입 요청 DTO", required = true, content = @Content(schema = @Schema(implementation = SocialSignUpRequestDto.class), examples = @ExampleObject(value = "{\"birth\":\"1990-01-01\",\"gender\":\"FEMALE\",\"emergencyCall\":\"01012345678\"}"))) SocialSignUpRequestDto req,
 		HttpServletRequest httpReq);
 
 	@Operation(summary = "토큰 재발급", description = "Refresh Token이 담긴 쿠키를 통해 Access Token을 재발급합니다.")

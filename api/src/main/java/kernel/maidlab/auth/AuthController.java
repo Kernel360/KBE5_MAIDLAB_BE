@@ -22,6 +22,7 @@ import kernel.maidlab.domain.auth.dto.request.SocialLoginRequestDto;
 import kernel.maidlab.domain.auth.dto.request.SocialSignUpRequestDto;
 import kernel.maidlab.domain.auth.dto.response.LoginResponseDto;
 import kernel.maidlab.domain.auth.dto.response.SocialLoginResponseDto;
+import kernel.maidlab.domain.auth.dto.response.SocialSignUpResponseDto;
 import kernel.maidlab.domain.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ public class AuthController implements AuthApi {
 	}
 
 	@PostMapping("/social-sign-up")
-	public ResponseEntity<ResponseDto<Void>> socialSignUp(@Validated @RequestBody SocialSignUpRequestDto req,
+	public ResponseEntity<ResponseDto<SocialSignUpResponseDto>> socialSignUp(@Validated @RequestBody SocialSignUpRequestDto req,
 		HttpServletRequest httpReq) {
 		return authService.socialSignUp(req, httpReq);
 	}

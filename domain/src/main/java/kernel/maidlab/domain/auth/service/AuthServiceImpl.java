@@ -17,6 +17,7 @@ import kernel.maidlab.domain.auth.dto.JwtDto;
 import kernel.maidlab.domain.auth.dto.request.*;
 import kernel.maidlab.domain.auth.dto.response.LoginResponseDto;
 import kernel.maidlab.domain.auth.dto.response.SocialLoginResponseDto;
+import kernel.maidlab.domain.auth.dto.response.SocialSignUpResponseDto;
 import kernel.maidlab.domain.auth.social.GoogleOAuthService;
 import kernel.maidlab.domain.auth.social.GoogleResourceApi;
 import kernel.maidlab.domain.auth.social.GoogleResourceDto;
@@ -33,6 +34,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Slf4j
@@ -243,9 +245,10 @@ public class AuthServiceImpl implements AuthService {
             logLevel = LogLevel.ERROR,
             enableNotification = true
     )
-    public ResponseEntity<ResponseDto<Void>> socialSignUp(SocialSignUpRequestDto req, HttpServletRequest req2) {
+    public ResponseEntity<ResponseDto<SocialSignUpResponseDto>> socialSignUp(SocialSignUpRequestDto req, HttpServletRequest req2) {
         JwtDto.TempTokenInfo googleInfo = extractGoogleInfo(req2);
 
+        String userKey;
         if (googleInfo.getUserType() == UserType.CONSUMER) {
             Consumer consumer = Consumer.createSocialConsumer(
                     googleInfo.getGoogleId(),
@@ -255,6 +258,7 @@ public class AuthServiceImpl implements AuthService {
                     SocialType.GOOGLE
             );
             Consumer savedConsumer = consumerRepository.save(consumer);
+            userKey = savedConsumer.getUuid();
             log.info("소셜 Consumer 회원가입 완료 - ID: {}, 이름: {}", savedConsumer.getId(), googleInfo.getGoogleName());
         } else {
             Manager manager = Manager.createSocialManager(
@@ -265,10 +269,26 @@ public class AuthServiceImpl implements AuthService {
                     SocialType.GOOGLE
             );
             Manager savedManager = managerRepository.save(manager);
+            userKey = savedManager.getUuid();
             log.info("소셜 Manager 회원가입 완료 - ID: {}, 이름: {}", savedManager.getId(), googleInfo.getGoogleName());
         }
 
-        return ResponseDto.success(null);
+        // 회원가입 완료 후 토큰 생성
+        JwtDto.TokenPair tokenPair = jwtTokenService.generateTokenPair(userKey, googleInfo.getUserType());
+        
+        // 토큰 만료 시간 계산 (현재 시간 + 토큰 유효 기간)
+        LocalDateTime expirationTime = LocalDateTime.now().plusSeconds(jwtProperties.getExpiration().getAccess() / 1000);
+        
+        // 프로필 완성도 체크 (소셜 회원가입 시 기본 정보만 있으므로 false)
+        boolean profileCompleted = false;
+        
+        SocialSignUpResponseDto response = new SocialSignUpResponseDto(
+                tokenPair.getAccessToken(),
+                expirationTime,
+                profileCompleted
+        );
+
+        return ResponseDto.success(response);
     }
 
     private JwtDto.TempTokenInfo extractGoogleInfo(HttpServletRequest req) {

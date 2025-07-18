@@ -88,6 +88,11 @@ public class Manager extends UserBase {
         super.updateBasicInfo(name, birth, gender);
     }
 
+    public void updateBasicInfo(String name, LocalDate birth, Gender gender, String emergencyCall) {
+        super.updateBasicInfo(name, birth, gender);
+        super.updateEmergencyCall(emergencyCall);
+    }
+
     public boolean hasCompleteProfile() {
         return super.getProfileImage() != null && !super.getProfileImage().trim().isEmpty() && this.regions != null
                 && !this.regions.isEmpty();
