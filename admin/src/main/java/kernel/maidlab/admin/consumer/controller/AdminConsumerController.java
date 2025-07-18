@@ -32,6 +32,14 @@ public class AdminConsumerController implements AdminConsumerApi {
 		return ResponseDto.success(ResponseType.SUCCESS, adminConsumerService.getConsumerBypage(page, size));
 	}
 
+	@GetMapping("/filter")
+	@AdminRequired
+	@Override
+	public ResponseEntity<ResponseDto<Page<ConsumerListResponseDto>>> getConsumersByFilter(
+		@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam Boolean isDeleted) {
+		return ResponseDto.success(ResponseType.SUCCESS, adminConsumerService.getConsumerBypageWithFilter(page, size, isDeleted));
+	}
+
 	@GetMapping("/{consumerId}")
 	@AdminRequired
 	@Override

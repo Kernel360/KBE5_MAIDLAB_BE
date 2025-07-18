@@ -9,6 +9,8 @@ public interface AdminConsumerService {
 	// 관리자용 전체조회로직
 	Page<ConsumerListResponseDto> getConsumerBypage(int page, int size);
 
+	Page<ConsumerListResponseDto> getConsumerBypageWithFilter(int page, int size, Boolean isDeleted);
+
 	AdminConsumerProfileResponseDto getConsumerProfileById(Long id);
 
 	Long getCount();

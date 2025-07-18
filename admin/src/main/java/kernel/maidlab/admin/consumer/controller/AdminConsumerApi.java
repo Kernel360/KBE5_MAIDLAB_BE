@@ -25,6 +25,14 @@ public interface AdminConsumerApi {
 	ResponseEntity<ResponseDto<Page<ConsumerListResponseDto>>> getConsumers(@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size);
 
+	@GetMapping("/filter")
+	@Operation(summary = "수요자 계정 필터 조회", description = "삭제 상태별 수요자 계정 조회 API")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
+		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
+		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
+	ResponseEntity<ResponseDto<Page<ConsumerListResponseDto>>> getConsumersByFilter(@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size, @RequestParam Boolean isDeleted);
+
 	@GetMapping("/{consumerId}")
 	@Operation(summary = "수요자 계정 상세 조회", description = "계정 상세 조회 API")
 	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "조회 성공 (SU)"),
