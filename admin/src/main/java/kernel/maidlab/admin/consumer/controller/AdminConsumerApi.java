@@ -2,6 +2,7 @@ package kernel.maidlab.admin.consumer.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,4 +39,12 @@ public interface AdminConsumerApi {
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<Long>> ConsumerCount();
+
+	@DeleteMapping("/{consumerId}")
+	@Operation(summary = "수요자 계정 삭제", description = "수요자 계정 소프트 삭제 API")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "삭제 성공 (SU)"),
+		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
+		@ApiResponse(responseCode = "404", description = "Not Found (NF)"),
+		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
+	ResponseEntity<ResponseDto<String>> deleteConsumer(@PathVariable("consumerId") Long consumerId);
 }

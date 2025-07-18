@@ -121,4 +121,19 @@ public class AdminManagerServiceImpl implements AdminManagerService {
 		return adminManagerRepository.countByIsDeletedFalseAndIsVerified(Status.PENDING);
 	}
 
+	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class},
+		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
+		message = "매니저를 찾을 수 없습니다",
+		logLevel = LogLevel.WARN
+	)
+	public void deleteManager(Long managerId) {
+		Manager manager = adminManagerRepository.findById(managerId)
+			.orElseThrow(() -> new IllegalArgumentException("매니저를 찾을 수 없습니다."));
+		
+		manager.deleteAccount();
+		adminManagerRepository.save(manager);
+	}
+
 }

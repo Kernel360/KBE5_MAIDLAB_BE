@@ -29,7 +29,10 @@ public interface ManagerService {
 
     List<AvailableManagerResponseDto> findAvailableManagers(String gu, LocalDateTime StartTime, LocalDateTime EndTime);
 
-    List<AvailableManagerResponseDto> previousManagers(Consumer consumer);
+	AvailableManagerResponseDto findRandomAvailableManagers(String gu, LocalDateTime StartTime,
+		LocalDateTime EndTime);
+
+	List<AvailableManagerResponseDto> previousManagers(Consumer consumer);
 
     Manager getManager(String userId);
 

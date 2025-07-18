@@ -12,4 +12,6 @@ public interface AdminConsumerService {
 	AdminConsumerProfileResponseDto getConsumerProfileById(Long id);
 
 	Long getCount();
+
+	void deleteConsumer(Long consumerId);
 }

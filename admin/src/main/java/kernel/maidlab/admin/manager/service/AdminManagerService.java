@@ -27,4 +27,6 @@ public interface AdminManagerService {
 	Long managerCount(HttpServletRequest request);
 
 	Long newManagerCount(HttpServletRequest request);
+
+	void deleteManager(Long managerId);
 }

@@ -1,5 +1,6 @@
 package kernel.maidlab.matching;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class MatchingController implements MatchingApi {
 	public ResponseEntity<ResponseDto<List<AvailableManagerResponseDto>>> matchManagers(
 		@RequestBody MatchingRequestDto dto) {
 		List<AvailableManagerResponseDto> AvailableManagers = matchingService.findAvailableManagers(dto);
-
+		AvailableManagerResponseDto AvailableManager = matchingService.findRandomAvailableManagers(dto);
 		// 후보군 작성을 위한 redis 설정으로 일단 일시중지
 		//int ttlMin = AvailableManagers.size() * 10;
 		//Object key = generateKey(dto);
@@ -68,9 +69,12 @@ public class MatchingController implements MatchingApi {
 		if (dto.getManagerChoose())
 			return ResponseDto.success(ResponseType.SUCCESS, AvailableManagers);
 			// return ResponseEntity.ok(AvailableManagers);
-		else
+		else {
 			// return ResponseEntity.ok(Collections.singletonList(AvailableManagers.getFirst()));
-			return ResponseDto.success(ResponseType.SUCCESS, Collections.singletonList(AvailableManagers.getFirst()));
+			AvailableManagers.clear();
+			AvailableManagers.add(AvailableManager);
+			return ResponseDto.success(ResponseType.SUCCESS, AvailableManagers);
+		}
 	}
 
 	@GetMapping("/preferencemanager")
