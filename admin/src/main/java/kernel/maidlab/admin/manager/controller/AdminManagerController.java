@@ -2,6 +2,7 @@ package kernel.maidlab.admin.manager.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -88,6 +89,14 @@ public class AdminManagerController implements AdminManagerApi {
 	@AdminRequired
 	public ResponseEntity<ResponseDto<Long>> newManagerCount(HttpServletRequest request) {
 		return ResponseDto.success(adminManagerService.newManagerCount(request));
+	}
+
+	@DeleteMapping("/{managerId}")
+	@Override
+	@AdminRequired
+	public ResponseEntity<ResponseDto<String>> deleteManager(@PathVariable("managerId") Long managerId) {
+		adminManagerService.deleteManager(managerId);
+		return ResponseDto.success(ResponseType.SUCCESS, "매니저 계정이 삭제되었습니다.");
 	}
 
 }

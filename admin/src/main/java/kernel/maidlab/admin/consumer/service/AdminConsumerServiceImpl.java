@@ -58,4 +58,19 @@ public class AdminConsumerServiceImpl implements AdminConsumerService {
 	public Long getCount() {
 		return adminConsumerRepository.countByIsDeletedFalse();
 	}
+
+	@Override
+	@ExceptionHandler(
+		value = {IllegalArgumentException.class},
+		responseType = ResponseType.THIS_RESOURCE_DOES_NOT_EXIST,
+		message = "소비자를 찾을 수 없습니다",
+		logLevel = LogLevel.WARN
+	)
+	public void deleteConsumer(Long consumerId) {
+		Consumer consumer = adminConsumerRepository.findById(consumerId)
+			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+		
+		consumer.deleteAccount();
+		adminConsumerRepository.save(consumer);
+	}
 }

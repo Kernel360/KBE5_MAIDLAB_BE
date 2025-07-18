@@ -2,6 +2,7 @@ package kernel.maidlab.admin.manager.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -80,4 +81,12 @@ public interface AdminManagerApi {
 		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
 		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
 	ResponseEntity<ResponseDto<Long>> newManagerCount(HttpServletRequest request);
+
+	@DeleteMapping("/{managerId}")
+	@Operation(summary = "매니저 계정 삭제", description = "매니저 계정 소프트 삭제 API")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "삭제 성공 (SU)"),
+		@ApiResponse(responseCode = "401", description = "Authorization failed (AF)"),
+		@ApiResponse(responseCode = "404", description = "Not Found (NF)"),
+		@ApiResponse(responseCode = "500", description = "Database error (DBE)")})
+	ResponseEntity<ResponseDto<String>> deleteManager(@PathVariable("managerId") Long managerId);
 }

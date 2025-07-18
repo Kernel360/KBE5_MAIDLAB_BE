@@ -2,6 +2,7 @@ package kernel.maidlab.admin.consumer.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +45,14 @@ public class AdminConsumerController implements AdminConsumerApi {
 	@Override
 	public ResponseEntity<ResponseDto<Long>> ConsumerCount() {
 		return ResponseDto.success(ResponseType.SUCCESS, adminConsumerService.getCount());
+	}
+
+	@DeleteMapping("/{consumerId}")
+	@AdminRequired
+	@Override
+	public ResponseEntity<ResponseDto<String>> deleteConsumer(@PathVariable("consumerId") Long consumerId) {
+		adminConsumerService.deleteConsumer(consumerId);
+		return ResponseDto.success(ResponseType.SUCCESS, "수요자 계정이 삭제되었습니다.");
 	}
 
 }
