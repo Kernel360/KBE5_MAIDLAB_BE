@@ -36,6 +36,18 @@ public class AdminConsumerServiceImpl implements AdminConsumerService {
 	}
 
 	@Override
+	public Page<ConsumerListResponseDto> getConsumerBypageWithFilter(int page, int size, Boolean isDeleted) {
+		Pageable pageable = PageRequest.of(page, size);
+		return adminConsumerRepository.findByIsDeleted(isDeleted, pageable)
+			.map(consumer -> new ConsumerListResponseDto(
+				consumer.getId(),
+				consumer.getPhoneNumber(),
+				consumer.getName(),
+				consumer.getUuid()
+			));
+	}
+
+	@Override
 	@Retry(
 		maxAttempts = 2,
 		delay = 500,

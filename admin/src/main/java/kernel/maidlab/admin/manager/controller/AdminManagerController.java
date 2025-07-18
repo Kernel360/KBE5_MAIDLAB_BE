@@ -91,6 +91,15 @@ public class AdminManagerController implements AdminManagerApi {
 		return ResponseDto.success(adminManagerService.newManagerCount(request));
 	}
 
+	@GetMapping("/region/{regionId}")
+	@Override
+	@AdminRequired
+	public ResponseEntity<ResponseDto<Page<ManagerListResponseDto>>> getManagersByRegion(
+		@PathVariable Long regionId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+		Page<ManagerListResponseDto> response = adminManagerService.getManagersByRegion(regionId, page, size);
+		return ResponseDto.success(ResponseType.SUCCESS, response);
+	}
+
 	@DeleteMapping("/{managerId}")
 	@Override
 	@AdminRequired
