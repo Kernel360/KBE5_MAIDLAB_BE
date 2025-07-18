@@ -15,7 +15,9 @@ public interface MatchingService {
 
     List<AvailableManagerResponseDto> findAvailableManagers(MatchingRequestDto dto);
 
-    void createMatching(MatchingResponseDto dto);
+	AvailableManagerResponseDto findRandomAvailableManagers(MatchingRequestDto dto);
+
+	void createMatching(MatchingResponseDto dto);
 
     void changeStatus(Long reservationId, Status status);
 

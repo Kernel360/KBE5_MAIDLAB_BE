@@ -9,5 +9,7 @@ import java.util.List;
 public interface ManagerRepositoryCustom {
     List<AvailableManagerResponseDto> findAvailableManagers(String site, LocalDateTime start, LocalDateTime end);
 
-    List<AvailableManagerResponseDto> previousManagers(Consumer consumer);
+	AvailableManagerResponseDto findRandomAvailableManagers(String gu, LocalDateTime start, LocalDateTime end);
+
+	List<AvailableManagerResponseDto> previousManagers(Consumer consumer);
 }

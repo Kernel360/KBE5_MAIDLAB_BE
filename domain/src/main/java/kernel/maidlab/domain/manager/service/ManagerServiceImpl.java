@@ -295,6 +295,11 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
+    public AvailableManagerResponseDto findRandomAvailableManagers(String gu, LocalDateTime StartTime,
+        LocalDateTime EndTime) {
+        return managerRepository.findRandomAvailableManagers(gu, StartTime, EndTime);
+    }
+    @Override
     public List<AvailableManagerResponseDto> previousManagers(Consumer consumer) {
         return managerRepository.previousManagers(consumer);
     }
