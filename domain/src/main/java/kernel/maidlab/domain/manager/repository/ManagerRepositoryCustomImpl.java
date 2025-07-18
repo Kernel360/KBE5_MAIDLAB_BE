@@ -60,6 +60,7 @@ public class ManagerRepositoryCustomImpl implements ManagerRepositoryCustom {
 							reservation.endTime.gt(start)      // 예약 종료 > 요청 시작
 						)))
 			.orderBy(manager.averageRate.desc())
+			.limit(5)
 			.fetch();
 	}
 
