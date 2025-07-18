@@ -6,6 +6,7 @@ import kernel.maidlab.common.dto.ResponseDto;
 import kernel.maidlab.domain.auth.dto.request.*;
 import kernel.maidlab.domain.auth.dto.response.LoginResponseDto;
 import kernel.maidlab.domain.auth.dto.response.SocialLoginResponseDto;
+import kernel.maidlab.domain.auth.dto.response.SocialSignUpResponseDto;
 import org.springframework.http.ResponseEntity;
 
 public interface AuthService {
@@ -18,8 +19,8 @@ public interface AuthService {
 
     ResponseEntity<ResponseDto<Void>> signUp(SignUpRequestDto signUpRequestDto);
 
-    ResponseEntity<ResponseDto<Void>> socialSignUp(SocialSignUpRequestDto socialSignUpRequestDto,
-                                                   HttpServletRequest req);
+    ResponseEntity<ResponseDto<SocialSignUpResponseDto>> socialSignUp(SocialSignUpRequestDto socialSignUpRequestDto,
+                                                                       HttpServletRequest req);
 
     ResponseEntity<ResponseDto<LoginResponseDto>> refreshToken(String refreshToken, HttpServletResponse res);
 

@@ -26,5 +26,6 @@ public class ProfileResponseDto {
     private List<ScheduleListItem> schedules;
     private List<ServiceType> services;
     private String introduceText;
+    private String emergencyCall;
 
 }

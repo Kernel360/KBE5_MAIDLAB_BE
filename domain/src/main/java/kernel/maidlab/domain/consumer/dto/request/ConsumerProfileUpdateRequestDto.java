@@ -14,5 +14,6 @@ public class ConsumerProfileUpdateRequestDto {
     private LocalDate birth;
     private String address;
     private String detailAddress;
+    private String emergencyCall;
 
 }

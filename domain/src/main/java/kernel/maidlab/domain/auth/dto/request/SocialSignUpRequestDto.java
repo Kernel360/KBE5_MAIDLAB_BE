@@ -1,6 +1,6 @@
 package kernel.maidlab.domain.auth.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import kernel.maidlab.common.enums.Gender;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +13,13 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class SocialSignUpRequestDto {
 
-    @NotBlank
+    @NotNull
     private LocalDate birth;
 
-    @NotBlank
+    @NotNull
     private Gender gender;
+
+    @NotNull
+    private String emergencyCall;
 
 }

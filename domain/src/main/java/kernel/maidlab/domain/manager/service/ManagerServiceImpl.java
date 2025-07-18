@@ -188,7 +188,8 @@ public class ManagerServiceImpl implements ManagerService {
                 regions,
                 schedules,
                 services,
-                manager.getIntroduceText()
+                manager.getIntroduceText(),
+                manager.isSocialAccount() ? manager.getEmergencyCall() : null
         );
 
         return ResponseDto.success(responseDto);
@@ -206,7 +207,7 @@ public class ManagerServiceImpl implements ManagerService {
     public ResponseEntity<ResponseDto<Void>> updateProfile(ProfileUpdateRequestDto req, HttpServletRequest httpReq) {
         Manager manager = getCurrentManager();
 
-        manager.updateBasicInfo(req.getName(), req.getBirth(), req.getGender());
+        manager.updateBasicInfo(req.getName(), req.getBirth(), req.getGender(), req.getEmergencyCall());
 
         if (req.getProfileImage() != null) {
             manager.updateProfileImage(req.getProfileImage());
